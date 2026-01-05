@@ -1,0 +1,356 @@
+"use client"
+
+import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
+import Link from 'next/link'
+import dynamic from 'next/dynamic'
+import type { Quote } from '@/core/contracts'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { QuoteLineItemsTable } from '@/features/quotes/components/quote-line-items-table'
+import { QuoteTotalsSummary } from '@/features/quotes/components/quote-totals-summary'
+import { CreateOrderFromQuoteButton } from '@/features/orders/components/create-order-from-quote-button'
+import { ActivityTimeline } from '@/features/activities/components'
+import { cn } from '@/lib/utils'
+import { formatCurrency } from '@/features/quotes/utils/quote-calculations'
+import {
+  FileText,
+  Package,
+  Calendar,
+  Link2,
+  History,
+  Building2,
+  User,
+  Clock,
+} from 'lucide-react'
+
+// Dynamic imports for version features
+const QuoteVersionTimeline = dynamic(
+  () => import('@/features/quotes/components/quote-version-timeline').then((mod) => ({
+    default: mod.QuoteVersionTimeline,
+  })),
+  { ssr: false }
+)
+
+export type QuoteTabId = 'general' | 'products' | 'details' | 'versions' | 'related' | 'activities'
+
+interface QuoteDetailTabsProps {
+  quote: Quote
+  quoteLines?: any[]
+  onCompareVersions?: (fromId: string, toId: string) => void
+}
+
+/**
+ * QuoteDetailTabs
+ *
+ * Tabbed view for Quote details.
+ *
+ * Tabs:
+ * - General: Quote overview with key information
+ * - Products: Quote lines table
+ * - Details: Dates, metadata
+ * - Versions: Version timeline and history
+ * - Related: Related records (opportunity)
+ * - Activities: Activity timeline
+ */
+export function QuoteDetailTabs({ quote, quoteLines = [], onCompareVersions }: QuoteDetailTabsProps) {
+  const [activeTab, setActiveTab] = useState<QuoteTabId>('general')
+  const [tabsContainer, setTabsContainer] = useState<HTMLElement | null>(null)
+
+  // Find the tabs container in sticky header on mount
+  useEffect(() => {
+    const container = document.getElementById('quote-tabs-nav-container')
+    setTabsContainer(container)
+  }, [])
+
+  // Format helpers
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return '-'
+    return new Date(dateString).toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    })
+  }
+
+  // Tabs navigation component
+  const tabsNavigation = (
+    <div className="overflow-x-auto">
+      <TabsList className="h-auto p-0 bg-transparent border-0 gap-0 justify-start rounded-none inline-flex w-full md:w-auto min-w-max">
+        <TabsTrigger
+          value="general"
+          className={cn(
+            "relative rounded-none border-0 px-4 md:px-6 py-3 text-sm font-medium transition-colors",
+            "data-[state=active]:bg-transparent data-[state=active]:text-purple-600",
+            "data-[state=inactive]:text-gray-500 hover:text-gray-900",
+            "data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-purple-600"
+          )}
+        >
+          <FileText className="w-4 h-4 mr-2" />
+          General
+        </TabsTrigger>
+
+        <TabsTrigger
+          value="products"
+          className={cn(
+            "relative rounded-none border-0 px-4 md:px-6 py-3 text-sm font-medium transition-colors",
+            "data-[state=active]:bg-transparent data-[state=active]:text-purple-600",
+            "data-[state=inactive]:text-gray-500 hover:text-gray-900",
+            "data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-purple-600"
+          )}
+        >
+          <Package className="w-4 h-4 mr-2" />
+          Products ({quoteLines.length})
+        </TabsTrigger>
+
+        <TabsTrigger
+          value="details"
+          className={cn(
+            "relative rounded-none border-0 px-4 md:px-6 py-3 text-sm font-medium transition-colors",
+            "data-[state=active]:bg-transparent data-[state=active]:text-purple-600",
+            "data-[state=inactive]:text-gray-500 hover:text-gray-900",
+            "data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-purple-600"
+          )}
+        >
+          <Calendar className="w-4 h-4 mr-2" />
+          Details
+        </TabsTrigger>
+
+        <TabsTrigger
+          value="versions"
+          className={cn(
+            "relative rounded-none border-0 px-4 md:px-6 py-3 text-sm font-medium transition-colors",
+            "data-[state=active]:bg-transparent data-[state=active]:text-purple-600",
+            "data-[state=inactive]:text-gray-500 hover:text-gray-900",
+            "data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-purple-600"
+          )}
+        >
+          <Clock className="w-4 h-4 mr-2" />
+          Versions
+        </TabsTrigger>
+
+        <TabsTrigger
+          value="related"
+          className={cn(
+            "relative rounded-none border-0 px-4 md:px-6 py-3 text-sm font-medium transition-colors",
+            "data-[state=active]:bg-transparent data-[state=active]:text-purple-600",
+            "data-[state=inactive]:text-gray-500 hover:text-gray-900",
+            "data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-purple-600"
+          )}
+        >
+          <Link2 className="w-4 h-4 mr-2" />
+          Related
+        </TabsTrigger>
+
+        <TabsTrigger
+          value="activities"
+          className={cn(
+            "relative rounded-none border-0 px-4 md:px-6 py-3 text-sm font-medium transition-colors",
+            "data-[state=active]:bg-transparent data-[state=active]:text-purple-600",
+            "data-[state=inactive]:text-gray-500 hover:text-gray-900",
+            "data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-purple-600"
+          )}
+        >
+          <History className="w-4 h-4 mr-2" />
+          Activities
+        </TabsTrigger>
+      </TabsList>
+    </div>
+  )
+
+  return (
+    <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as QuoteTabId)} className="w-full">
+      {/* Render tabs navigation in sticky header container via portal */}
+      {tabsContainer && createPortal(tabsNavigation, tabsContainer)}
+
+      {/* GENERAL TAB */}
+      <TabsContent value="general" className="mt-0 space-y-4">
+        {/* Information Grid */}
+        <div className="grid gap-4 md:grid-cols-2">
+          {/* Customer Information Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base font-semibold flex items-center gap-2">
+                {quote.customeridtype === 'account' ? (
+                  <Building2 className="h-5 w-5" />
+                ) : (
+                  <User className="h-5 w-5" />
+                )}
+                Customer Information
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div>
+                <p className="text-sm text-muted-foreground">Customer Type</p>
+                <p className="font-medium capitalize">{quote.customeridtype}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Customer ID</p>
+                <p className="font-mono text-sm">{quote.customerid}</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Quote Totals */}
+          <QuoteTotalsSummary quote={quote} />
+        </div>
+
+        {/* Validity Period Card */}
+        {quote.effectivefrom && quote.effectiveto && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base font-semibold flex items-center gap-2">
+                <Calendar className="h-5 w-5" />
+                Validity Period
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-4 md:grid-cols-2">
+              <div>
+                <p className="text-sm text-muted-foreground">Effective From</p>
+                <p className="font-medium">{formatDate(quote.effectivefrom)}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Effective To</p>
+                <p className="font-medium">{formatDate(quote.effectiveto)}</p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Create Order Section (if Quote is Won) */}
+        {quote.statecode === 2 && quoteLines.length > 0 && (
+          <Card className="border-primary/50 bg-primary/5">
+            <CardHeader>
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Package className="h-4 w-4" />
+                Next Step: Create Order
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <p className="text-sm text-muted-foreground">
+                This quote has been won{quote.opportunityid && ' and the opportunity has been closed'}.
+                Create a sales order to proceed with fulfillment.
+              </p>
+              <CreateOrderFromQuoteButton
+                quote={quote}
+                quoteLines={quoteLines.map((line) => ({
+                  productid: line.productid,
+                  productdescription: line.productdescription,
+                  quantity: line.quantity,
+                  priceperunit: line.priceperunit,
+                  manualdiscountamount: line.manualdiscountamount,
+                  tax: line.tax,
+                }))}
+                className="w-full"
+              />
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Description Card */}
+        {quote.description && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base font-semibold">Description</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm">{quote.description}</p>
+            </CardContent>
+          </Card>
+        )}
+      </TabsContent>
+
+      {/* PRODUCTS TAB */}
+      <TabsContent value="products" className="mt-0">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Package className="h-5 w-5" />
+              Products ({quoteLines.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <QuoteLineItemsTable quoteLines={quoteLines} canEdit={false} />
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      {/* DETAILS TAB */}
+      <TabsContent value="details" className="mt-0 space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base font-semibold">Metadata</CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm space-y-2">
+            <div>
+              <p className="text-muted-foreground">Created</p>
+              <p className="font-medium">
+                {new Date(quote.createdon).toLocaleString()}
+              </p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">Last Modified</p>
+              <p className="font-medium">
+                {new Date(quote.modifiedon).toLocaleString()}
+              </p>
+            </div>
+            {quote.effectivefrom && (
+              <div>
+                <p className="text-muted-foreground">Effective From</p>
+                <p className="font-medium">{formatDate(quote.effectivefrom)}</p>
+              </div>
+            )}
+            {quote.effectiveto && (
+              <div>
+                <p className="text-muted-foreground">Effective To</p>
+                <p className="font-medium">{formatDate(quote.effectiveto)}</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      {/* VERSIONS TAB */}
+      <TabsContent value="versions" className="mt-0">
+        <QuoteVersionTimeline
+          quoteid={quote.quoteid}
+          onCompareVersions={onCompareVersions}
+        />
+      </TabsContent>
+
+      {/* RELATED TAB */}
+      <TabsContent value="related" className="mt-0 space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base font-semibold">Related Records</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {quote.opportunityid && (
+              <div>
+                <p className="text-sm text-muted-foreground">Opportunity</p>
+                <Link
+                  href={`/opportunities/${quote.opportunityid}`}
+                  className="text-sm hover:underline text-primary font-medium"
+                >
+                  View Opportunity
+                </Link>
+              </div>
+            )}
+            {!quote.opportunityid && (
+              <p className="text-sm text-muted-foreground">No related records available</p>
+            )}
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      {/* ACTIVITIES TAB */}
+      <TabsContent value="activities" className="mt-0">
+        <ActivityTimeline
+          regardingId={quote.quoteid}
+          regardingType="quote"
+          regardingName={quote.name}
+        />
+      </TabsContent>
+    </Tabs>
+  )
+}

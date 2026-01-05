@@ -1,0 +1,101 @@
+{
+  "title": "Settings",
+  "description": "Manage your application preferences and settings",
+  "tabs": {
+    "preferences": "User Preferences",
+    "system": "System Configuration"
+  },
+  "preferences": {
+    "title": "User Preferences",
+    "description": "Customize your application experience",
+    "theme": {
+      "label": "Theme",
+      "description": "Select the color theme for the interface",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "language": {
+      "label": "Language",
+      "description": "Select the interface language",
+      "en-US": "English",
+      "es-ES": "Spanish"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "description": "Configure how and when to receive notifications",
+      "desktop": {
+        "label": "Desktop notifications",
+        "description": "Receive notifications in the browser"
+      },
+      "email": {
+        "label": "Email notifications",
+        "description": "Receive notifications by email"
+      },
+      "sound": {
+        "label": "Sound",
+        "description": "Play sound with notifications"
+      }
+    },
+    "display": {
+      "title": "Display",
+      "description": "Adjust how information is displayed",
+      "sidebarCollapsed": {
+        "label": "Collapsed sidebar",
+        "description": "Collapse the sidebar by default"
+      },
+      "compactMode": {
+        "label": "Compact mode",
+        "description": "Show more information in less space"
+      }
+    }
+  },
+  "system": {
+    "title": "System Configuration",
+    "description": "Configure regional formats and system preferences",
+    "regional": {
+      "title": "Regional Formats",
+      "description": "Configure how dates, numbers and currencies are displayed",
+      "dateFormat": {
+        "label": "Date format",
+        "description": "Select how to display dates",
+        "short": "Short (11/15/2025)",
+        "medium": "Medium (Nov 15, 2025)",
+        "long": "Long (November 15, 2025)"
+      },
+      "timeFormat": {
+        "label": "Time format",
+        "description": "Select 12 or 24 hour format",
+        "12h": "12 hour (2:30 PM)",
+        "24h": "24 hour (14:30)"
+      },
+      "timezone": {
+        "label": "Timezone",
+        "description": "Select your timezone"
+      },
+      "currency": {
+        "label": "Currency",
+        "description": "Select currency to display prices",
+        "EUR": "Euro (€)",
+        "USD": "US Dollar ($)",
+        "GBP": "British Pound (£)"
+      },
+      "numberFormat": {
+        "label": "Number format",
+        "description": "Select format for numbers and decimals",
+        "es-ES": "European (1.234,56)",
+        "en-US": "US (1,234.56)"
+      }
+    }
+  },
+  "actions": {
+    "save": "Save changes",
+    "reset": "Reset to defaults",
+    "cancel": "Cancel"
+  },
+  "messages": {
+    "saved": "Settings saved successfully",
+    "error": "Error saving settings",
+    "resetConfirm": "Are you sure you want to reset all settings to default values?"
+  }
+}

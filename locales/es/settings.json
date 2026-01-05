@@ -1,0 +1,101 @@
+{
+  "title": "Configuración",
+  "description": "Gestiona las preferencias y configuraciones de tu aplicación",
+  "tabs": {
+    "preferences": "Preferencias de Usuario",
+    "system": "Configuración del Sistema"
+  },
+  "preferences": {
+    "title": "Preferencias de Usuario",
+    "description": "Personaliza tu experiencia en la aplicación",
+    "theme": {
+      "label": "Tema",
+      "description": "Selecciona el tema de color para la interfaz",
+      "light": "Claro",
+      "dark": "Oscuro",
+      "system": "Sistema"
+    },
+    "language": {
+      "label": "Idioma",
+      "description": "Selecciona el idioma de la interfaz",
+      "en-US": "Inglés",
+      "es-ES": "Español"
+    },
+    "notifications": {
+      "title": "Notificaciones",
+      "description": "Configura cómo y cuándo recibir notificaciones",
+      "desktop": {
+        "label": "Notificaciones de escritorio",
+        "description": "Recibir notificaciones en el navegador"
+      },
+      "email": {
+        "label": "Notificaciones por correo",
+        "description": "Recibir notificaciones por email"
+      },
+      "sound": {
+        "label": "Sonido",
+        "description": "Reproducir sonido con las notificaciones"
+      }
+    },
+    "display": {
+      "title": "Visualización",
+      "description": "Ajusta cómo se muestra la información",
+      "sidebarCollapsed": {
+        "label": "Barra lateral contraída",
+        "description": "Contraer la barra lateral por defecto"
+      },
+      "compactMode": {
+        "label": "Modo compacto",
+        "description": "Mostrar más información en menos espacio"
+      }
+    }
+  },
+  "system": {
+    "title": "Configuración del Sistema",
+    "description": "Configura formatos regionales y preferencias del sistema",
+    "regional": {
+      "title": "Formatos Regionales",
+      "description": "Configura cómo se muestran fechas, números y monedas",
+      "dateFormat": {
+        "label": "Formato de fecha",
+        "description": "Selecciona cómo mostrar las fechas",
+        "short": "Corto (15/11/2025)",
+        "medium": "Medio (15 nov 2025)",
+        "long": "Largo (15 de noviembre de 2025)"
+      },
+      "timeFormat": {
+        "label": "Formato de hora",
+        "description": "Selecciona el formato de 12 o 24 horas",
+        "12h": "12 horas (2:30 PM)",
+        "24h": "24 horas (14:30)"
+      },
+      "timezone": {
+        "label": "Zona horaria",
+        "description": "Selecciona tu zona horaria"
+      },
+      "currency": {
+        "label": "Moneda",
+        "description": "Selecciona la moneda para mostrar precios",
+        "EUR": "Euro (€)",
+        "USD": "Dólar estadounidense ($)",
+        "GBP": "Libra esterlina (£)"
+      },
+      "numberFormat": {
+        "label": "Formato de números",
+        "description": "Selecciona el formato para números y decimales",
+        "es-ES": "Europeo (1.234,56)",
+        "en-US": "Estadounidense (1,234.56)"
+      }
+    }
+  },
+  "actions": {
+    "save": "Guardar cambios",
+    "reset": "Restablecer valores predeterminados",
+    "cancel": "Cancelar"
+  },
+  "messages": {
+    "saved": "Configuración guardada exitosamente",
+    "error": "Error al guardar la configuración",
+    "resetConfirm": "¿Está seguro de que desea restablecer todos los valores predeterminados?"
+  }
+}

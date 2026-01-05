@@ -1,0 +1,98 @@
+/**
+ * Quote PDF Export API Route
+ *
+ * GET /api/quotes/[id]/pdf
+ *
+ * Genera y devuelve un PDF del quote especificado
+ */
+
+import { NextRequest, NextResponse } from 'next/server'
+import { renderToStream } from '@react-pdf/renderer'
+import { QuotePdfTemplate } from '@/features/quotes/components/quote-pdf-template'
+import { quoteService } from '@/features/quotes/api/quote-service'
+import { quoteDetailService } from '@/features/quotes/api/quote-detail-service'
+
+interface RouteContext {
+  params: Promise<{ id: string }>
+}
+
+/**
+ * GET /api/quotes/[id]/pdf
+ *
+ * Genera PDF del quote
+ */
+export async function GET(request: NextRequest, context: RouteContext) {
+  try {
+    const { id } = await context.params
+
+    // Validar ID
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Quote ID is required' },
+        { status: 400 }
+      )
+    }
+
+    // Obtener quote y sus líneas
+    const quote = await quoteService.getById(id)
+    if (!quote) {
+      return NextResponse.json(
+        { error: 'Quote not found' },
+        { status: 404 }
+      )
+    }
+
+    const quoteLines = await quoteDetailService.getByQuote(id)
+
+    // Validar que el quote tenga líneas
+    if (quoteLines.length === 0) {
+      return NextResponse.json(
+        { error: 'Quote has no line items. Cannot generate PDF.' },
+        { status: 400 }
+      )
+    }
+
+    // Generar PDF usando el template
+    const pdfStream = await renderToStream(
+      <QuotePdfTemplate
+        quote={quote}
+        quoteLines={quoteLines}
+        companyInfo={{
+          name: 'Your Company Name',
+          address: '123 Business St, City, ST 12345',
+          phone: '(555) 123-4567',
+          email: 'sales@company.com',
+        }}
+      />
+    )
+
+    // Convertir stream a buffer
+    const chunks: Buffer[] = []
+    for await (const chunk of pdfStream) {
+      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk))
+    }
+    const pdfBuffer = Buffer.concat(chunks)
+
+    // Generar nombre de archivo
+    const filename = `Quote-${quote.quotenumber || id}-${new Date().toISOString().split('T')[0]}.pdf`
+
+    // Devolver PDF con headers apropiados
+    return new NextResponse(pdfBuffer, {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="${filename}"`,
+        'Content-Length': pdfBuffer.length.toString(),
+      },
+    })
+  } catch (error) {
+    console.error('Error generating quote PDF:', error)
+    return NextResponse.json(
+      {
+        error: 'Failed to generate PDF',
+        message: error instanceof Error ? error.message : 'Unknown error',
+      },
+      { status: 500 }
+    )
+  }
+}

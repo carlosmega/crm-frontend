@@ -1,0 +1,32 @@
+{
+  "main": {
+    "dashboard": "Panel de Control",
+    "sales": "Ventas",
+    "customers": "Clientes",
+    "settings": "Configuración"
+  },
+  "sales": {
+    "leads": "Leads",
+    "opportunities": "Oportunidades",
+    "quotes": "Cotizaciones",
+    "orders": "Pedidos",
+    "invoices": "Facturas",
+    "products": "Productos"
+  },
+  "customers": {
+    "accounts": "Cuentas",
+    "contacts": "Contactos",
+    "activities": "Actividades"
+  },
+  "settings": {
+    "general": "General",
+    "profile": "Perfil",
+    "preferences": "Preferencias",
+    "security": "Seguridad"
+  },
+  "user": {
+    "profile": "Perfil",
+    "settings": "Configuración",
+    "logout": "Cerrar sesión"
+  }
+}

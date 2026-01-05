@@ -1,0 +1,32 @@
+{
+  "main": {
+    "dashboard": "Dashboard",
+    "sales": "Sales",
+    "customers": "Customers",
+    "settings": "Settings"
+  },
+  "sales": {
+    "leads": "Leads",
+    "opportunities": "Opportunities",
+    "quotes": "Quotes",
+    "orders": "Orders",
+    "invoices": "Invoices",
+    "products": "Products"
+  },
+  "customers": {
+    "accounts": "Accounts",
+    "contacts": "Contacts",
+    "activities": "Activities"
+  },
+  "settings": {
+    "general": "General",
+    "profile": "Profile",
+    "preferences": "Preferences",
+    "security": "Security"
+  },
+  "user": {
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout"
+  }
+}

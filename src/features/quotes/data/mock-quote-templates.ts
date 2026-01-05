@@ -1,0 +1,227 @@
+import type { QuoteTemplate } from '@/core/contracts'
+import { QuoteTemplateCategory } from '@/core/contracts'
+
+/**
+ * Mock Quote Templates
+ *
+ * Templates predefinidos para testing
+ */
+export const MOCK_QUOTE_TEMPLATES: QuoteTemplate[] = [
+  {
+    quotetemplateid: 'template-001',
+    name: 'Standard Software License',
+    description: 'Standard software licensing package with support',
+    category: QuoteTemplateCategory.Product,
+    templatedata: {
+      name: 'Software License Quote',
+      description: 'Annual software license with premium support',
+      lines: [
+        {
+          productid: 'prod-001',
+          productdescription: 'Enterprise Software License (Annual)',
+          quantity: 1,
+          priceperunit: 9999.00,
+          manualdiscountamount: 0,
+          tax: 0,
+        },
+        {
+          productid: 'prod-002',
+          productdescription: 'Premium Support Package (Annual)',
+          quantity: 1,
+          priceperunit: 2499.00,
+          manualdiscountamount: 0,
+          tax: 0,
+        },
+        {
+          productid: 'prod-003',
+          productdescription: 'Implementation & Training',
+          quantity: 1,
+          priceperunit: 3500.00,
+          manualdiscountamount: 0,
+          tax: 0,
+        },
+      ],
+    },
+    ownerid: 'user-001',
+    isshared: true,
+    usagecount: 45,
+    createdon: '2024-01-15T10:00:00Z',
+    createdby: 'admin@company.com',
+    modifiedon: '2024-10-20T14:30:00Z',
+    modifiedby: 'admin@company.com',
+  },
+  {
+    quotetemplateid: 'template-002',
+    name: 'Consulting Services Package',
+    description: 'Standard consulting engagement (40 hours)',
+    category: QuoteTemplateCategory.Service,
+    templatedata: {
+      name: 'Consulting Services Quote',
+      description: 'Professional consulting services package',
+      lines: [
+        {
+          productdescription: 'Senior Consultant Hours',
+          quantity: 40,
+          priceperunit: 200.00,
+          manualdiscountamount: 0,
+          tax: 0,
+        },
+        {
+          productdescription: 'Project Management',
+          quantity: 10,
+          priceperunit: 150.00,
+          manualdiscountamount: 0,
+          tax: 0,
+        },
+      ],
+    },
+    ownerid: 'user-001',
+    isshared: true,
+    usagecount: 32,
+    createdon: '2024-02-10T09:00:00Z',
+    createdby: 'sales@company.com',
+    modifiedon: '2024-11-01T11:15:00Z',
+    modifiedby: 'sales@company.com',
+  },
+  {
+    quotetemplateid: 'template-003',
+    name: 'Hardware Bundle - Office Setup',
+    description: 'Complete office hardware setup for 10 employees',
+    category: QuoteTemplateCategory.Bundle,
+    templatedata: {
+      name: 'Office Hardware Bundle',
+      description: 'Complete hardware setup for 10 workstations',
+      lines: [
+        {
+          productdescription: 'Desktop Computer - Business Class',
+          quantity: 10,
+          priceperunit: 1200.00,
+          manualdiscountamount: 1000.00, // Volume discount
+          tax: 0,
+        },
+        {
+          productdescription: 'Monitor 27" 4K',
+          quantity: 10,
+          priceperunit: 350.00,
+          manualdiscountamount: 300.00,
+          tax: 0,
+        },
+        {
+          productdescription: 'Keyboard & Mouse Combo',
+          quantity: 10,
+          priceperunit: 80.00,
+          manualdiscountamount: 0,
+          tax: 0,
+        },
+        {
+          productdescription: 'Desk & Chair Package',
+          quantity: 10,
+          priceperunit: 600.00,
+          manualdiscountamount: 500.00,
+          tax: 0,
+        },
+      ],
+    },
+    ownerid: 'user-002',
+    isshared: true,
+    usagecount: 18,
+    createdon: '2024-03-05T13:00:00Z',
+    createdby: 'hardware-sales@company.com',
+    modifiedon: '2024-10-15T16:45:00Z',
+    modifiedby: 'hardware-sales@company.com',
+  },
+  {
+    quotetemplateid: 'template-004',
+    name: 'Marketing Campaign Package',
+    description: 'Digital marketing campaign - 3 months',
+    category: QuoteTemplateCategory.Service,
+    templatedata: {
+      name: 'Digital Marketing Campaign',
+      description: '3-month comprehensive digital marketing package',
+      lines: [
+        {
+          productdescription: 'Social Media Management (Monthly)',
+          quantity: 3,
+          priceperunit: 2500.00,
+          manualdiscountamount: 0,
+          tax: 0,
+        },
+        {
+          productdescription: 'SEO Optimization (Monthly)',
+          quantity: 3,
+          priceperunit: 1800.00,
+          manualdiscountamount: 0,
+          tax: 0,
+        },
+        {
+          productdescription: 'Content Creation (Monthly)',
+          quantity: 3,
+          priceperunit: 1200.00,
+          manualdiscountamount: 0,
+          tax: 0,
+        },
+        {
+          productdescription: 'Ad Campaign Setup & Management',
+          quantity: 1,
+          priceperunit: 3000.00,
+          manualdiscountamount: 0,
+          tax: 0,
+        },
+      ],
+    },
+    ownerid: 'user-003',
+    isshared: false, // Private template
+    usagecount: 8,
+    createdon: '2024-06-12T10:30:00Z',
+    createdby: 'marketing@company.com',
+    modifiedon: '2024-11-05T09:20:00Z',
+    modifiedby: 'marketing@company.com',
+  },
+  {
+    quotetemplateid: 'template-005',
+    name: 'Web Development - Standard Site',
+    description: 'Standard business website development',
+    category: QuoteTemplateCategory.Service,
+    templatedata: {
+      name: 'Business Website Development',
+      description: 'Custom business website with CMS',
+      lines: [
+        {
+          productdescription: 'Website Design (5 pages)',
+          quantity: 1,
+          priceperunit: 4500.00,
+          manualdiscountamount: 0,
+          tax: 0,
+        },
+        {
+          productdescription: 'Frontend Development',
+          quantity: 1,
+          priceperunit: 6000.00,
+          manualdiscountamount: 0,
+          tax: 0,
+        },
+        {
+          productdescription: 'CMS Integration',
+          quantity: 1,
+          priceperunit: 3000.00,
+          manualdiscountamount: 0,
+          tax: 0,
+        },
+        {
+          productdescription: 'Hosting & Domain (Annual)',
+          quantity: 1,
+          priceperunit: 500.00,
+          manualdiscountamount: 0,
+          tax: 0,
+        },
+      ],
+    },
+    ownerid: 'user-001',
+    isshared: true,
+    usagecount: 12,
+    createdon: '2024-04-20T14:00:00Z',
+    createdby: 'webdev@company.com',
+    modifiedon: '2024-10-28T12:00:00Z',
+    modifiedby: 'webdev@company.com',
+  },
+]
