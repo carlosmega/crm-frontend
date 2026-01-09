@@ -1,7 +1,7 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
-import { Check, Archive, Trash2, X } from 'lucide-react'
+import { Check, Archive, Trash2 } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 interface NotificationBulkActionsBarProps {
   selectedCount: number
@@ -19,40 +19,67 @@ export function NotificationBulkActionsBar({
   onClearSelection,
 }: NotificationBulkActionsBarProps) {
   return (
-    <div className="fixed bottom-0 left-0 right-0 md:left-64 z-50 border-t bg-white shadow-lg">
-      <div className="container max-w-7xl mx-auto px-4 py-3">
-        <div className="flex items-center justify-between gap-4">
-          {/* Left: Selection info */}
-          <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClearSelection}
-              className="h-8 w-8 p-0"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-            <span className="text-sm font-medium">
-              {selectedCount} notification{selectedCount === 1 ? '' : 's'} selected
-            </span>
-          </div>
-
-          {/* Right: Actions */}
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={onMarkAsRead}>
-              <Check className="mr-2 h-4 w-4" />
-              Mark as read
-            </Button>
-            <Button variant="outline" size="sm" onClick={onArchive}>
-              <Archive className="mr-2 h-4 w-4" />
-              Archive
-            </Button>
-            <Button variant="destructive" size="sm" onClick={onDelete}>
-              <Trash2 className="mr-2 h-4 w-4" />
-              Delete
-            </Button>
-          </div>
+    <div
+      className={cn(
+        "bg-primary/5 px-4 py-3 flex items-center justify-between border-b border-border/40 animate-in fade-in-0 slide-in-from-top-1 duration-200"
+      )}
+    >
+      {/* Selection info */}
+      <div className="flex items-center gap-3">
+        {/* Count badge */}
+        <div className="w-6 h-6 rounded bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">
+          {selectedCount}
         </div>
+
+        {/* Selection text */}
+        <span className="text-sm font-medium text-foreground">
+          {selectedCount} notification{selectedCount !== 1 ? 's' : ''} selected
+        </span>
+
+        {/* Separator */}
+        <span className="h-4 w-px bg-purple-200 dark:bg-purple-800 mx-1" />
+
+        {/* Clear selection button */}
+        <button
+          onClick={onClearSelection}
+          className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium"
+        >
+          Clear selection
+        </button>
+      </div>
+
+      {/* Bulk actions */}
+      <div className="flex items-center gap-2">
+        <button
+          onClick={onMarkAsRead}
+          className={cn(
+            "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all shadow-sm",
+            "bg-background border border-border hover:bg-accent hover:text-accent-foreground"
+          )}
+        >
+          <Check className="size-4" />
+          <span className="hidden sm:inline">Mark as read</span>
+        </button>
+        <button
+          onClick={onArchive}
+          className={cn(
+            "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all shadow-sm",
+            "bg-background border border-border hover:bg-accent hover:text-accent-foreground"
+          )}
+        >
+          <Archive className="size-4" />
+          <span className="hidden sm:inline">Archive</span>
+        </button>
+        <button
+          onClick={onDelete}
+          className={cn(
+            "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all shadow-sm",
+            "bg-background border border-destructive/40 text-destructive hover:bg-destructive/10 hover:border-destructive/60 dark:border-destructive/30 dark:hover:bg-destructive/20"
+          )}
+        >
+          <Trash2 className="size-4" />
+          <span className="hidden sm:inline">Delete</span>
+        </button>
       </div>
     </div>
   )

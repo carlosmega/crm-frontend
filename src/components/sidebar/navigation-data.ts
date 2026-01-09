@@ -1,5 +1,6 @@
 import {
   BarChart3,
+  Bell,
   Building2,
   FileText,
   Inbox,
@@ -23,6 +24,15 @@ export const NAVIGATION_DATA = {
       title: "Dashboard",
       url: "/dashboard",
       icon: LayoutDashboard,
+    },
+  ],
+
+  // Notifications - Standalone (high priority)
+  notifications: [
+    {
+      title: "Notifications",
+      url: "/notifications",
+      icon: Bell,
     },
   ],
 

@@ -2,7 +2,6 @@
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
 import {
   Select,
   SelectContent,
@@ -34,10 +33,10 @@ export function NotificationFiltersBar({
   }
 
   return (
-    <div className="p-4 space-y-3 border-b">
+    <div className="p-4 space-y-3 border-b bg-muted/30">
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
         <Input
           placeholder="Search notifications..."
           value={filters.searchQuery || ''}
@@ -47,7 +46,8 @@ export function NotificationFiltersBar({
               searchQuery: e.target.value || undefined,
             })
           }
-          className="pl-9"
+          className="pl-9 h-9"
+          aria-label="Search notifications"
         />
       </div>
 
@@ -58,20 +58,25 @@ export function NotificationFiltersBar({
           value={filters.isRead === undefined ? 'all' : filters.isRead ? 'read' : 'unread'}
           onValueChange={handleReadStatusChange}
         >
-          <SelectTrigger className="w-[120px] h-8">
+          <SelectTrigger className="w-[130px] h-8 text-sm">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All</SelectItem>
-            <SelectItem value="unread">Unread</SelectItem>
-            <SelectItem value="read">Read</SelectItem>
+            <SelectItem value="all">All status</SelectItem>
+            <SelectItem value="unread">Unread only</SelectItem>
+            <SelectItem value="read">Read only</SelectItem>
           </SelectContent>
         </Select>
 
         {/* Clear Filters */}
         {hasActiveFilters && (
-          <Button variant="ghost" size="sm" className="h-8" onClick={onClearFilters}>
-            <X className="mr-1 h-3 w-3" />
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 px-2 text-xs"
+            onClick={onClearFilters}
+          >
+            <X className="mr-1.5 h-3 w-3" />
             Clear filters
           </Button>
         )}

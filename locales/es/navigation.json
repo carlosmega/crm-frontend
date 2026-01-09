@@ -1,6 +1,7 @@
 {
   "main": {
     "dashboard": "Panel de Control",
+    "notifications": "Notificaciones",
     "sales": "Ventas",
     "customers": "Clientes",
     "settings": "Configuración"

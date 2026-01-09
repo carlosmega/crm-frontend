@@ -1,6 +1,7 @@
 {
   "main": {
     "dashboard": "Dashboard",
+    "notifications": "Notifications",
     "sales": "Sales",
     "customers": "Customers",
     "settings": "Settings"

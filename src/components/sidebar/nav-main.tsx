@@ -12,12 +12,14 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { Badge } from "@/components/ui/badge"
 
 /**
  * NavMain Component
  * ✅ OPTIMIZED: Memoized to prevent re-renders when items don't change
  * - Only re-renders when pathname or items change
  * - Stable references prevent unnecessary updates
+ * - Supports optional badge count for notifications
  */
 export const NavMain = memo(function NavMain({
   items,
@@ -27,6 +29,7 @@ export const NavMain = memo(function NavMain({
     url: string
     icon?: LucideIcon
     isActive?: boolean
+    badge?: number
   }[]
 }) {
   const pathname = usePathname()
@@ -44,6 +47,15 @@ export const NavMain = memo(function NavMain({
                 <Link href={item.url}>
                   {item.icon && <item.icon />}
                   <span>{item.title}</span>
+                  {item.badge !== undefined && (
+                    <Badge
+                      variant="secondary"
+                      className="ml-auto rounded-full px-2 py-0 text-xs"
+                      aria-label={`${item.badge} unread`}
+                    >
+                      {item.badge > 99 ? '99+' : item.badge}
+                    </Badge>
+                  )}
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -59,6 +71,7 @@ export const NavMain = memo(function NavMain({
  * ✅ OPTIMIZED: Memoized to prevent re-renders when label/items don't change
  * - Only re-renders when pathname, label, or items change
  * - Stable references prevent unnecessary updates
+ * - Supports optional badge count for notifications
  */
 export const NavSection = memo(function NavSection({
   label,
@@ -70,6 +83,7 @@ export const NavSection = memo(function NavSection({
     url: string
     icon?: LucideIcon
     isActive?: boolean
+    badge?: number
   }[]
 }) {
   const pathname = usePathname()
@@ -88,6 +102,15 @@ export const NavSection = memo(function NavSection({
                 <Link href={item.url}>
                   {item.icon && <item.icon />}
                   <span>{item.title}</span>
+                  {item.badge !== undefined && (
+                    <Badge
+                      variant="secondary"
+                      className="ml-auto rounded-full px-2 py-0 text-xs"
+                      aria-label={`${item.badge} unread`}
+                    >
+                      {item.badge > 99 ? '99+' : item.badge}
+                    </Badge>
+                  )}
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

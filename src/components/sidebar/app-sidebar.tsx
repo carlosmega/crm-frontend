@@ -64,6 +64,9 @@ const AppSidebarComponent = ({ ...props }: React.ComponentProps<typeof Sidebar>)
         {/* Dashboard - Sin sección */}
         <NavMain items={navigationData.dashboard} />
 
+        {/* Notifications - Standalone (high priority) */}
+        <NavMain items={navigationData.notifications} />
+
         {/* Sales Section */}
         <NavSection label={navigationData.labels.sales} items={navigationData.sales} />
 

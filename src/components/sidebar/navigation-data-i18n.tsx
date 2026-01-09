@@ -8,6 +8,7 @@
 import { useMemo } from 'react'
 import {
   BarChart3,
+  Bell,
   Building2,
   FileText,
   Inbox,
@@ -21,16 +22,19 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import { useTranslation } from '@/shared/hooks/use-translation'
+import { useNotifications } from '@/features/notifications/hooks/use-notifications'
 
 // ✅ Define navigation data type explicitly to avoid circular reference
 type NavigationItem = {
   title: string
   url: string
   icon: LucideIcon
+  badge?: number // Optional badge count
 }
 
 type NavigationData = {
   dashboard: NavigationItem[]
+  notifications: NavigationItem[]
   sales: NavigationItem[]
   customers: NavigationItem[]
   quoteToCash: NavigationItem[]
@@ -50,6 +54,13 @@ let cachedNavigationData: NavigationData | null = null
 
 export function useNavigationData() {
   const { t, isLoading } = useTranslation('navigation')
+  const { notifications } = useNotifications()
+
+  // Calculate unread count
+  const unreadCount = useMemo(
+    () => notifications.filter((n) => !n.isRead).length,
+    [notifications]
+  )
 
   const navigationData = useMemo(
     () => {
@@ -64,6 +75,15 @@ export function useNavigationData() {
             title: t('main.dashboard'),
             url: '/dashboard',
             icon: LayoutDashboard,
+          },
+        ],
+
+        notifications: [
+          {
+            title: t('main.notifications'),
+            url: '/notifications',
+            icon: Bell,
+            badge: unreadCount > 0 ? unreadCount : undefined, // Only show badge when > 0
           },
         ],
 
@@ -149,7 +169,7 @@ export function useNavigationData() {
 
       return data
     },
-    [t, isLoading]
+    [t, isLoading, unreadCount]
   )
 
   return { navigationData, isLoading }

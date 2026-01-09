@@ -3,7 +3,6 @@
 import { useState, useMemo, useCallback } from 'react'
 import { NotificationFiltersBar } from '@/features/notifications/components/notification-filters-bar'
 import { NotificationListView } from '@/features/notifications/components/notification-list-view'
-import { NotificationBulkActionsBar } from '@/features/notifications/components/notification-bulk-actions-bar'
 import { useNotifications } from '@/features/notifications/hooks/use-notifications'
 import { useNotificationMutations } from '@/features/notifications/hooks/use-notification-mutations'
 import { useNotificationFilters } from '@/features/notifications/hooks/use-notification-filters'
@@ -11,6 +10,16 @@ import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,6 +48,8 @@ export default function NotificationsPage() {
   // State
   const [selectedNotifications, setSelectedNotifications] = useState<string[]>([])
   const [activeTab, setActiveTab] = useState<'all' | 'unread' | 'mentions'>('all')
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [notificationsToDelete, setNotificationsToDelete] = useState<string[]>([])
 
   // Hooks
   const { notifications, loading, refetch } = useNotifications()
@@ -90,17 +101,18 @@ export default function NotificationsPage() {
     refetch()
   }, [markAllAsRead, refetch])
 
-  const handleDeleteSelected = useCallback(async () => {
-    if (
-      confirm(
-        `Are you sure you want to delete ${selectedNotifications.length} notification(s)? This action cannot be undone.`
-      )
-    ) {
-      await deleteNotifications(selectedNotifications)
-      setSelectedNotifications([])
-      refetch()
-    }
-  }, [selectedNotifications, deleteNotifications, refetch])
+  const handleDeleteSelected = useCallback(() => {
+    setNotificationsToDelete(selectedNotifications)
+    setDeleteDialogOpen(true)
+  }, [selectedNotifications])
+
+  const confirmDelete = useCallback(async () => {
+    await deleteNotifications(notificationsToDelete)
+    setSelectedNotifications([])
+    setDeleteDialogOpen(false)
+    setNotificationsToDelete([])
+    refetch()
+  }, [notificationsToDelete, deleteNotifications, refetch])
 
   const handleArchiveSelected = useCallback(async () => {
     await archiveNotifications(selectedNotifications)
@@ -171,15 +183,15 @@ export default function NotificationsPage() {
       {/* Main Content */}
       <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100">
         {/* Page Header with Actions */}
-        <div className="px-4 pt-4 pb-4">
+        <div className="p-4 md:p-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-3">
-              <div className="rounded-full bg-purple-100 p-3">
-                <Bell className="h-6 w-6 text-purple-600" />
+            <div className="flex items-center gap-3 md:gap-4">
+              <div className="rounded-full bg-primary/10 p-2 md:p-3">
+                <Bell className="h-5 w-5 md:h-6 md:w-6 text-primary" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold tracking-tight">Notifications</h2>
-                <p className="text-muted-foreground">
+                <h2 className="text-xl md:text-2xl font-bold tracking-tight">Notifications</h2>
+                <p className="text-sm text-muted-foreground">
                   {unreadCount > 0
                     ? `${unreadCount} unread notification${unreadCount === 1 ? '' : 's'}`
                     : "You're all caught up!"}
@@ -220,58 +232,36 @@ export default function NotificationsPage() {
           </div>
         </div>
 
-        {/* Tabs + Filters */}
-        <div className="px-4 pb-4">
-          <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-            {/* Tabs */}
-            <Tabs value={activeTab} onValueChange={(v: any) => setActiveTab(v)}>
-              <div className="border-b px-4">
-                <TabsList className="w-full grid grid-cols-3 h-auto p-0 bg-transparent">
+        {/* Tabs + Filters Card */}
+        <div className="px-4 pb-4 md:px-6 md:pb-6">
+          <div className="bg-card rounded-lg border shadow-sm overflow-hidden">
+            <Tabs value={activeTab} onValueChange={(v: any) => setActiveTab(v)} className="w-full">
+              <div className="border-b bg-gray-50">
+                <TabsList className="h-auto w-full justify-start bg-transparent p-0 rounded-none">
                   <TabsTrigger
                     value="all"
-                    className={cn(
-                      'relative rounded-none border-0 px-4 py-3 text-sm font-medium transition-colors',
-                      'data-[state=active]:bg-transparent data-[state=active]:text-purple-600',
-                      'data-[state=inactive]:text-gray-500 hover:text-gray-900',
-                      'data-[state=active]:after:absolute data-[state=active]:after:bottom-0',
-                      'data-[state=active]:after:left-0 data-[state=active]:after:right-0',
-                      'data-[state=active]:after:h-0.5 data-[state=active]:after:bg-purple-600'
-                    )}
+                    className="relative rounded-none border-0 px-4 md:px-6 py-3 text-sm font-medium data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-primary"
                   >
                     All
                   </TabsTrigger>
                   <TabsTrigger
                     value="unread"
-                    className={cn(
-                      'relative rounded-none border-0 px-4 py-3 text-sm font-medium transition-colors',
-                      'data-[state=active]:bg-transparent data-[state=active]:text-purple-600',
-                      'data-[state=inactive]:text-gray-500 hover:text-gray-900',
-                      'data-[state=active]:after:absolute data-[state=active]:after:bottom-0',
-                      'data-[state=active]:after:left-0 data-[state=active]:after:right-0',
-                      'data-[state=active]:after:h-0.5 data-[state=active]:after:bg-purple-600'
-                    )}
+                    className="relative rounded-none border-0 px-4 md:px-6 py-3 text-sm font-medium data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-primary"
                   >
                     Unread
                     {unreadCount > 0 && (
-                      <Badge variant="secondary" className="ml-1.5 h-5 min-w-5 px-1 text-[10px]">
+                      <Badge variant="secondary" className="ml-2 rounded-full px-2 py-0 text-xs">
                         {unreadCount}
                       </Badge>
                     )}
                   </TabsTrigger>
                   <TabsTrigger
                     value="mentions"
-                    className={cn(
-                      'relative rounded-none border-0 px-4 py-3 text-sm font-medium transition-colors',
-                      'data-[state=active]:bg-transparent data-[state=active]:text-purple-600',
-                      'data-[state=inactive]:text-gray-500 hover:text-gray-900',
-                      'data-[state=active]:after:absolute data-[state=active]:after:bottom-0',
-                      'data-[state=active]:after:left-0 data-[state=active]:after:right-0',
-                      'data-[state=active]:after:h-0.5 data-[state=active]:after:bg-purple-600'
-                    )}
+                    className="relative rounded-none border-0 px-4 md:px-6 py-3 text-sm font-medium data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-primary"
                   >
                     Mentions
                     {unreadMentions > 0 && (
-                      <Badge variant="secondary" className="ml-1.5 h-5 min-w-5 px-1 text-[10px]">
+                      <Badge variant="secondary" className="ml-2 rounded-full px-2 py-0 text-xs">
                         {unreadMentions}
                       </Badge>
                     )}
@@ -286,14 +276,27 @@ export default function NotificationsPage() {
                 onClearFilters={clearFilters}
                 hasActiveFilters={hasActiveFilters}
               />
+            </Tabs>
+          </div>
+        </div>
 
-              {/* Content */}
+        {/* Notifications List Card */}
+        <div className="px-4 pb-4 md:px-6 md:pb-6">
+          <div className="bg-card rounded-lg border shadow-sm">
+            <Tabs value={activeTab}>
               <TabsContent value={activeTab} className="m-0">
                 <NotificationListView
                   notifications={displayedNotifications}
                   selectedNotifications={selectedNotifications}
                   onSelectionChange={setSelectedNotifications}
                   onMarkAsRead={handleMarkAsRead}
+                  onMarkAllAsRead={async () => {
+                    await Promise.all(selectedNotifications.map(markAsRead))
+                    setSelectedNotifications([])
+                    refetch()
+                  }}
+                  onArchive={handleArchiveSelected}
+                  onDelete={handleDeleteSelected}
                   loading={loading}
                   emptyStateType={activeTab}
                 />
@@ -301,22 +304,29 @@ export default function NotificationsPage() {
             </Tabs>
           </div>
         </div>
-
-        {/* Bulk Actions Bar (sticky at bottom when items selected) */}
-        {selectedNotifications.length > 0 && (
-          <NotificationBulkActionsBar
-            selectedCount={selectedNotifications.length}
-            onMarkAsRead={async () => {
-              await Promise.all(selectedNotifications.map(markAsRead))
-              setSelectedNotifications([])
-              refetch()
-            }}
-            onArchive={handleArchiveSelected}
-            onDelete={handleDeleteSelected}
-            onClearSelection={() => setSelectedNotifications([])}
-          />
-        )}
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete notifications?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete {notificationsToDelete.length} notification
+              {notificationsToDelete.length === 1 ? '' : 's'}? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   )
 }
