@@ -60,3 +60,10 @@ Thumbs.db
 # Claude Code configuration (may contain API keys)
 .mcp.json
 .claude/settings.local.json
+
+# Playwright
+/test-results/
+/playwright-report/
+
+# Claude temp files
+tmpclaude-*

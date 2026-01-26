@@ -4,7 +4,7 @@ import { use, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { useOrder, useCancelOrder } from '@/features/orders/hooks/use-orders'
+import { useOrder, useCancelOrder, useSubmitOrder } from '@/features/orders/hooks/use-orders'
 import { useOrderDetails } from '@/features/orders/hooks/use-order-details'
 import { useOrderPdfExport } from '@/features/orders/hooks/use-order-pdf-export'
 import { OrderStatusBadge } from '@/features/orders/components/order-status-badge'
@@ -61,6 +61,7 @@ import {
   XCircle,
   FileDown,
   Package,
+  Send,
 } from 'lucide-react'
 
 interface OrderDetailPageProps {
@@ -80,11 +81,14 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
   const { data: order, isLoading: loading, error } = useOrder(id)
   const { data: orderDetails, isLoading: loadingDetails } = useOrderDetails(id)
   const cancelMutation = useCancelOrder()
+  const submitMutation = useSubmitOrder()
   const { exportToPdf, isExporting } = useOrderPdfExport()
   const [showCancelDialog, setShowCancelDialog] = useState(false)
+  const [showSubmitDialog, setShowSubmitDialog] = useState(false)
   const [showAddLineDialog, setShowAddLineDialog] = useState(false)
   const [editingLine, setEditingLine] = useState<OrderDetail | null>(null)
 
+  const canSubmit = order?.statecode === OrderStateCode.Active
   const canFulfill = order?.statecode === OrderStateCode.Submitted
   const canCancel = order?.statecode === OrderStateCode.Active || order?.statecode === OrderStateCode.Submitted
   const canEditLines = order?.statecode === OrderStateCode.Active
@@ -105,6 +109,26 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
       toast({
         title: 'Error',
         description: error instanceof Error ? error.message : 'Failed to cancel order. Please try again.',
+        variant: 'destructive',
+      })
+    }
+  }
+
+  const handleSubmitOrder = async () => {
+    try {
+      await submitMutation.mutateAsync(id)
+
+      toast({
+        title: 'Order Submitted',
+        description: 'The order has been submitted and is ready for fulfillment.',
+      })
+
+      setShowSubmitDialog(false)
+    } catch (error) {
+      console.error('Error submitting order:', error)
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Failed to submit order. Please try again.',
         variant: 'destructive',
       })
     }
@@ -167,6 +191,15 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                   <FileDown className="mr-2 h-4 w-4" />
                   {isExporting ? 'Exporting...' : 'Export PDF'}
                 </DropdownMenuItem>
+                {canSubmit && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => setShowSubmitDialog(true)}>
+                      <Send className="mr-2 h-4 w-4" />
+                      Submit Order
+                    </DropdownMenuItem>
+                  </>
+                )}
                 {canFulfill && (
                   <>
                     <DropdownMenuSeparator />
@@ -271,6 +304,15 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                   <FileText className="mr-2 h-4 w-4" />
                   {isExporting ? 'Exporting...' : 'Export PDF'}
                 </Button>
+                {canSubmit && (
+                  <Button
+                    onClick={() => setShowSubmitDialog(true)}
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-medium"
+                  >
+                    <Send className="mr-2 h-4 w-4" />
+                    Submit Order
+                  </Button>
+                )}
                 {canFulfill && (
                   <Button asChild className="bg-purple-600 hover:bg-purple-700 text-white font-medium">
                     <Link href={`/orders/${id}/fulfill`}>
@@ -328,6 +370,38 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
           />
         </div>
       </div>
+
+      {/* Submit Order Dialog */}
+      <AlertDialog open={showSubmitDialog} onOpenChange={setShowSubmitDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Submit Order?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Once submitted, the order will be locked for editing and ready for fulfillment.
+              Make sure all order lines are correct before proceeding.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={submitMutation.isPending}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-blue-600 hover:bg-blue-700"
+              onClick={handleSubmitOrder}
+              disabled={submitMutation.isPending}
+            >
+              {submitMutation.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Submitting...
+                </>
+              ) : (
+                'Submit Order'
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Cancel Order Dialog */}
       <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
