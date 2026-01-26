@@ -10,10 +10,6 @@ import { OpportunityOriginatingLead } from './opportunity-originating-lead'
 import { OpportunityTabsNavigation, type OpportunityTabId } from '@/shared/components/opportunity-tabs-navigation'
 import {
   User,
-  Target,
-  TrendingUp,
-  Presentation,
-  CheckCircle2,
   Phone,
   Mail,
   MapPin,
@@ -52,15 +48,11 @@ export function OpportunityDetailTabs({
     return 'Yesterday via Email'
   }
 
-  // Tabs navigation configuration - BPF stages
+  // Tabs navigation configuration
   const tabsNavigation = (
     <OpportunityTabsNavigation
       tabs={[
         { id: 'general', label: 'General', icon: User },
-        { id: 'qualify', label: 'Qualify', icon: Target },
-        { id: 'develop', label: 'Develop', icon: TrendingUp },
-        { id: 'propose', label: 'Propose', icon: Presentation },
-        { id: 'close', label: 'Close', icon: CheckCircle2 },
       ]}
       showActivities
     />
@@ -321,107 +313,6 @@ export function OpportunityDetailTabs({
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </TabsContent>
-
-      {/* QUALIFY TAB */}
-      <TabsContent value="qualify" className="mt-0">
-        <div className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base font-semibold">Budget & Timeline</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <div className="text-sm text-muted-foreground mb-1">Budget Amount</div>
-                  <div className="text-base font-medium">-</div>
-                </div>
-                <div>
-                  <div className="text-sm text-muted-foreground mb-1">Budget Status</div>
-                  <div className="text-base font-medium">-</div>
-                </div>
-                <div>
-                  <div className="text-sm text-muted-foreground mb-1">Timeframe</div>
-                  <div className="text-base font-medium">-</div>
-                </div>
-                <div>
-                  <div className="text-sm text-muted-foreground mb-1">Decision Maker</div>
-                  <div className="text-base font-medium">-</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base font-semibold">Need Analysis</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground italic">
-                BPF stage data will be available once backend support is implemented.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      </TabsContent>
-
-      {/* DEVELOP TAB */}
-      <TabsContent value="develop" className="mt-0">
-        <div className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base font-semibold">Solution & Timeline</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground italic">
-                BPF stage data will be available once backend support is implemented.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      </TabsContent>
-
-      {/* PROPOSE TAB */}
-      <TabsContent value="propose" className="mt-0">
-        <div className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base font-semibold">Presentation Details</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground italic">
-                BPF stage data will be available once backend support is implemented.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      </TabsContent>
-
-      {/* CLOSE TAB */}
-      <TabsContent value="close" className="mt-0">
-        <div className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base font-semibold">Final Values</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <div className="text-sm text-muted-foreground mb-1">Actual Value</div>
-                  <div className="text-base font-medium">{opportunity.actualvalue ? `$${opportunity.actualvalue.toLocaleString()}` : '-'}</div>
-                </div>
-                <div>
-                  <div className="text-sm text-muted-foreground mb-1">Actual Close Date</div>
-                  <div className="text-base font-medium">{opportunity.actualclosedate ? formatDate(opportunity.actualclosedate) : '-'}</div>
-                </div>
-                <div>
-                  <div className="text-sm text-muted-foreground mb-1">Close Status</div>
-                  <div className="text-base font-medium">{opportunity.closestatus || '-'}</div>
                 </div>
               </div>
             </CardContent>

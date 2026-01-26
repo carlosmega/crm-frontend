@@ -57,7 +57,7 @@ const accountFormSchema = z.object({
 
 type AccountFormValues = z.infer<typeof accountFormSchema>
 
-export type AccountFormSection = 'general' | 'address' | 'all'
+export type AccountFormSection = 'general' | 'details' | 'address' | 'all'
 
 interface AccountFormProps {
   account?: Account
@@ -145,6 +145,7 @@ export function AccountForm({ account, onSubmit, onCancel, isLoading, hideAction
 
   // Section visibility control
   const showGeneral = section === 'all' || section === 'general'
+  const showDetails = section === 'all' || section === 'details'
   const showAddress = section === 'all' || section === 'address'
 
   const handleSubmit = async (values: AccountFormValues) => {
@@ -158,7 +159,7 @@ export function AccountForm({ account, onSubmit, onCancel, isLoading, hideAction
   return (
     <Form {...form}>
       <form id="account-edit-form" onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-        {/* GENERAL SECTION - Basic, Contact, Business, Credit Information */}
+        {/* GENERAL SECTION - Basic & Contact Information */}
         {showGeneral && (
           <>
         {/* Basic Information Card */}
@@ -217,14 +218,12 @@ export function AccountForm({ account, onSubmit, onCancel, isLoading, hideAction
           </CardContent>
         </Card>
 
-        {/* Contact & Business Information - Grid Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Contact Information Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base font-semibold">Contact Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+        {/* Contact Information Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base font-semibold">Contact Information</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
               <FormField
                 control={form.control}
                 name="emailaddress1"
@@ -339,8 +338,36 @@ export function AccountForm({ account, onSubmit, onCancel, isLoading, hideAction
           </CardContent>
         </Card>
 
-        {/* Business Information Card */}
+        {/* Description Card */}
         <Card>
+          <CardHeader>
+            <CardTitle className="text-base font-semibold">Description</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <AutoGrowTextarea
+                      placeholder="Additional notes or description about this account..."
+                      className="min-h-[100px]"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
+            />
+          </CardContent>
+        </Card>
+          </>
+        )}
+
+        {/* DETAILS SECTION - Business Information & Relationships */}
+        {showDetails && (
+          <Card>
           <CardHeader>
             <CardTitle className="text-base font-semibold">Business Information</CardTitle>
           </CardHeader>
@@ -537,33 +564,6 @@ export function AccountForm({ account, onSubmit, onCancel, isLoading, hideAction
             )}
           </CardContent>
         </Card>
-        </div>
-
-        {/* Description Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base font-semibold">Description</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <AutoGrowTextarea
-                      placeholder="Additional notes or description about this account..."
-                      className="min-h-[100px]"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage className="text-xs" />
-                </FormItem>
-              )}
-            />
-          </CardContent>
-        </Card>
-          </>
         )}
 
         {/* ADDRESS SECTION - Address Information */}

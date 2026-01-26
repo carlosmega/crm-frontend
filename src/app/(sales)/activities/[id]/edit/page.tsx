@@ -3,7 +3,7 @@
 import { use, useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import Link from 'next/link'
 import { useActivity } from '@/features/activities/hooks/use-activities'
 import { useUpdateActivity } from '@/features/activities/hooks/use-activity-mutations'
@@ -22,6 +22,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { DateTimePicker } from '@/components/ui/date-time-picker'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useToast } from '@/components/ui/use-toast'
@@ -31,8 +32,8 @@ import { cn } from '@/lib/utils'
 interface ActivityFormData {
   subject: string
   description?: string
-  scheduledstart?: string
-  scheduledend?: string
+  scheduledstart?: Date
+  scheduledend?: Date
   prioritycode?: string
 }
 
@@ -52,6 +53,7 @@ export default function EditActivityPage({ params }: { params: Promise<{ id: str
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors, isDirty },
   } = useForm<ActivityFormData>()
 
@@ -68,11 +70,11 @@ export default function EditActivityPage({ params }: { params: Promise<{ id: str
         subject: activity.subject,
         description: activity.description || '',
         scheduledstart: activity.scheduledstart
-          ? new Date(activity.scheduledstart).toISOString().slice(0, 16)
-          : '',
+          ? new Date(activity.scheduledstart)
+          : undefined,
         scheduledend: activity.scheduledend
-          ? new Date(activity.scheduledend).toISOString().slice(0, 16)
-          : '',
+          ? new Date(activity.scheduledend)
+          : undefined,
         prioritycode: activity.prioritycode?.toString() || '1',
       })
     }
@@ -83,8 +85,8 @@ export default function EditActivityPage({ params }: { params: Promise<{ id: str
       const dto: UpdateActivityDto = {
         subject: data.subject,
         description: data.description,
-        scheduledstart: data.scheduledstart || undefined,
-        scheduledend: data.scheduledend || undefined,
+        scheduledstart: data.scheduledstart?.toISOString(),
+        scheduledend: data.scheduledend?.toISOString(),
         prioritycode: data.prioritycode ? parseInt(data.prioritycode) : undefined,
       }
 
@@ -305,20 +307,32 @@ export default function EditActivityPage({ params }: { params: Promise<{ id: str
                       {/* Scheduled Start */}
                       <div className="space-y-2">
                         <Label htmlFor="scheduledstart">Scheduled Start</Label>
-                        <Input
-                          id="scheduledstart"
-                          type="datetime-local"
-                          {...register('scheduledstart')}
+                        <Controller
+                          name="scheduledstart"
+                          control={control}
+                          render={({ field }) => (
+                            <DateTimePicker
+                              value={field.value}
+                              onChange={field.onChange}
+                              placeholder="Select start date and time"
+                            />
+                          )}
                         />
                       </div>
 
                       {/* Scheduled End */}
                       <div className="space-y-2">
                         <Label htmlFor="scheduledend">Scheduled End</Label>
-                        <Input
-                          id="scheduledend"
-                          type="datetime-local"
-                          {...register('scheduledend')}
+                        <Controller
+                          name="scheduledend"
+                          control={control}
+                          render={({ field }) => (
+                            <DateTimePicker
+                              value={field.value}
+                              onChange={field.onChange}
+                              placeholder="Select end date and time"
+                            />
+                          )}
                         />
                       </div>
                     </div>

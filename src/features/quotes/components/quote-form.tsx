@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { DatePicker } from '@/components/ui/date-picker'
 import { CustomerSelectorButton } from '@/shared/components/selectors'
 import type { SelectedCustomer } from '@/shared/types/selected-customer'
 import type { Quote, CreateQuoteDto, UpdateQuoteDto } from '../types'
@@ -53,6 +54,7 @@ export function QuoteForm({
     handleSubmit,
     setValue,
     watch,
+    control,
     formState: { errors },
   } = useForm<CreateQuoteDto>({
     defaultValues: quote
@@ -216,10 +218,16 @@ export function QuoteForm({
             {/* Effective From */}
             <div className="space-y-2">
               <Label htmlFor="effectivefrom">Effective From</Label>
-              <Input
-                id="effectivefrom"
-                type="date"
-                {...register('effectivefrom')}
+              <Controller
+                name="effectivefrom"
+                control={control}
+                render={({ field }) => (
+                  <DatePicker
+                    value={field.value}
+                    onChange={(date) => field.onChange(date?.toISOString())}
+                    placeholder="Select start date"
+                  />
+                )}
               />
               <p className="text-xs text-muted-foreground">
                 Quote becomes valid from this date
@@ -229,7 +237,17 @@ export function QuoteForm({
             {/* Effective To */}
             <div className="space-y-2">
               <Label htmlFor="effectiveto">Effective To</Label>
-              <Input id="effectiveto" type="date" {...register('effectiveto')} />
+              <Controller
+                name="effectiveto"
+                control={control}
+                render={({ field }) => (
+                  <DatePicker
+                    value={field.value}
+                    onChange={(date) => field.onChange(date?.toISOString())}
+                    placeholder="Select end date"
+                  />
+                )}
+              />
               <p className="text-xs text-muted-foreground">
                 Quote expires on this date
               </p>

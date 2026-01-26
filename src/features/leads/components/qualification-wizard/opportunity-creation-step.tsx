@@ -12,6 +12,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { DatePicker } from '@/components/ui/date-picker'
 import { TrendingUp, DollarSign, Calendar, FileText } from 'lucide-react'
 import type { QualificationWizardFormData } from './types'
 import type { Lead } from '@/core/contracts'
@@ -120,9 +121,10 @@ export function OpportunityCreationStep({ lead }: OpportunityCreationStepProps) 
               Estimated Close Date
             </FormLabel>
             <FormControl>
-              <Input
-                type="date"
-                {...field}
+              <DatePicker
+                value={field.value}
+                onChange={(date) => field.onChange(date?.toISOString().split('T')[0])}
+                placeholder="Select close date"
               />
             </FormControl>
             <FormDescription>

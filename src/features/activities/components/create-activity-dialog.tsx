@@ -1,7 +1,6 @@
 'use client'
 
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import {
   Dialog,
   DialogContent,
@@ -11,7 +10,6 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import {
@@ -22,10 +20,12 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useToast } from '@/components/ui/use-toast'
+import { DateTimePicker } from '@/components/ui/date-time-picker'
 import { Loader2, Plus } from 'lucide-react'
 import { useCreateActivity } from '../hooks'
 import { ActivityTypeCode, getActivityTypeLabel } from '@/core/contracts/enums'
 import type { CreateActivityDto } from '@/core/contracts/entities/activity'
+import { Input } from '@/components/ui/input'
 
 interface CreateActivityDialogProps {
   open: boolean
@@ -39,8 +39,8 @@ interface ActivityFormData {
   activitytype: string
   subject: string
   description?: string
-  scheduledstart?: string
-  scheduledend?: string
+  scheduledstart?: Date
+  scheduledend?: Date
 }
 
 /**
@@ -64,6 +64,7 @@ export function CreateActivityDialog({
     watch,
     reset,
     setValue,
+    control,
     formState: { errors },
   } = useForm<ActivityFormData>({
     defaultValues: {
@@ -79,8 +80,8 @@ export function CreateActivityDialog({
         activitytypecode: parseInt(data.activitytype) as ActivityTypeCode,
         subject: data.subject,
         description: data.description,
-        scheduledstart: data.scheduledstart,
-        scheduledend: data.scheduledend,
+        scheduledstart: data.scheduledstart?.toISOString(),
+        scheduledend: data.scheduledend?.toISOString(),
         regardingobjectid: regardingId,
         regardingobjectidtype: regardingType,
         ownerid: 'user-1', // TODO: Get from auth context
@@ -186,20 +187,32 @@ export function CreateActivityDialog({
           {/* Scheduled Start */}
           <div className="space-y-2">
             <Label htmlFor="scheduledstart">Scheduled Start</Label>
-            <Input
-              id="scheduledstart"
-              type="datetime-local"
-              {...register('scheduledstart')}
+            <Controller
+              name="scheduledstart"
+              control={control}
+              render={({ field }) => (
+                <DateTimePicker
+                  value={field.value}
+                  onChange={field.onChange}
+                  placeholder="Select start date and time"
+                />
+              )}
             />
           </div>
 
           {/* Scheduled End */}
           <div className="space-y-2">
             <Label htmlFor="scheduledend">Scheduled End</Label>
-            <Input
-              id="scheduledend"
-              type="datetime-local"
-              {...register('scheduledend')}
+            <Controller
+              name="scheduledend"
+              control={control}
+              render={({ field }) => (
+                <DateTimePicker
+                  value={field.value}
+                  onChange={field.onChange}
+                  placeholder="Select end date and time"
+                />
+              )}
             />
           </div>
 

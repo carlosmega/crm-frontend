@@ -4,7 +4,7 @@ import { use, useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { useOrder, useFulfillOrder } from '@/features/orders/hooks/use-orders'
 import { OrderStatusBadge } from '@/features/orders/components/order-status-badge'
 import { OrderStateCode } from '@/core/contracts/enums'
@@ -26,6 +26,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { DatePicker } from '@/components/ui/date-picker'
 import { cn } from '@/lib/utils'
 import {
   ArrowLeft,
@@ -69,6 +70,7 @@ export default function OrderFulfillPage({ params }: OrderFulfillPageProps) {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<FulfillFormData>({
     defaultValues: {
@@ -333,12 +335,17 @@ export default function OrderFulfillPage({ params }: OrderFulfillPageProps) {
                       <Label htmlFor="datefulfilled">
                         Fulfillment Date *
                       </Label>
-                      <Input
-                        id="datefulfilled"
-                        type="date"
-                        {...register('datefulfilled', {
-                          required: 'Fulfillment date is required',
-                        })}
+                      <Controller
+                        name="datefulfilled"
+                        control={control}
+                        rules={{ required: 'Fulfillment date is required' }}
+                        render={({ field }) => (
+                          <DatePicker
+                            value={field.value}
+                            onChange={(date) => field.onChange(date?.toISOString().split('T')[0])}
+                            placeholder="Select fulfillment date"
+                          />
+                        )}
                       />
                       {errors.datefulfilled && (
                         <p className="text-sm text-destructive">

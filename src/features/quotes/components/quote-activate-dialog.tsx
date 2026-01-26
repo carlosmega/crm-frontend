@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import {
   Dialog,
   DialogContent,
@@ -11,8 +11,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { DatePicker } from '@/components/ui/date-picker'
 import { useActivateQuote } from '../hooks/use-quote-mutations'
 import type { Quote, ActivateQuoteDto } from '../types'
 import { formatCurrency } from '../utils/quote-calculations'
@@ -44,10 +44,10 @@ export function QuoteActivateDialog({
   const [validationWarnings, setValidationWarnings] = useState<string[]>([])
 
   const {
-    register,
     handleSubmit,
     formState: { errors },
     reset,
+    control,
   } = useForm<ActivateQuoteDto>({
     defaultValues: {
       effectivefrom: quote.effectivefrom,
@@ -193,12 +193,17 @@ export function QuoteActivateDialog({
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="effectivefrom">Effective From *</Label>
-                <Input
-                  id="effectivefrom"
-                  type="date"
-                  {...register('effectivefrom', {
-                    required: 'Effective From date is required',
-                  })}
+                <Controller
+                  name="effectivefrom"
+                  control={control}
+                  rules={{ required: 'Effective From date is required' }}
+                  render={({ field }) => (
+                    <DatePicker
+                      value={field.value}
+                      onChange={(date) => field.onChange(date?.toISOString())}
+                      placeholder="Select start date"
+                    />
+                  )}
                 />
                 {errors.effectivefrom && (
                   <p className="text-sm text-destructive">
@@ -209,12 +214,17 @@ export function QuoteActivateDialog({
 
               <div className="space-y-2">
                 <Label htmlFor="effectiveto">Effective To *</Label>
-                <Input
-                  id="effectiveto"
-                  type="date"
-                  {...register('effectiveto', {
-                    required: 'Effective To date is required',
-                  })}
+                <Controller
+                  name="effectiveto"
+                  control={control}
+                  rules={{ required: 'Effective To date is required' }}
+                  render={({ field }) => (
+                    <DatePicker
+                      value={field.value}
+                      onChange={(date) => field.onChange(date?.toISOString())}
+                      placeholder="Select end date"
+                    />
+                  )}
                 />
                 {errors.effectiveto && (
                   <p className="text-sm text-destructive">

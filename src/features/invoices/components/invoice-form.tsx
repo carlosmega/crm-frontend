@@ -1,12 +1,12 @@
 'use client'
 
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { DatePicker } from '@/components/ui/date-picker'
 import { CustomerSelectorButton } from '@/shared/components/selectors'
 import type { SelectedCustomer } from '@/shared/types/selected-customer'
 import type { Invoice, CreateInvoiceDto, UpdateInvoiceDto } from '@/core/contracts'
@@ -41,6 +41,7 @@ export function InvoiceForm({
     handleSubmit,
     setValue,
     watch,
+    control,
     formState: { errors },
   } = useForm<CreateInvoiceDto>({
     defaultValues: invoice
@@ -107,10 +108,17 @@ export function InvoiceForm({
                 <Label htmlFor="duedate">
                   Due Date <span className="text-destructive">*</span>
                 </Label>
-                <Input
-                  id="duedate"
-                  type="date"
-                  {...register('duedate', { required: 'Due date is required' })}
+                <Controller
+                  name="duedate"
+                  control={control}
+                  rules={{ required: 'Due date is required' }}
+                  render={({ field }) => (
+                    <DatePicker
+                      value={field.value}
+                      onChange={(date) => field.onChange(date?.toISOString().split('T')[0])}
+                      placeholder="Select due date"
+                    />
+                  )}
                 />
                 {errors.duedate && (
                   <p className="text-sm text-destructive">{errors.duedate.message}</p>

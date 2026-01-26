@@ -151,6 +151,11 @@ export default function NewOpportunityPage() {
               </p>
             </div>
           </div>
+
+          {/* Tabs Navigation Container (Portal Target) */}
+          <div className="px-4">
+            <div id="opportunity-tabs-nav-container" />
+          </div>
         </div>
 
         {/* Main Content - Form */}

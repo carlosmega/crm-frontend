@@ -23,6 +23,7 @@ import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { DatePicker } from '@/components/ui/date-picker'
 import { CheckCircle2, Building2, User, TrendingUp, Loader2, Euro, Calendar, X } from 'lucide-react'
 import { useToast } from '@/components/ui/use-toast'
 import { cn } from '@/lib/utils'
@@ -549,15 +550,11 @@ export function LeadQualifyDialog({ lead, open, onOpenChange }: LeadQualifyDialo
                     <Label htmlFor="estimatedCloseDate">
                       Est. Close Date <span className="text-red-500">*</span>
                     </Label>
-                    <div className="relative">
-                      <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        id="estimatedCloseDate"
-                        type="date"
-                        className="pl-10"
-                        {...form.register('estimatedCloseDate')}
-                      />
-                    </div>
+                    <DatePicker
+                      value={form.watch('estimatedCloseDate')}
+                      onChange={(date) => form.setValue('estimatedCloseDate', date?.toISOString().split('T')[0] || '')}
+                      placeholder="Select close date"
+                    />
                     {form.formState.errors.estimatedCloseDate && (
                       <p className="text-xs text-red-500">
                         {form.formState.errors.estimatedCloseDate.message}

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, type UseFormReturn } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import type { Contact, CreateContactDto, UpdateContactDto } from '@/core/contracts'
@@ -22,7 +22,8 @@ import { CustomerSelectorButton } from '@/shared/components/selectors/customer-s
 import { useAccounts } from '@/features/accounts/hooks/use-accounts'
 import { Mail, Phone, Smartphone, User, Briefcase, Loader2 } from 'lucide-react'
 
-const contactFormSchema = z.object({
+// Export schema for use in ContactFormTabs
+export const contactFormSchema = z.object({
   firstname: z.string().min(1, 'First name is required'),
   lastname: z.string().min(1, 'Last name is required'),
   salutation: z.string().optional(),
@@ -43,7 +44,7 @@ const contactFormSchema = z.object({
   parentcustomerid: z.string().optional(), // Account ID for B2B
 })
 
-type ContactFormValues = z.infer<typeof contactFormSchema>
+export type ContactFormValues = z.infer<typeof contactFormSchema>
 
 export type ContactFormSection = 'general' | 'professional' | 'address' | 'all'
 
@@ -54,56 +55,65 @@ interface ContactFormProps {
   isLoading?: boolean
   hideActions?: boolean
   section?: ContactFormSection // Which section to show (default: 'all')
+  sharedForm?: UseFormReturn<ContactFormValues> // Optional shared form instance
 }
 
-export function ContactForm({ contact, onSubmit, onCancel, isLoading, hideActions, section = 'all' }: ContactFormProps) {
+// Helper to get default values
+export function getContactFormDefaultValues(contact?: Contact): ContactFormValues {
+  return contact
+    ? {
+        firstname: contact.firstname || '',
+        lastname: contact.lastname || '',
+        salutation: contact.salutation || '',
+        jobtitle: contact.jobtitle || '',
+        department: contact.department || '',
+        emailaddress1: contact.emailaddress1 || '',
+        emailaddress2: contact.emailaddress2 || '',
+        telephone1: contact.telephone1 || '',
+        telephone2: contact.telephone2 || '',
+        mobilephone: contact.mobilephone || '',
+        fax: contact.fax || '',
+        address1_line1: contact.address1_line1 || '',
+        address1_line2: contact.address1_line2 || '',
+        address1_city: contact.address1_city || '',
+        address1_stateorprovince: contact.address1_stateorprovince || '',
+        address1_postalcode: contact.address1_postalcode || '',
+        address1_country: contact.address1_country || '',
+        parentcustomerid: contact.parentcustomerid || '',
+      }
+    : {
+        firstname: '',
+        lastname: '',
+        salutation: '',
+        jobtitle: '',
+        department: '',
+        emailaddress1: '',
+        emailaddress2: '',
+        telephone1: '',
+        telephone2: '',
+        mobilephone: '',
+        fax: '',
+        address1_line1: '',
+        address1_line2: '',
+        address1_city: '',
+        address1_stateorprovince: '',
+        address1_postalcode: '',
+        address1_country: '',
+        parentcustomerid: '',
+      }
+}
+
+export function ContactForm({ contact, onSubmit, onCancel, isLoading, hideActions, section = 'all', sharedForm }: ContactFormProps) {
   const { accounts } = useAccounts()
   const [selectedAccount, setSelectedAccount] = useState<SelectedCustomer | undefined>(undefined)
 
-  const form = useForm<ContactFormValues>({
+  // Use shared form if provided, otherwise create a new one
+  const localForm = useForm<ContactFormValues>({
     resolver: zodResolver(contactFormSchema),
-    defaultValues: contact
-      ? {
-          firstname: contact.firstname || '',
-          lastname: contact.lastname || '',
-          salutation: contact.salutation || '',
-          jobtitle: contact.jobtitle || '',
-          department: contact.department || '',
-          emailaddress1: contact.emailaddress1 || '',
-          emailaddress2: contact.emailaddress2 || '',
-          telephone1: contact.telephone1 || '',
-          telephone2: contact.telephone2 || '',
-          mobilephone: contact.mobilephone || '',
-          fax: contact.fax || '',
-          address1_line1: contact.address1_line1 || '',
-          address1_line2: contact.address1_line2 || '',
-          address1_city: contact.address1_city || '',
-          address1_stateorprovince: contact.address1_stateorprovince || '',
-          address1_postalcode: contact.address1_postalcode || '',
-          address1_country: contact.address1_country || '',
-          parentcustomerid: contact.parentcustomerid || '',
-        }
-      : {
-          firstname: '',
-          lastname: '',
-          salutation: '',
-          jobtitle: '',
-          department: '',
-          emailaddress1: '',
-          emailaddress2: '',
-          telephone1: '',
-          telephone2: '',
-          mobilephone: '',
-          fax: '',
-          address1_line1: '',
-          address1_line2: '',
-          address1_city: '',
-          address1_stateorprovince: '',
-          address1_postalcode: '',
-          address1_country: '',
-          parentcustomerid: '',
-        },
+    defaultValues: getContactFormDefaultValues(contact),
   })
+
+  const form = sharedForm || localForm
 
   // Initialize selectedAccount from contact.parentcustomerid
   useEffect(() => {

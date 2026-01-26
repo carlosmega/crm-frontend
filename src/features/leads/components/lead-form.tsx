@@ -61,15 +61,18 @@ const leadFormSchema = z.object({
 
 type LeadFormValues = z.infer<typeof leadFormSchema>
 
+export type LeadFormSection = 'general' | 'qualification' | 'address' | 'notes' | 'all'
+
 interface LeadFormProps {
   lead?: Lead
   onSubmit: (data: CreateLeadDto | UpdateLeadDto) => Promise<void>
   onCancel?: () => void
   isLoading?: boolean
   hideActions?: boolean
+  section?: LeadFormSection // Which section to show (default: 'all')
 }
 
-export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions }: LeadFormProps) {
+export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, section = 'all' }: LeadFormProps) {
   const form = useForm<LeadFormValues>({
     resolver: zodResolver(leadFormSchema),
     defaultValues: lead
@@ -131,9 +134,18 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions }: L
     await onSubmit(data as CreateLeadDto | UpdateLeadDto)
   }
 
+  // Section visibility control
+  const showGeneral = section === 'all' || section === 'general'
+  const showQualification = section === 'all' || section === 'qualification'
+  const showAddress = section === 'all' || section === 'address'
+  const showNotes = section === 'all' || section === 'notes'
+
   return (
     <Form {...form}>
       <form id="lead-edit-form" onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+        {/* GENERAL SECTION - Basic Information & Contact Details */}
+        {showGeneral && (
+          <>
         {/* Basic Information */}
         <Card>
           <CardHeader>
@@ -324,7 +336,13 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions }: L
               />
             </CardContent>
           </Card>
+        </div>
+        </>
+      )}
 
+          {/* QUALIFICATION SECTION - Key Dates & Lead Details (BANT) */}
+          {showQualification && (
+            <>
           {/* Key Dates Card */}
           <Card>
             <CardHeader>
@@ -346,8 +364,11 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions }: L
                           type="number"
                           placeholder="50000"
                           className="h-10 pl-10"
-                          {...field}
+                          value={field.value ?? ''}
                           onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          ref={field.ref}
                         />
                       </div>
                     </FormControl>
@@ -394,9 +415,11 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions }: L
               />
             </CardContent>
           </Card>
-        </div>
+          </>
+        )}
 
-        {/* Address */}
+        {/* ADDRESS SECTION */}
+        {showAddress && (
         <Card>
           <CardHeader>
             <CardTitle className="text-base font-semibold">Address</CardTitle>
@@ -525,8 +548,10 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions }: L
             />
           </CardContent>
         </Card>
+        )}
 
-        {/* Lead Details */}
+        {/* QUALIFICATION SECTION (Part 2) - Lead Details (BANT) */}
+        {showQualification && (
         <Card>
           <CardHeader>
             <CardTitle className="text-base font-semibold">Lead Details</CardTitle>
@@ -613,8 +638,10 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions }: L
             </FormFieldGroup>
           </CardContent>
         </Card>
+        )}
 
-        {/* Description */}
+        {/* NOTES SECTION - Description */}
+        {showNotes && (
         <Card>
           <CardHeader>
             <CardTitle className="text-base font-semibold">Description</CardTitle>
@@ -640,6 +667,7 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions }: L
             />
           </CardContent>
         </Card>
+        )}
 
         {/* Actions */}
         {!hideActions && (

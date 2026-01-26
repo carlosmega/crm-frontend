@@ -105,7 +105,6 @@ export default function NewLeadPage() {
           <LeadFormTabs
             onSubmit={handleSubmit}
             isLoading={loading}
-            isCreating={true}
           />
         </div>
       </div>

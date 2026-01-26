@@ -28,6 +28,7 @@ import { ActivityTypeCode } from '@/core/contracts/enums'
 import type { CreateActivityDto } from '@/core/contracts/entities/activity'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { TimePicker } from '@/components/ui/time-picker'
 import { format, addMinutes, isBefore, startOfToday } from 'date-fns'
 import { cn } from '@/lib/utils'
 
@@ -250,12 +251,9 @@ ${data.description ? `\nNOTES:\n${data.description}` : ''}
             {/* Start Time */}
             <div className="space-y-1.5">
               <Label htmlFor="startTime">Start Time *</Label>
-              <Input
-                id="startTime"
-                type="time"
+              <TimePicker
                 value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-                className="w-full"
+                onChange={(time) => setStartTime(time)}
               />
             </div>
 

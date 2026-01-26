@@ -24,6 +24,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { DatePicker } from '@/components/ui/date-picker'
 import { useToast } from '@/components/ui/use-toast'
 import { ArrowLeft, Loader2, Save, AlertCircle, X, FileText, MapPin } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -341,15 +342,13 @@ export default function InvoiceEditPage({ params }: InvoiceEditPageProps) {
 
                     <div className="space-y-2">
                       <Label htmlFor="duedate">Due Date</Label>
-                      <Input
-                        id="duedate"
-                        type="date"
+                      <DatePicker
                         value={formData.duedate}
-                        onChange={(e) =>
-                          setFormData({ ...formData, duedate: e.target.value })
+                        onChange={(date) =>
+                          setFormData({ ...formData, duedate: date?.toISOString().split('T')[0] || '' })
                         }
                         disabled={!canEdit}
-                        required
+                        placeholder="Select due date"
                       />
                     </div>
                   </CardContent>

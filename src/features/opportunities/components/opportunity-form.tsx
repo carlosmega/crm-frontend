@@ -9,8 +9,11 @@ import { Button } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
 import { Loader2 } from 'lucide-react'
 
-// Import only General section (BPF stages now edited via dialogs)
+// Import sections (BPF stages now edited via dialogs)
 import { GeneralInfoSection } from './sections/general-info-section'
+import { AdditionalDetailsSection } from './sections/additional-details-section'
+
+export type OpportunityFormSection = 'general' | 'additional' | 'all'
 
 /**
  * Calcula la probabilidad de cierre según el Sales Stage
@@ -72,6 +75,7 @@ interface OpportunityFormProps {
   onCancel?: () => void
   isLoading?: boolean
   hideActions?: boolean
+  section?: OpportunityFormSection // Which section to show (default: 'all')
 }
 
 export function OpportunityForm({
@@ -79,7 +83,8 @@ export function OpportunityForm({
   onSubmit,
   onCancel,
   isLoading,
-  hideActions
+  hideActions,
+  section = 'all'
 }: OpportunityFormProps) {
 
   const form = useForm<OpportunityFormValues>({
@@ -210,6 +215,10 @@ export function OpportunityForm({
     await onSubmit(cleanedData as CreateOpportunityDto | UpdateOpportunityDto)
   }
 
+  // Section visibility control
+  const showGeneral = section === 'all' || section === 'general'
+  const showAdditional = section === 'all' || section === 'additional'
+
   return (
     <Form {...form}>
       <form
@@ -227,8 +236,15 @@ export function OpportunityForm({
         )}
         className="space-y-4"
       >
-        {/* General Information Section - BPF stages now edited via dialogs */}
-        <GeneralInfoSection isEditMode={!!opportunity} />
+        {/* GENERAL SECTION */}
+        {showGeneral && (
+          <GeneralInfoSection isEditMode={!!opportunity} />
+        )}
+
+        {/* ADDITIONAL DETAILS SECTION */}
+        {showAdditional && (
+          <AdditionalDetailsSection isEditMode={!!opportunity} />
+        )}
 
         {/* Actions */}
         {!hideActions && (

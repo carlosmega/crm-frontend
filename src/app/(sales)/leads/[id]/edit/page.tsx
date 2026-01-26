@@ -192,7 +192,6 @@ export default function EditLeadPage({ params }: { params: Promise<{ id: string 
             lead={lead}
             onSubmit={handleSubmit}
             isLoading={mutating}
-            isCreating={false}
           />
         </div>
       </div>

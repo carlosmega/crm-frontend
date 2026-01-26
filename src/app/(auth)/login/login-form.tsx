@@ -170,35 +170,40 @@ export function LoginForm() {
     setError(null)
 
     try {
-      // ✅ PASO 1: Autenticar con Django PRIMERO (desde el navegador)
-      // Esto guarda las cookies de sesión de Django en el navegador
-      const djangoResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include', // ✅ CRÍTICO: Guardar cookies de Django
-        body: JSON.stringify({
-          emailaddress1: data.email,
-          password: data.password,
-        }),
-      })
+      const useBackendAPI = process.env.NEXT_PUBLIC_USE_BACKEND_API === 'true'
 
-      if (!djangoResponse.ok) {
-        setLoginAttempts(prev => prev + 1)
-        setError('Email o contraseña incorrectos. Por favor, verifica tus credenciales e intenta nuevamente.')
-        return
+      // Solo autenticar con Django si el feature flag está habilitado
+      if (useBackendAPI) {
+        // ✅ PASO 1: Autenticar con Django PRIMERO (desde el navegador)
+        // Esto guarda las cookies de sesión de Django en el navegador
+        const djangoResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include', // ✅ CRÍTICO: Guardar cookies de Django
+          body: JSON.stringify({
+            emailaddress1: data.email,
+            password: data.password,
+          }),
+        })
+
+        if (!djangoResponse.ok) {
+          setLoginAttempts(prev => prev + 1)
+          setError('Email o contraseña incorrectos. Por favor, verifica tus credenciales e intenta nuevamente.')
+          return
+        }
+
+        const djangoData = await djangoResponse.json()
+
+        if (!djangoData.success) {
+          setLoginAttempts(prev => prev + 1)
+          setError('Email o contraseña incorrectos. Por favor, verifica tus credenciales e intenta nuevamente.')
+          return
+        }
       }
 
-      const djangoData = await djangoResponse.json()
-
-      if (!djangoData.success) {
-        setLoginAttempts(prev => prev + 1)
-        setError('Email o contraseña incorrectos. Por favor, verifica tus credenciales e intenta nuevamente.')
-        return
-      }
-
-      // ✅ PASO 2: Autenticar con NextAuth (crea sesión JWT)
+      // ✅ PASO 2 (o único paso en modo mock): Autenticar con NextAuth (crea sesión JWT)
       const result = await signIn('credentials', {
         email: data.email,
         password: data.password,
@@ -207,7 +212,7 @@ export function LoginForm() {
 
       if (result?.error) {
         setLoginAttempts(prev => prev + 1)
-        setError('Error al crear sesión. Por favor, intenta nuevamente.')
+        setError('Email o contraseña incorrectos. Por favor, verifica tus credenciales e intenta nuevamente.')
       } else if (result?.ok) {
         // Success animation before redirect
         await new Promise(resolve => setTimeout(resolve, 500))

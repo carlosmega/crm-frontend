@@ -7,9 +7,10 @@ import { XIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 function Dialog({
+  modal = true,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Root>) {
-  return <DialogPrimitive.Root data-slot="dialog" {...props} />
+  return <DialogPrimitive.Root data-slot="dialog" modal={modal} {...props} />
 }
 
 function DialogTrigger({
@@ -30,15 +31,28 @@ function DialogClose({
   return <DialogPrimitive.Close data-slot="dialog-close" {...props} />
 }
 
+// Z-index levels for nested dialogs
+const DIALOG_Z_INDEXES = {
+  0: "z-50",
+  1: "z-[60]",
+  2: "z-[70]",
+  3: "z-[80]",
+}
+
 function DialogOverlay({
   className,
+  nestLevel = 0,
   ...props
-}: React.ComponentProps<typeof DialogPrimitive.Overlay>) {
+}: React.ComponentProps<typeof DialogPrimitive.Overlay> & {
+  /** Nesting level for z-index stacking. 0 = root dialog, 1 = nested, 2 = double-nested, etc. */
+  nestLevel?: 0 | 1 | 2 | 3
+}) {
   return (
     <DialogPrimitive.Overlay
       data-slot="dialog-overlay"
       className={cn(
-        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50",
+        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 bg-black/50",
+        DIALOG_Z_INDEXES[nestLevel],
         className
       )}
       {...props}
@@ -50,17 +64,21 @@ function DialogContent({
   className,
   children,
   showCloseButton = true,
+  nestLevel = 0,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean
+  /** Nesting level for z-index stacking. 0 = root dialog, 1 = nested, 2 = double-nested, etc. */
+  nestLevel?: 0 | 1 | 2 | 3
 }) {
   return (
     <DialogPortal data-slot="dialog-portal">
-      <DialogOverlay />
+      <DialogOverlay nestLevel={nestLevel} />
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border p-6 shadow-lg duration-200 sm:max-w-lg",
+          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border p-6 shadow-lg duration-200 sm:max-w-lg",
+          DIALOG_Z_INDEXES[nestLevel],
           className
         )}
         {...props}

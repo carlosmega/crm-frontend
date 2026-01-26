@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import type { Contact } from '@/core/contracts'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ContactForm } from './contact-form'
+import { ContactForm, contactFormSchema, getContactFormDefaultValues, type ContactFormValues } from './contact-form'
 import { cn } from '@/lib/utils'
 import { User, Briefcase, MapPin } from 'lucide-react'
 
@@ -30,12 +32,19 @@ interface ContactFormTabsProps {
  *
  * Features:
  * - Tabs navigation rendered in sticky header via portal
+ * - Shared form state across all tabs (prevents data loss on tab change)
  * - Each tab shows only relevant fields (filtered by section prop)
  * - Consistent naming with detail view tabs
  */
 export function ContactFormTabs({ contact, onSubmit, isLoading, hideActions }: ContactFormTabsProps) {
   const [activeTab, setActiveTab] = useState<ContactFormTabId>('general')
   const [tabsContainer, setTabsContainer] = useState<HTMLElement | null>(null)
+
+  // ✅ Create form once at the parent level and share across all tabs
+  const sharedForm = useForm<ContactFormValues>({
+    resolver: zodResolver(contactFormSchema),
+    defaultValues: getContactFormDefaultValues(contact),
+  })
 
   // Find the tabs container in sticky header on mount
   useEffect(() => {
@@ -102,6 +111,7 @@ export function ContactFormTabs({ contact, onSubmit, isLoading, hideActions }: C
           isLoading={isLoading}
           hideActions={hideActions}
           section="general"
+          sharedForm={sharedForm}
         />
       </TabsContent>
 
@@ -113,6 +123,7 @@ export function ContactFormTabs({ contact, onSubmit, isLoading, hideActions }: C
           isLoading={isLoading}
           hideActions={hideActions}
           section="professional"
+          sharedForm={sharedForm}
         />
       </TabsContent>
 
@@ -124,6 +135,7 @@ export function ContactFormTabs({ contact, onSubmit, isLoading, hideActions }: C
           isLoading={isLoading}
           hideActions={hideActions}
           section="address"
+          sharedForm={sharedForm}
         />
       </TabsContent>
     </Tabs>

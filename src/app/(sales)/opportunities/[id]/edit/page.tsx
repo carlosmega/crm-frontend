@@ -249,6 +249,11 @@ export default function EditOpportunityPage({ params }: { params: Promise<{ id: 
               setStageDialogOpen(true)
             }}
           />
+
+          {/* Tabs Navigation Container (Portal Target) */}
+          <div className="px-4">
+            <div id="opportunity-tabs-nav-container" />
+          </div>
         </div>
 
         {/* Main Content - Form */}
