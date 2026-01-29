@@ -9,16 +9,8 @@ import { useAccountMutations } from '@/features/accounts/hooks/use-account-mutat
 import { AccountInfoHeader } from '@/features/accounts/components/account-info-header'
 import { LogActivityButton } from '@/features/activities/components'
 import { AccountStateCode } from '@/core/contracts'
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb'
-import { Separator } from '@/components/ui/separator'
-import { SidebarTrigger } from '@/components/ui/sidebar'
+import { DetailPageHeader } from '@/components/layout/detail-page-header'
+import { MobileDetailHeader } from '@/components/layout/mobile-detail-header'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -33,7 +25,6 @@ import {
   XCircle,
   CheckCircle2,
   Loader2,
-  ArrowLeft,
   MoreVertical,
   FileText,
 } from 'lucide-react'
@@ -100,104 +91,64 @@ export default function AccountDetailPage({ params }: { params: Promise<{ id: st
     )
   }
 
+  // Mobile actions dropdown
+  const mobileActions = (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon" className="h-8 w-8">
+          <MoreVertical className="h-5 w-5" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-48">
+        <DropdownMenuItem asChild>
+          <Link href={`/accounts/${account.accountid}/edit`} className="flex items-center cursor-pointer">
+            <Edit className="mr-2 h-4 w-4" />
+            Edit
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <FileText className="mr-2 h-4 w-4" />
+          Log Activity
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        {account.statecode === AccountStateCode.Active ? (
+          <DropdownMenuItem onClick={handleDeactivate} disabled={mutating}>
+            <XCircle className="mr-2 h-4 w-4" />
+            Deactivate
+          </DropdownMenuItem>
+        ) : (
+          <DropdownMenuItem onClick={handleActivate} disabled={mutating}>
+            <CheckCircle2 className="mr-2 h-4 w-4" />
+            Activate
+          </DropdownMenuItem>
+        )}
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={handleDelete} disabled={mutating} className="text-destructive focus:text-destructive">
+          <Trash2 className="mr-2 h-4 w-4" />
+          Delete
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+
   return (
     <>
       {/* Mobile Header */}
-      <header className="md:hidden sticky top-0 z-50 bg-white border-b">
-        <div className="flex items-center justify-between px-4 py-3">
-          {/* LEFT: Back Button + Title */}
-          <div className="flex items-center gap-3 flex-1 min-w-0">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 shrink-0"
-              asChild
-            >
-              <Link href="/accounts">
-                <ArrowLeft className="h-5 w-5" />
-              </Link>
-            </Button>
-            <div className="min-w-0 flex-1">
-              <p className="text-xs font-semibold text-purple-600 uppercase tracking-wide">
-                ACCOUNTS
-              </p>
-              <h1 className="text-sm font-semibold text-gray-900 truncate">
-                {account.name}
-              </h1>
-            </div>
-          </div>
-
-          {/* RIGHT: Hamburger + Actions */}
-          <div className="flex items-center gap-1 shrink-0">
-            {/* Navigation Menu */}
-            <SidebarTrigger className="h-8 w-8" />
-
-            {/* Separator */}
-            <div className="h-6 w-px bg-gray-300 mx-1" />
-
-            {/* Actions Menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <MoreVertical className="h-5 w-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem asChild>
-                  <Link href={`/accounts/${account.accountid}/edit`} className="flex items-center cursor-pointer">
-                    <Edit className="mr-2 h-4 w-4" />
-                    Edit
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <FileText className="mr-2 h-4 w-4" />
-                  Log Activity
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                {account.statecode === AccountStateCode.Active ? (
-                  <DropdownMenuItem onClick={handleDeactivate} disabled={mutating}>
-                    <XCircle className="mr-2 h-4 w-4" />
-                    Deactivate
-                  </DropdownMenuItem>
-                ) : (
-                  <DropdownMenuItem onClick={handleActivate} disabled={mutating}>
-                    <CheckCircle2 className="mr-2 h-4 w-4" />
-                    Activate
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleDelete} disabled={mutating} className="text-destructive focus:text-destructive">
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-      </header>
+      <MobileDetailHeader
+        backHref="/accounts"
+        entityType="ACCOUNTS"
+        title={account.name}
+        actions={mobileActions}
+      />
 
       {/* Desktop Header */}
-      <header className="hidden md:flex sticky top-0 z-50 h-16 shrink-0 items-center gap-2 bg-background border-b transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-        <div className="flex items-center gap-2 px-4">
-          <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/dashboard">Sales</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/accounts">Accounts</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
-              <BreadcrumbItem>
-                <BreadcrumbPage>{account.name}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
-      </header>
+      <DetailPageHeader
+        breadcrumbs={[
+          { label: 'Sales', href: '/dashboard' },
+          { label: 'Accounts', href: '/accounts' },
+          { label: account.name },
+        ]}
+      />
 
       {/* Content - Fondo gris igual que opportunities/leads */}
       <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100">

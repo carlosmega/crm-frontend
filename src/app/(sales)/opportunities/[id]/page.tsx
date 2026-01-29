@@ -11,16 +11,8 @@ import { OpportunityStageDialog } from '@/features/opportunities/components/dial
 import { LogActivityButton } from '@/features/activities/components'
 import { OpportunityStateCode, SalesStageCode } from '@/core/contracts'
 import { SalesBusinessProcessFlow } from '@/shared/components'
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb'
-import { Separator } from '@/components/ui/separator'
-import { SidebarTrigger } from '@/components/ui/sidebar'
+import { DetailPageHeader } from '@/components/layout/detail-page-header'
+import { MobileDetailHeader } from '@/components/layout/mobile-detail-header'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -33,7 +25,6 @@ import {
   Loader2,
   Edit,
   ArrowRight,
-  ArrowLeft,
   CheckCircle2,
   XCircle,
   MoreVertical,
@@ -105,106 +96,66 @@ export default function OpportunityDetailPageFinal() {
   const canMovePrevious = isOpen && opportunity.salesstage > SalesStageCode.Qualify
   const canClose = isOpen && opportunity.salesstage === SalesStageCode.Close
 
+  // Mobile actions dropdown
+  const mobileActions = (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon" className="h-8 w-8">
+          <MoreVertical className="h-5 w-5" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-48">
+        {canEdit && (
+          <DropdownMenuItem asChild>
+            <Link href={`/opportunities/${id}/edit`} className="flex items-center cursor-pointer">
+              <Edit className="mr-2 h-4 w-4" />
+              Edit
+            </Link>
+          </DropdownMenuItem>
+        )}
+        <DropdownMenuItem>
+          <FileText className="mr-2 h-4 w-4" />
+          Log Activity
+        </DropdownMenuItem>
+        {isOpen && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link href={`/opportunities/${id}/close`} className="flex items-center cursor-pointer">
+                <CheckCircle2 className="mr-2 h-4 w-4" />
+                Win Opportunity
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href={`/opportunities/${id}/close`} className="flex items-center cursor-pointer">
+                <XCircle className="mr-2 h-4 w-4" />
+                Lose Opportunity
+              </Link>
+            </DropdownMenuItem>
+          </>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+
   return (
     <>
-      {/* Header - Desktop Only */}
-      <header className="hidden md:flex sticky top-0 z-50 h-16 shrink-0 items-center gap-2 bg-background border-b transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-        <div className="flex items-center gap-2 px-4">
-          <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/dashboard">Sales</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/opportunities">Opportunities</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
-              <BreadcrumbItem>
-                <BreadcrumbPage>{opportunity.name}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
-      </header>
-
       {/* Mobile Header */}
-      <header className="md:hidden sticky top-0 z-50 bg-white border-b">
-        <div className="flex items-center justify-between px-4 py-3">
-          {/* LEFT: Back Button + Title */}
-          <div className="flex items-center gap-3 flex-1 min-w-0">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 shrink-0"
-              asChild
-            >
-              <Link href="/opportunities">
-                <ArrowLeft className="h-5 w-5" />
-              </Link>
-            </Button>
-            <div className="min-w-0 flex-1">
-              <p className="text-xs font-semibold text-purple-600 uppercase tracking-wide">
-                OPPORTUNITIES
-              </p>
-              <h1 className="text-sm font-semibold text-gray-900 truncate">
-                {opportunity.name}
-              </h1>
-            </div>
-          </div>
+      <MobileDetailHeader
+        backHref="/opportunities"
+        entityType="OPPORTUNITIES"
+        title={opportunity.name}
+        actions={mobileActions}
+      />
 
-          {/* RIGHT: Hamburger + Actions */}
-          <div className="flex items-center gap-1 shrink-0">
-            {/* Navigation Menu */}
-            <SidebarTrigger className="h-8 w-8" />
-
-            {/* Separator */}
-            <div className="h-6 w-px bg-gray-300 mx-1" />
-
-            {/* Actions Menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <MoreVertical className="h-5 w-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                {canEdit && (
-                  <DropdownMenuItem asChild>
-                    <Link href={`/opportunities/${id}/edit`} className="flex items-center cursor-pointer">
-                      <Edit className="mr-2 h-4 w-4" />
-                      Edit
-                    </Link>
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuItem>
-                  <FileText className="mr-2 h-4 w-4" />
-                  Log Activity
-                </DropdownMenuItem>
-                {isOpen && (
-                  <>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link href={`/opportunities/${id}/close`} className="flex items-center cursor-pointer">
-                        <CheckCircle2 className="mr-2 h-4 w-4" />
-                        Win Opportunity
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href={`/opportunities/${id}/close`} className="flex items-center cursor-pointer">
-                        <XCircle className="mr-2 h-4 w-4" />
-                        Lose Opportunity
-                      </Link>
-                    </DropdownMenuItem>
-                  </>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-      </header>
+      {/* Desktop Header */}
+      <DetailPageHeader
+        breadcrumbs={[
+          { label: 'Sales', href: '/dashboard' },
+          { label: 'Opportunities', href: '/opportunities' },
+          { label: opportunity.name },
+        ]}
+      />
 
       {/* Content */}
       <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100">

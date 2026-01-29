@@ -26,15 +26,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb'
-import { Separator } from '@/components/ui/separator'
+import { PageHeader } from '@/components/layout/page-header'
+import { UserMenu } from '@/components/layout/user-menu'
+import { NotificationMenu } from '@/components/layout/notification-menu'
 import {
   Bell,
   Check,
@@ -138,47 +132,42 @@ export default function NotificationsPage() {
             </div>
           </div>
 
-          {/* RIGHT: Actions */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
-                <MoreVertical className="h-5 w-5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              {unreadCount > 0 && (
-                <DropdownMenuItem onClick={handleMarkAllAsRead}>
-                  <Check className="mr-2 h-4 w-4" />
-                  Mark all as read
+          {/* RIGHT: Notifications + User + Actions */}
+          <div className="flex items-center gap-1 shrink-0">
+            <NotificationMenu />
+            <UserMenu variant="icon" />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <MoreVertical className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                {unreadCount > 0 && (
+                  <DropdownMenuItem onClick={handleMarkAllAsRead}>
+                    <Check className="mr-2 h-4 w-4" />
+                    Mark all as read
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem>
+                  <Settings className="mr-2 h-4 w-4" />
+                  Notification settings
                 </DropdownMenuItem>
-              )}
-              <DropdownMenuItem>
-                <Settings className="mr-2 h-4 w-4" />
-                Notification settings
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </header>
 
       {/* Desktop Header */}
-      <header className="hidden md:flex sticky top-0 z-50 h-16 shrink-0 items-center gap-2 bg-background border-b transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-        <div className="flex items-center gap-2 px-4">
-          <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/dashboard">Sales</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Notifications</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
-      </header>
+      <div className="hidden md:block">
+        <PageHeader
+          breadcrumbs={[
+            { label: 'Sales', href: '/dashboard' },
+            { label: 'Notifications' },
+          ]}
+        />
+      </div>
 
       {/* Main Content */}
       <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100">

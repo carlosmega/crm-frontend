@@ -21,7 +21,8 @@ export const apiConfig = {
 export const featureFlags = {
   /**
    * Usa el backend Django real en lugar de mocks de localStorage
-   * Por defecto: true (backend activo)
+   * Por defecto: false (usa mocks para desarrollo)
+   * Establecer a 'true' para usar backend Django
    */
-  useBackendAPI: process.env.NEXT_PUBLIC_USE_BACKEND_API !== 'false',
+  useBackendAPI: process.env.NEXT_PUBLIC_USE_BACKEND_API === 'true',
 } as const

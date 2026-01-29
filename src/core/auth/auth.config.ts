@@ -34,6 +34,7 @@ function mapRoleNameToUserRole(roleName: string | undefined): UserRole {
  * Used by both middleware and API routes
  */
 export const authConfig: NextAuthConfig = {
+  trustHost: true,
   providers: [
     Credentials({
       name: 'Credentials',

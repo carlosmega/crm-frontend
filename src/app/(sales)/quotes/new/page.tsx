@@ -3,20 +3,12 @@
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
 import { useCreateQuote } from '@/features/quotes/hooks/use-quote-mutations'
+import { DetailPageHeader } from '@/components/layout/detail-page-header'
+import { MobileDetailHeader } from '@/components/layout/mobile-detail-header'
 import type { CreateQuoteDto } from '@/features/quotes/types'
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb'
-import { Separator } from '@/components/ui/separator'
-import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Loader2, ArrowLeft, Save, X } from 'lucide-react'
+import { Loader2, Save, X } from 'lucide-react'
 import { toast } from 'sonner'
 
 // Dynamic import for QuoteFormTabs
@@ -65,26 +57,11 @@ export default function QuoteNewPage() {
   return (
     <>
       {/* Mobile Header */}
-      <header className="md:hidden sticky top-0 z-50 bg-white border-b">
-        <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8"
-              onClick={handleCancel}
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <div>
-              <p className="text-xs font-semibold text-purple-600 uppercase tracking-wide">
-                NEW QUOTE
-              </p>
-              <h1 className="text-sm font-semibold text-gray-900">
-                Create Quote
-              </h1>
-            </div>
-          </div>
+      <MobileDetailHeader
+        backHref="/quotes"
+        entityType="NEW QUOTE"
+        title="New Quote"
+        actions={
           <Button
             size="sm"
             onClick={() => {
@@ -96,31 +73,17 @@ export default function QuoteNewPage() {
           >
             {isCreating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
           </Button>
-        </div>
-      </header>
+        }
+      />
 
       {/* Desktop Header */}
-      <header className="hidden md:flex sticky top-0 z-50 h-16 shrink-0 items-center gap-2 bg-background border-b transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-        <div className="flex items-center gap-2 px-4">
-          <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/dashboard">Sales</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/quotes">Quotes</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
-              <BreadcrumbItem>
-                <BreadcrumbPage>New</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
-      </header>
+      <DetailPageHeader
+        breadcrumbs={[
+          { label: 'Sales', href: '/dashboard' },
+          { label: 'Quotes', href: '/quotes' },
+          { label: 'New Quote' },
+        ]}
+      />
 
       {/* Content */}
       <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100">

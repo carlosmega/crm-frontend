@@ -12,7 +12,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Eye, Edit, Package, TrendingUp } from 'lucide-react'
-import { formatCurrency } from '@/shared/utils/formatters'
+import { formatCurrency, formatDate } from '@/shared/utils/formatters'
 import { EmptyState } from '@/shared/components/empty-state'
 
 interface ProductListProps {
@@ -208,6 +208,22 @@ export function ProductList({
       ),
     },
     {
+      id: 'createdon',
+      header: 'Created',
+      accessorFn: (product) => product.createdon ? new Date(product.createdon) : null,
+      sortable: true,
+      filterable: true,
+      filter: {
+        type: 'daterange',
+        operators: ['equals', 'before', 'after', 'between'],
+      },
+      cell: (product) => (
+        <span className="text-sm text-muted-foreground">
+          {formatDate(product.createdon)}
+        </span>
+      ),
+    },
+    {
       id: 'actions',
       header: 'Actions',
       className: 'text-right',
@@ -254,8 +270,8 @@ export function ProductList({
       loadingRows={8}
       emptyState={emptyState}
       defaultSort={{
-        columnId: 'name',
-        direction: 'asc',
+        columnId: 'createdon',
+        direction: 'desc',
       }}
       bulkActions={bulkActions}
     />

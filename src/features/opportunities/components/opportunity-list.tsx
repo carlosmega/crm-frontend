@@ -221,6 +221,22 @@ export function OpportunityList({
       ),
     },
     {
+      id: 'createdon',
+      header: 'Created',
+      accessorFn: (opp) => opp.createdon ? new Date(opp.createdon) : null,
+      sortable: true,
+      filterable: true,
+      filter: {
+        type: 'daterange',
+        operators: ['equals', 'before', 'after', 'between'],
+      },
+      cell: (opp) => (
+        <span className="text-sm text-muted-foreground">
+          {formatDate(opp.createdon)}
+        </span>
+      ),
+    },
+    {
       id: 'actions',
       header: 'Actions',
       className: 'text-right',
@@ -292,8 +308,8 @@ export function OpportunityList({
       loadingRows={8}
       emptyState={emptyState}
       defaultSort={{
-        columnId: 'closeDate',
-        direction: 'asc',
+        columnId: 'createdon',
+        direction: 'desc',
       }}
       bulkActions={bulkActions}
     />

@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import type { Account } from '@/core/contracts'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { AccountForm } from './account-form'
+import { AccountForm, accountFormSchema, getAccountFormDefaultValues, type AccountFormValues } from './account-form'
 import { cn } from '@/lib/utils'
 import { Building2, FileText, MapPin } from 'lucide-react'
 
@@ -29,6 +31,7 @@ interface AccountFormTabsProps {
  *
  * Features:
  * - Tabs navigation rendered in sticky header via portal
+ * - Shared form state across all tabs (prevents data loss on tab change)
  * - Organized sections for better UX (60% reduction in fields per tab)
  * - Uses AccountForm component with section filtering
  */
@@ -40,6 +43,12 @@ export function AccountFormTabs({
 }: AccountFormTabsProps) {
   const [activeTab, setActiveTab] = useState<AccountFormTabId>('general')
   const [tabsContainer, setTabsContainer] = useState<HTMLElement | null>(null)
+
+  // ✅ Create form once at the parent level and share across all tabs
+  const sharedForm = useForm<AccountFormValues>({
+    resolver: zodResolver(accountFormSchema),
+    defaultValues: getAccountFormDefaultValues(account),
+  })
 
   // Find the tabs container in sticky header on mount
   useEffect(() => {
@@ -107,6 +116,7 @@ export function AccountFormTabs({
           isLoading={isLoading}
           hideActions
           section="general"
+          sharedForm={sharedForm}
         />
       </TabsContent>
 
@@ -119,6 +129,7 @@ export function AccountFormTabs({
           isLoading={isLoading}
           hideActions
           section="details"
+          sharedForm={sharedForm}
         />
       </TabsContent>
 
@@ -131,6 +142,7 @@ export function AccountFormTabs({
           isLoading={isLoading}
           hideActions
           section="address"
+          sharedForm={sharedForm}
         />
       </TabsContent>
     </Tabs>

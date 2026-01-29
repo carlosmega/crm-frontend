@@ -264,6 +264,22 @@ export function LeadList({
       ),
     },
     {
+      id: 'createdon',
+      header: 'Created',
+      accessorFn: (lead) => lead.createdon ? new Date(lead.createdon) : null,
+      sortable: true,
+      filterable: true,
+      filter: {
+        type: 'daterange',
+        operators: ['equals', 'before', 'after', 'between'],
+      },
+      cell: (lead) => (
+        <span className="text-sm text-muted-foreground">
+          {formatDate(lead.createdon)}
+        </span>
+      ),
+    },
+    {
       id: 'actions',
       header: 'Actions',
       className: 'text-right',
@@ -356,8 +372,8 @@ export function LeadList({
       loadingRows={8}
       emptyState={emptyState}
       defaultSort={{
-        columnId: 'closeDate',
-        direction: 'asc',
+        columnId: 'createdon',
+        direction: 'desc',
       }}
       bulkActions={bulkActions}
     />

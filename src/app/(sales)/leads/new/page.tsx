@@ -3,22 +3,11 @@
 import { useRouter } from 'next/navigation'
 import { useLeadMutations } from '@/features/leads/hooks/use-lead-mutations'
 import { LeadFormTabs } from '@/features/leads/components/lead-form-tabs'
+import { DetailPageHeader } from '@/components/layout/detail-page-header'
+import { MobileDetailHeader } from '@/components/layout/mobile-detail-header'
 import type { CreateLeadDto } from '@/core/contracts'
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb'
-import { Separator } from '@/components/ui/separator'
-import {
-  SidebarInset,
-  SidebarTrigger,
-} from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Save } from 'lucide-react'
 
 export default function NewLeadPage() {
   const router = useRouter()
@@ -40,28 +29,34 @@ export default function NewLeadPage() {
 
   return (
     <>
-      {/* Header */}
-      <header className="flex h-16 shrink-0 items-center gap-2 bg-background border-b transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-        <div className="flex items-center gap-2 px-4">
-          <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/dashboard">Sales</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/leads">Leads</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
-              <BreadcrumbItem>
-                <BreadcrumbPage>New Lead</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
-      </header>
+      {/* Mobile Header */}
+      <MobileDetailHeader
+        backHref="/leads"
+        entityType="NEW LEAD"
+        title="New Lead"
+        actions={
+          <Button
+            size="sm"
+            onClick={() => {
+              const form = document.getElementById('lead-edit-form') as HTMLFormElement
+              form?.requestSubmit()
+            }}
+            disabled={loading}
+            className="bg-purple-600 hover:bg-purple-700"
+          >
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+          </Button>
+        }
+      />
+
+      {/* Desktop Header */}
+      <DetailPageHeader
+        breadcrumbs={[
+          { label: 'Sales', href: '/dashboard' },
+          { label: 'Leads', href: '/leads' },
+          { label: 'New Lead' },
+        ]}
+      />
 
       {/* Content - Fondo gris igual que opportunities */}
       <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100">

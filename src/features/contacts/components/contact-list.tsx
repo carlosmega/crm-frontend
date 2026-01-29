@@ -230,8 +230,8 @@ export const ContactList = memo(function ContactList({
       loadingRows={8}
       emptyState={emptyState}
       defaultSort={{
-        columnId: 'name',
-        direction: 'asc',
+        columnId: 'created',
+        direction: 'desc',
       }}
       bulkActions={bulkActions}
     />

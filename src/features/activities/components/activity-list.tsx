@@ -232,6 +232,22 @@ export function ActivityList({
       ),
     },
     {
+      id: 'createdon',
+      header: 'Created',
+      accessorFn: (activity) => activity.createdon ? new Date(activity.createdon) : null,
+      sortable: true,
+      filterable: true,
+      filter: {
+        type: 'daterange',
+        operators: ['equals', 'before', 'after', 'between'],
+      },
+      cell: (activity) => (
+        <span className="text-sm text-muted-foreground">
+          {formatDate(activity.createdon)}
+        </span>
+      ),
+    },
+    {
       id: 'actions',
       header: 'Actions',
       className: 'text-right',
@@ -280,7 +296,7 @@ export function ActivityList({
       loadingRows={8}
       emptyState={emptyState}
       defaultSort={{
-        columnId: 'scheduled',
+        columnId: 'createdon',
         direction: 'desc',
       }}
       bulkActions={bulkActions}

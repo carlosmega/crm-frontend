@@ -218,8 +218,11 @@ export function ProductForm({
                         min="0"
                         placeholder="0.00"
                         className="h-10"
-                        {...field}
+                        value={field.value ?? ''}
                         onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                        onBlur={field.onBlur}
+                        name={field.name}
+                        ref={field.ref}
                       />
                     </FormControl>
                     <p className="text-xs text-muted-foreground">Selling price</p>
@@ -244,8 +247,11 @@ export function ProductForm({
                         min="0"
                         placeholder="0.00"
                         className="h-10"
-                        {...field}
+                        value={field.value ?? ''}
                         onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                        onBlur={field.onBlur}
+                        name={field.name}
+                        ref={field.ref}
                       />
                     </FormControl>
                     <p className="text-xs text-muted-foreground">Base cost</p>
@@ -270,8 +276,11 @@ export function ProductForm({
                         min="0"
                         placeholder="0.00"
                         className="h-10"
-                        {...field}
+                        value={field.value ?? ''}
                         onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                        onBlur={field.onBlur}
+                        name={field.name}
+                        ref={field.ref}
                       />
                     </FormControl>
                     <p className="text-xs text-muted-foreground">Current cost</p>
@@ -330,8 +339,11 @@ export function ProductForm({
                         min="0"
                         placeholder="0"
                         className="h-10"
-                        {...field}
+                        value={field.value ?? ''}
                         onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                        onBlur={field.onBlur}
+                        name={field.name}
+                        ref={field.ref}
                       />
                     </FormControl>
                     <p className="text-xs text-muted-foreground">Total units in stock</p>

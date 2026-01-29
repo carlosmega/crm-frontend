@@ -6,18 +6,10 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useInvoice } from '@/features/invoices/hooks/use-invoices'
 import { useUpdateInvoice } from '@/features/invoices/hooks/use-invoice-mutations'
+import { DetailPageHeader } from '@/components/layout/detail-page-header'
+import { MobileDetailHeader } from '@/components/layout/mobile-detail-header'
 import { InvoiceStateCode } from '@/core/contracts/enums'
 import type { UpdateInvoiceDto } from '@/core/contracts/entities/invoice'
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb'
-import { Separator } from '@/components/ui/separator'
-import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
@@ -26,7 +18,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { DatePicker } from '@/components/ui/date-picker'
 import { useToast } from '@/components/ui/use-toast'
-import { ArrowLeft, Loader2, Save, AlertCircle, X, FileText, MapPin } from 'lucide-react'
+import { Loader2, Save, AlertCircle, X, FileText, MapPin } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { cn } from '@/lib/utils'
 
@@ -157,23 +149,11 @@ export default function InvoiceEditPage({ params }: InvoiceEditPageProps) {
   return (
     <>
       {/* Mobile Header */}
-      <header className="md:hidden sticky top-0 z-50 bg-white border-b">
-        <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-3 flex-1 min-w-0">
-            <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" asChild>
-              <Link href={`/invoices/${id}`}>
-                <ArrowLeft className="h-5 w-5" />
-              </Link>
-            </Button>
-            <div className="min-w-0 flex-1">
-              <p className="text-xs font-semibold text-purple-600 uppercase tracking-wide">
-                EDIT INVOICE
-              </p>
-              <h1 className="text-sm font-semibold text-gray-900 truncate">
-                {invoice.name}
-              </h1>
-            </div>
-          </div>
+      <MobileDetailHeader
+        backHref={`/invoices/${id}`}
+        entityType="EDIT INVOICE"
+        title={invoice.name}
+        actions={
           <Button
             size="sm"
             onClick={(e) => {
@@ -190,35 +170,18 @@ export default function InvoiceEditPage({ params }: InvoiceEditPageProps) {
               <Save className="h-4 w-4" />
             )}
           </Button>
-        </div>
-      </header>
+        }
+      />
 
       {/* Desktop Header */}
-      <header className="hidden md:flex sticky top-0 z-50 h-16 shrink-0 items-center gap-2 bg-background border-b">
-        <div className="flex items-center gap-2 px-4">
-          <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/dashboard">Sales</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/invoices">Invoices</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
-              <BreadcrumbItem>
-                <BreadcrumbLink href={`/invoices/${id}`}>{invoice.name}</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Edit</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
-      </header>
+      <DetailPageHeader
+        breadcrumbs={[
+          { label: 'Sales', href: '/dashboard' },
+          { label: 'Invoices', href: '/invoices' },
+          { label: invoice.name, href: `/invoices/${id}` },
+          { label: 'Edit' },
+        ]}
+      />
 
       {/* Sticky Section with Invoice Info and Actions + Tabs (Desktop Only) */}
       <div className="hidden md:block sticky top-16 z-40 bg-gray-100/98 backdrop-blur-sm">

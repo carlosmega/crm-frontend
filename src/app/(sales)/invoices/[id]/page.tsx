@@ -10,22 +10,14 @@ import { useInvoicePdfExport } from '@/features/invoices/hooks/use-invoice-pdf-e
 import { MarkInvoicePaidButton } from '@/features/invoices/components/mark-invoice-paid-button'
 import { CancelInvoiceButton } from '@/features/invoices/components/cancel-invoice-button'
 import { InvoiceStateCode } from '@/core/contracts/enums'
+import { DetailPageHeader } from '@/components/layout/detail-page-header'
+import { MobileDetailHeader } from '@/components/layout/mobile-detail-header'
 
 // ✅ PERFORMANCE: Dynamic import for tabs
 const InvoiceDetailTabs = dynamic(
   () => import('@/features/invoices/components/invoice-detail-tabs').then(mod => ({ default: mod.InvoiceDetailTabs })),
   { ssr: false }
 )
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb'
-import { Separator } from '@/components/ui/separator'
-import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -100,94 +92,67 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
     )
   }
 
+  // Mobile actions dropdown
+  const mobileActions = (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon" className="h-8 w-8">
+          <MoreVertical className="h-5 w-5" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-48">
+        <DropdownMenuItem onClick={() => exportToPdf(id)} disabled={isExporting}>
+          <FileText className="mr-2 h-4 w-4" />
+          {isExporting ? 'Exporting...' : 'Export PDF'}
+        </DropdownMenuItem>
+        {canMarkAsPaid && invoice && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => {
+                const button = document.querySelector('[data-mark-paid-button]') as HTMLButtonElement
+                button?.click()
+              }}
+            >
+              <CheckCircle2 className="mr-2 h-4 w-4" />
+              Mark as Paid
+            </DropdownMenuItem>
+          </>
+        )}
+        {canCancel && invoice && (
+          <DropdownMenuItem
+            onClick={() => {
+              const button = document.querySelector('[data-cancel-invoice-button]') as HTMLButtonElement
+              button?.click()
+            }}
+            className="text-destructive focus:text-destructive"
+          >
+            <XCircle className="mr-2 h-4 w-4" />
+            Cancel Invoice
+          </DropdownMenuItem>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+
   return (
     <>
       {/* Mobile Header */}
-      <header className="md:hidden sticky top-0 z-50 bg-white border-b">
-        <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-3 flex-1 min-w-0">
-            <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" asChild>
-              <Link href="/invoices">
-                <ArrowLeft className="h-5 w-5" />
-              </Link>
-            </Button>
-            <div className="min-w-0 flex-1">
-              <p className="text-xs font-semibold text-purple-600 uppercase tracking-wide">
-                INVOICE
-              </p>
-              <h1 className="text-sm font-semibold text-gray-900 truncate">
-                {invoice.name}
-              </h1>
-            </div>
-          </div>
-          <div className="flex items-center gap-1 shrink-0">
-            <SidebarTrigger className="h-8 w-8" />
-            <div className="h-6 w-px bg-gray-300 mx-1" />
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <MoreVertical className="h-5 w-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem onClick={() => exportToPdf(id)} disabled={isExporting}>
-                  <FileText className="mr-2 h-4 w-4" />
-                  {isExporting ? 'Exporting...' : 'Export PDF'}
-                </DropdownMenuItem>
-                {canMarkAsPaid && invoice && (
-                  <>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      onClick={() => {
-                        const button = document.querySelector('[data-mark-paid-button]') as HTMLButtonElement
-                        button?.click()
-                      }}
-                    >
-                      <CheckCircle2 className="mr-2 h-4 w-4" />
-                      Mark as Paid
-                    </DropdownMenuItem>
-                  </>
-                )}
-                {canCancel && invoice && (
-                  <DropdownMenuItem
-                    onClick={() => {
-                      const button = document.querySelector('[data-cancel-invoice-button]') as HTMLButtonElement
-                      button?.click()
-                    }}
-                    className="text-destructive focus:text-destructive"
-                  >
-                    <XCircle className="mr-2 h-4 w-4" />
-                    Cancel Invoice
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-      </header>
+      <MobileDetailHeader
+        backHref="/invoices"
+        entityType="INVOICES"
+        title={invoice.name}
+        actions={mobileActions}
+      />
 
       {/* Desktop Header */}
-      <header className="hidden md:flex sticky top-0 z-50 h-16 shrink-0 items-center gap-2 bg-background border-b">
-        <div className="flex items-center gap-2 px-4">
-          <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/dashboard">Sales</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/invoices">Invoices</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
-              <BreadcrumbItem>
-                <BreadcrumbPage>{invoice.name}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
-      </header>
+      <DetailPageHeader
+        breadcrumbs={[
+          { label: 'Sales', href: '/dashboard' },
+          { label: 'Invoices', href: '/invoices' },
+          { label: invoice.name },
+        ]}
+      />
 
       {/* Content - Fondo gris igual que contacts/accounts/leads */}
       <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100">

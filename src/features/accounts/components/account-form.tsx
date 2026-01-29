@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, type UseFormReturn } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import type { Account, CreateAccountDto, UpdateAccountDto } from '@/core/contracts'
@@ -30,7 +30,8 @@ import type { SelectedCustomer } from '@/shared/types/selected-customer'
 import { useContacts } from '@/features/contacts/hooks/use-contacts'
 import { Mail, Phone, Globe, Loader2, Euro, Building2 } from 'lucide-react'
 
-const accountFormSchema = z.object({
+// Export schema for use in AccountFormTabs
+export const accountFormSchema = z.object({
   name: z.string().min(1, 'Account name is required'),
   accountnumber: z.string().optional(), // Autogenerado por el backend
   description: z.string().optional(),
@@ -55,9 +56,60 @@ const accountFormSchema = z.object({
   creditlimit: z.number().positive().optional(),
 })
 
-type AccountFormValues = z.infer<typeof accountFormSchema>
+export type AccountFormValues = z.infer<typeof accountFormSchema>
 
 export type AccountFormSection = 'general' | 'details' | 'address' | 'all'
+
+// Helper to get default values
+export function getAccountFormDefaultValues(account?: Account): AccountFormValues {
+  return account
+    ? {
+        name: account.name,
+        accountnumber: account.accountnumber || '',
+        description: account.description || '',
+        emailaddress1: account.emailaddress1 || '',
+        telephone1: account.telephone1 || '',
+        telephone2: account.telephone2 || '',
+        fax: account.fax || '',
+        websiteurl: account.websiteurl || '',
+        address1_line1: account.address1_line1 || '',
+        address1_line2: account.address1_line2 || '',
+        address1_city: account.address1_city || '',
+        address1_stateorprovince: account.address1_stateorprovince || '',
+        address1_postalcode: account.address1_postalcode || '',
+        address1_country: account.address1_country || '',
+        industrycode: account.industrycode,
+        accountcategorycode: account.accountcategorycode,
+        revenue: account.revenue,
+        numberofemployees: account.numberofemployees,
+        parentaccountid: account.parentaccountid || '',
+        primarycontactid: account.primarycontactid || '',
+        creditonhold: account.creditonhold ?? false,
+        creditlimit: account.creditlimit,
+      }
+    : {
+        name: '',
+        accountnumber: '',
+        description: '',
+        emailaddress1: '',
+        telephone1: '',
+        telephone2: '',
+        fax: '',
+        websiteurl: '',
+        address1_line1: '',
+        address1_line2: '',
+        address1_city: '',
+        address1_stateorprovince: '',
+        address1_postalcode: '',
+        address1_country: '',
+        revenue: undefined,
+        numberofemployees: undefined,
+        parentaccountid: '',
+        primarycontactid: '',
+        creditonhold: false,
+        creditlimit: undefined,
+      }
+}
 
 interface AccountFormProps {
   account?: Account
@@ -66,64 +118,22 @@ interface AccountFormProps {
   isLoading?: boolean
   hideActions?: boolean
   section?: AccountFormSection // Which section to show (default: 'all')
+  sharedForm?: UseFormReturn<AccountFormValues> // Optional shared form instance
 }
 
-export function AccountForm({ account, onSubmit, onCancel, isLoading, hideActions, section = 'all' }: AccountFormProps) {
+export function AccountForm({ account, onSubmit, onCancel, isLoading, hideActions, section = 'all', sharedForm }: AccountFormProps) {
   const [selectedContact, setSelectedContact] = useState<SelectedCustomer | undefined>()
 
   // Fetch contacts for contact lookup
   const { contacts } = useContacts()
 
-  const form = useForm<AccountFormValues>({
+  // Use shared form if provided, otherwise create a new one
+  const localForm = useForm<AccountFormValues>({
     resolver: zodResolver(accountFormSchema),
-    defaultValues: account
-      ? {
-          name: account.name,
-          accountnumber: account.accountnumber || '',
-          description: account.description || '',
-          emailaddress1: account.emailaddress1 || '',
-          telephone1: account.telephone1 || '',
-          telephone2: account.telephone2 || '',
-          fax: account.fax || '',
-          websiteurl: account.websiteurl || '',
-          address1_line1: account.address1_line1 || '',
-          address1_line2: account.address1_line2 || '',
-          address1_city: account.address1_city || '',
-          address1_stateorprovince: account.address1_stateorprovince || '',
-          address1_postalcode: account.address1_postalcode || '',
-          address1_country: account.address1_country || '',
-          industrycode: account.industrycode,
-          accountcategorycode: account.accountcategorycode,
-          revenue: account.revenue,
-          numberofemployees: account.numberofemployees,
-          parentaccountid: account.parentaccountid || '',
-          primarycontactid: account.primarycontactid || '',
-          creditonhold: account.creditonhold ?? false,
-          creditlimit: account.creditlimit,
-        }
-      : {
-          name: '',
-          accountnumber: '',
-          description: '',
-          emailaddress1: '',
-          telephone1: '',
-          telephone2: '',
-          fax: '',
-          websiteurl: '',
-          address1_line1: '',
-          address1_line2: '',
-          address1_city: '',
-          address1_stateorprovince: '',
-          address1_postalcode: '',
-          address1_country: '',
-          revenue: undefined,
-          numberofemployees: undefined,
-          parentaccountid: '',
-          primarycontactid: '',
-          creditonhold: false,
-          creditlimit: undefined,
-        },
+    defaultValues: getAccountFormDefaultValues(account),
   })
+
+  const form = sharedForm || localForm
 
   // Initialize selectedContact from form values (for edit mode)
   useEffect(() => {
@@ -470,8 +480,11 @@ export function AccountForm({ account, onSubmit, onCancel, isLoading, hideAction
                           type="number"
                           placeholder="5000000"
                           className="h-10 pl-10"
-                          {...field}
+                          value={field.value ?? ''}
                           onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          ref={field.ref}
                         />
                       </div>
                     </FormControl>
@@ -493,8 +506,11 @@ export function AccountForm({ account, onSubmit, onCancel, isLoading, hideAction
                         type="number"
                         placeholder="250"
                         className="h-10"
-                        {...field}
+                        value={field.value ?? ''}
                         onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
+                        onBlur={field.onBlur}
+                        name={field.name}
+                        ref={field.ref}
                       />
                     </FormControl>
                     <FormMessage className="text-xs" />

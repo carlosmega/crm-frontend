@@ -7,17 +7,9 @@ import { useForm, Controller } from 'react-hook-form'
 import Link from 'next/link'
 import { useActivity } from '@/features/activities/hooks/use-activities'
 import { useUpdateActivity } from '@/features/activities/hooks/use-activity-mutations'
+import { DetailPageHeader } from '@/components/layout/detail-page-header'
+import { MobileDetailHeader } from '@/components/layout/mobile-detail-header'
 import type { UpdateActivityDto } from '@/core/contracts/entities/activity'
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb'
-import { Separator } from '@/components/ui/separator'
-import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -26,7 +18,7 @@ import { DateTimePicker } from '@/components/ui/date-time-picker'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useToast } from '@/components/ui/use-toast'
-import { Loader2, Save, X, ArrowLeft, FileText } from 'lucide-react'
+import { Loader2, Save, X, FileText } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface ActivityFormData {
@@ -137,23 +129,11 @@ export default function EditActivityPage({ params }: { params: Promise<{ id: str
   return (
     <>
       {/* Mobile Header */}
-      <header className="md:hidden sticky top-0 z-50 bg-white border-b">
-        <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-3 flex-1 min-w-0">
-            <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" asChild>
-              <Link href={`/activities/${resolvedParams.id}`}>
-                <ArrowLeft className="h-5 w-5" />
-              </Link>
-            </Button>
-            <div className="min-w-0 flex-1">
-              <p className="text-xs font-semibold text-purple-600 uppercase tracking-wide">
-                EDIT ACTIVITY
-              </p>
-              <h1 className="text-sm font-semibold text-gray-900 truncate">
-                {activity.subject}
-              </h1>
-            </div>
-          </div>
+      <MobileDetailHeader
+        backHref={`/activities/${resolvedParams.id}`}
+        entityType="EDIT ACTIVITY"
+        title={activity.subject}
+        actions={
           <Button
             size="sm"
             onClick={handleSubmit(onSubmit)}
@@ -166,37 +146,18 @@ export default function EditActivityPage({ params }: { params: Promise<{ id: str
               <Save className="h-4 w-4" />
             )}
           </Button>
-        </div>
-      </header>
+        }
+      />
 
       {/* Desktop Header */}
-      <header className="hidden md:flex sticky top-0 z-50 h-16 shrink-0 items-center gap-2 bg-background border-b">
-        <div className="flex items-center gap-2 px-4">
-          <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/dashboard">Sales</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/activities">Activities</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
-              <BreadcrumbItem>
-                <BreadcrumbLink href={`/activities/${resolvedParams.id}`}>
-                  {activity.subject}
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Edit</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
-      </header>
+      <DetailPageHeader
+        breadcrumbs={[
+          { label: 'Sales', href: '/dashboard' },
+          { label: 'Activities', href: '/activities' },
+          { label: activity.subject, href: `/activities/${resolvedParams.id}` },
+          { label: 'Edit' },
+        ]}
+      />
 
       {/* Sticky Section with Activity Info and Actions + Tabs (Desktop Only) */}
       <div className="hidden md:block sticky top-16 z-40 bg-gray-100/98 backdrop-blur-sm">

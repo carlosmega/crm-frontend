@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button'
 import { AccountStatusBadge } from './account-status-badge'
 import { AccountCategoryBadge } from './account-category-badge'
 import { Eye, Edit, Mail, Phone, Globe, MapPin, DollarSign, Users, Building2, Filter } from 'lucide-react'
-import { formatCurrency, formatNumber } from '@/shared/utils/formatters'
+import { formatCurrency, formatNumber, formatDate } from '@/shared/utils/formatters'
 import { EmptyState } from '@/shared/components/empty-state'
 
 interface AccountListProps {
@@ -202,6 +202,22 @@ export const AccountList = memo(function AccountList({
       ),
     },
     {
+      id: 'createdon',
+      header: 'Created',
+      accessorFn: (account) => account.createdon ? new Date(account.createdon) : null,
+      sortable: true,
+      filterable: true,
+      filter: {
+        type: 'daterange',
+        operators: ['equals', 'before', 'after', 'between'],
+      },
+      cell: (account) => (
+        <span className="text-sm text-muted-foreground">
+          {formatDate(account.createdon)}
+        </span>
+      ),
+    },
+    {
       id: 'actions',
       header: 'Actions',
       className: 'text-right',
@@ -273,8 +289,8 @@ export const AccountList = memo(function AccountList({
       loadingRows={8}
       emptyState={emptyState}
       defaultSort={{
-        columnId: 'name',
-        direction: 'asc',
+        columnId: 'createdon',
+        direction: 'desc',
       }}
       bulkActions={bulkActions}
     />

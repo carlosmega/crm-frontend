@@ -207,6 +207,22 @@ export function InvoiceList({
       },
     },
     {
+      id: 'createdon',
+      header: 'Created',
+      accessorFn: (invoice) => invoice.createdon ? new Date(invoice.createdon) : null,
+      sortable: true,
+      filterable: true,
+      filter: {
+        type: 'daterange',
+        operators: ['equals', 'before', 'after', 'between'],
+      },
+      cell: (invoice) => (
+        <span className="text-sm text-muted-foreground">
+          {formatDate(invoice.createdon)}
+        </span>
+      ),
+    },
+    {
       id: 'actions',
       header: 'Actions',
       className: 'text-right',
@@ -251,8 +267,8 @@ export function InvoiceList({
       loadingRows={8}
       emptyState={emptyState}
       defaultSort={{
-        columnId: 'duedate',
-        direction: 'asc',
+        columnId: 'createdon',
+        direction: 'desc',
       }}
       bulkActions={bulkActions}
     />

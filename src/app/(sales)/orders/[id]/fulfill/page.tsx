@@ -10,16 +10,9 @@ import { OrderStatusBadge } from '@/features/orders/components/order-status-badg
 import { OrderStateCode } from '@/core/contracts/enums'
 import { formatCurrency } from '@/features/quotes/utils/quote-calculations'
 import { useToast } from '@/components/ui/use-toast'
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb'
+import { DetailPageHeader } from '@/components/layout/detail-page-header'
+import { MobileDetailHeader } from '@/components/layout/mobile-detail-header'
 import { Separator } from '@/components/ui/separator'
-import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
@@ -29,7 +22,6 @@ import { Textarea } from '@/components/ui/textarea'
 import { DatePicker } from '@/components/ui/date-picker'
 import { cn } from '@/lib/utils'
 import {
-  ArrowLeft,
   Package,
   Loader2,
   CheckCircle2,
@@ -38,6 +30,7 @@ import {
   X,
   FileText,
   Info,
+  ArrowLeft,
 } from 'lucide-react'
 
 interface OrderFulfillPageProps {
@@ -170,23 +163,11 @@ export default function OrderFulfillPage({ params }: OrderFulfillPageProps) {
   return (
     <>
       {/* Mobile Header */}
-      <header className="md:hidden sticky top-0 z-50 bg-white border-b">
-        <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-3 flex-1 min-w-0">
-            <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" asChild>
-              <Link href={`/orders/${id}`}>
-                <ArrowLeft className="h-5 w-5" />
-              </Link>
-            </Button>
-            <div className="min-w-0 flex-1">
-              <p className="text-xs font-semibold text-purple-600 uppercase tracking-wide">
-                FULFILL ORDER
-              </p>
-              <h1 className="text-sm font-semibold text-gray-900 truncate">
-                {order.name}
-              </h1>
-            </div>
-          </div>
+      <MobileDetailHeader
+        backHref={`/orders/${id}`}
+        entityType="FULFILL ORDER"
+        title={order.name}
+        actions={
           <Button
             size="sm"
             onClick={(e) => {
@@ -203,37 +184,18 @@ export default function OrderFulfillPage({ params }: OrderFulfillPageProps) {
               <CheckCircle2 className="h-4 w-4" />
             )}
           </Button>
-        </div>
-      </header>
+        }
+      />
 
       {/* Desktop Header */}
-      <header className="hidden md:flex sticky top-0 z-50 h-16 shrink-0 items-center gap-2 bg-background border-b">
-        <div className="flex items-center gap-2 px-4">
-          <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/dashboard">Sales</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/orders">Orders</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
-              <BreadcrumbItem>
-                <BreadcrumbLink href={`/orders/${id}`}>
-                  {order.name}
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Fulfill</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
-      </header>
+      <DetailPageHeader
+        breadcrumbs={[
+          { label: 'Sales', href: '/dashboard' },
+          { label: 'Orders', href: '/orders' },
+          { label: order.name, href: `/orders/${id}` },
+          { label: 'Fulfill' },
+        ]}
+      />
 
       {/* Sticky Section with Order Info and Actions + Tabs (Desktop Only) */}
       <div className="hidden md:block sticky top-16 z-40 bg-gray-100/98 backdrop-blur-sm">
