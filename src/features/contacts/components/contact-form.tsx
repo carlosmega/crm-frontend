@@ -17,7 +17,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { FormFieldGroup, IconInput, AutoGrowTextarea } from '@/shared/components/form'
+import { FormFieldGroup, IconInput, AutoGrowTextarea, AddressFormFields } from '@/shared/components/form'
 import { CustomerSelectorButton } from '@/shared/components/selectors/customer-selector-button'
 import { useAccounts } from '@/features/accounts/hooks/use-accounts'
 import { Mail, Phone, Smartphone, User, Briefcase, Loader2 } from 'lucide-react'
@@ -463,135 +463,27 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading, hideAction
         {/* ADDRESS SECTION - Address Information */}
         {showAddress && (
           <Card>
-          <CardHeader>
-            <CardTitle className="text-base font-semibold">Address</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-          <FormField
-            control={form.control}
-            name="address1_line1"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-sm font-medium">
-                  Street 1
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="123 Main Street"
-                    className="h-10"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage className="text-xs" />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="address1_line2"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-sm font-medium">
-                  Street 2
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Suite 100"
-                    className="h-10"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage className="text-xs" />
-              </FormItem>
-            )}
-          />
-
-          <FormFieldGroup columns={2}>
-            <FormField
-              control={form.control}
-              name="address1_city"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium">
-                    City
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Madrid"
-                      className="h-10"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage className="text-xs" />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="address1_stateorprovince"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium">
-                    State/Province
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Madrid"
-                      className="h-10"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage className="text-xs" />
-                </FormItem>
-              )}
-            />
-          </FormFieldGroup>
-
-          <FormFieldGroup columns={2}>
-            <FormField
-              control={form.control}
-              name="address1_postalcode"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium">
-                    ZIP/Postal Code
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="28001"
-                      className="h-10"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage className="text-xs" />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="address1_country"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium">
-                    Country/Region
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Spain"
-                      className="h-10"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage className="text-xs" />
-                </FormItem>
-              )}
-            />
-              </FormFieldGroup>
-              </CardContent>
-            </Card>
+            <CardHeader>
+              <CardTitle className="text-base font-semibold">Address</CardTitle>
+              <p className="text-xs text-muted-foreground">
+                Ingresa el código postal para autocompletar la dirección (México)
+              </p>
+            </CardHeader>
+            <CardContent>
+              <AddressFormFields
+                form={form}
+                fieldNames={{
+                  line1: 'address1_line1',
+                  line2: 'address1_line2',
+                  city: 'address1_city',
+                  stateOrProvince: 'address1_stateorprovince',
+                  postalCode: 'address1_postalcode',
+                  country: 'address1_country',
+                }}
+                enablePostalCodeLookup
+              />
+            </CardContent>
+          </Card>
         )}
 
         {/* Form Actions */}

@@ -24,7 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { FormFieldGroup, IconInput, AutoGrowTextarea } from '@/shared/components/form'
+import { FormFieldGroup, IconInput, AutoGrowTextarea, AddressFormFields } from '@/shared/components/form'
 import { CustomerSelectorButton } from '@/shared/components/selectors'
 import type { SelectedCustomer } from '@/shared/types/selected-customer'
 import { useContacts } from '@/features/contacts/hooks/use-contacts'
@@ -587,131 +587,25 @@ export function AccountForm({ account, onSubmit, onCancel, isLoading, hideAction
           <Card>
             <CardHeader>
               <CardTitle className="text-base font-semibold">Address Information</CardTitle>
+              <p className="text-xs text-muted-foreground">
+                Ingresa el código postal para autocompletar la dirección (México)
+              </p>
             </CardHeader>
-            <CardContent className="space-y-4">
-            <FormField
-              control={form.control}
-              name="address1_line1"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium">
-                    Address Line 1
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Calle Mayor 123"
-                      className="h-10"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage className="text-xs" />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="address1_line2"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium">
-                    Address Line 2
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Edificio A, Piso 3"
-                      className="h-10"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage className="text-xs" />
-                </FormItem>
-              )}
-            />
-
-            <FormFieldGroup columns={3}>
-              <FormField
-                control={form.control}
-                name="address1_city"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium">
-                      City
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Madrid"
-                        className="h-10"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage className="text-xs" />
-                  </FormItem>
-                )}
+            <CardContent>
+              <AddressFormFields
+                form={form}
+                fieldNames={{
+                  line1: 'address1_line1',
+                  line2: 'address1_line2',
+                  city: 'address1_city',
+                  stateOrProvince: 'address1_stateorprovince',
+                  postalCode: 'address1_postalcode',
+                  country: 'address1_country',
+                }}
+                enablePostalCodeLookup
               />
-
-              <FormField
-                control={form.control}
-                name="address1_stateorprovince"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium">
-                      State/Province
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Madrid"
-                        className="h-10"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage className="text-xs" />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="address1_postalcode"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium">
-                      Postal Code
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="28013"
-                        className="h-10"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage className="text-xs" />
-                  </FormItem>
-                )}
-              />
-            </FormFieldGroup>
-
-            <FormField
-              control={form.control}
-              name="address1_country"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-medium">
-                    Country
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="España"
-                      className="h-10"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage className="text-xs" />
-                </FormItem>
-              )}
-            />
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
         )}
 
         {/* Actions */}
