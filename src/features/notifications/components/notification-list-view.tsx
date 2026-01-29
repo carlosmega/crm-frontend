@@ -60,7 +60,7 @@ function NotificationListSkeleton() {
   return (
     <div className="divide-y">
       {/* Select all skeleton */}
-      <div className="flex items-center gap-3 px-4 py-3 bg-gray-50">
+      <div className="flex items-center gap-3 px-4 py-2.5 bg-gray-50">
         <Skeleton className="h-4 w-4 rounded" />
         <Skeleton className="h-4 w-32" />
       </div>
@@ -68,18 +68,19 @@ function NotificationListSkeleton() {
       {/* Notification item skeletons */}
       <div className="divide-y">
         {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="flex gap-3 p-4">
-            <div className="flex flex-col items-center gap-2 pt-0.5">
+          <div key={i} className="flex items-center gap-3 px-4 py-2.5">
+            <div className="flex items-center gap-2 shrink-0">
               <Skeleton className="h-4 w-4 rounded" />
-              <Skeleton className="h-8 w-8 rounded-full" />
+              <Skeleton className="h-7 w-7 rounded-full" />
             </div>
-            <div className="flex-1 space-y-2">
-              <div className="flex items-start justify-between gap-3">
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-3 w-16" />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex-1 space-y-1">
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-3 w-1/2" />
+                </div>
+                <Skeleton className="h-3 w-20 shrink-0" />
               </div>
-              <Skeleton className="h-3 w-full" />
-              <Skeleton className="h-3 w-2/3" />
             </div>
           </div>
         ))}
@@ -106,73 +107,76 @@ const NotificationItem = memo(({
   const content = (
     <div
       className={cn(
-        'group flex gap-3 p-4 transition-colors',
+        'group flex items-center gap-3 px-4 py-2.5 transition-colors',
         notification.isRead
           ? 'bg-background hover:bg-accent/50'
           : 'bg-primary/5 hover:bg-primary/10',
         isSelected && 'bg-primary/10 hover:bg-primary/15'
       )}
     >
-      {/* Left: Checkbox + Icon */}
-      <div className="flex flex-col items-center gap-2 pt-0.5">
+      {/* Left: Checkbox + Icon (horizontal) */}
+      <div className="flex items-center gap-2 shrink-0">
         <Checkbox
           checked={isSelected}
           onCheckedChange={() => onSelect(notification.id)}
           onClick={(e) => e.stopPropagation()}
           aria-label={`Select notification: ${notification.title}`}
         />
-        <div className={cn('flex-shrink-0 rounded-full p-2', colors.bg)}>
-          <Icon className={cn('h-4 w-4', colors.text)} />
+        <div className={cn('rounded-full p-1.5', colors.bg)}>
+          <Icon className={cn('h-3.5 w-3.5', colors.text)} />
         </div>
       </div>
 
-      {/* Center: Content */}
-      <div className="flex-1 min-w-0 space-y-2">
-        <div className="flex items-start justify-between gap-3">
-          <h4
-            className={cn(
-              'text-sm font-medium leading-tight',
-              !notification.isRead && 'font-semibold'
-            )}
-          >
-            {notification.title}
-          </h4>
+      {/* Center: Content (compact) */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-3">
+          <div className="min-w-0 flex-1">
+            <h4
+              className={cn(
+                'text-sm leading-tight truncate',
+                !notification.isRead ? 'font-semibold' : 'font-medium'
+              )}
+            >
+              {notification.title}
+            </h4>
+            <p className="text-xs text-muted-foreground truncate mt-0.5">
+              {notification.description}
+            </p>
+          </div>
 
-          {/* Time + Priority always visible */}
+          {/* Right: Time (fixed width) + Priority + Action */}
           <div className="flex items-center gap-2 shrink-0">
-            <time className="text-xs text-muted-foreground whitespace-nowrap">
+            <time className="text-xs text-muted-foreground w-28 text-right whitespace-nowrap">
               {formatDistanceToNow(notification.timestamp, { addSuffix: true })}
             </time>
-            {notification.priority === 'high' && !notification.isRead && (
+            {notification.priority === 'high' && !notification.isRead ? (
               <div
-                className="w-2 h-2 rounded-full bg-destructive"
+                className="w-2 h-2 rounded-full bg-destructive shrink-0"
                 aria-label="High priority"
               />
+            ) : (
+              <div className="w-2 shrink-0" />
+            )}
+            {/* Action button */}
+            {!notification.isRead ? (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  onMarkAsRead(notification.id)
+                }}
+              >
+                <Check className="h-3.5 w-3.5" />
+              </Button>
+            ) : (
+              <div className="w-7 shrink-0" />
             )}
           </div>
         </div>
-
-        <p className="text-sm text-muted-foreground line-clamp-2">
-          {notification.description}
-        </p>
       </div>
-
-      {/* Right: Action button (visible on mobile, hover on desktop) */}
-      {!notification.isRead && (
-        <Button
-          variant="ghost"
-          size="sm"
-          className="shrink-0 h-8 px-2 md:px-3 text-xs md:opacity-0 md:group-hover:opacity-100 transition-opacity"
-          onClick={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            onMarkAsRead(notification.id)
-          }}
-        >
-          <Check className="h-3 w-3 md:mr-1" />
-          <span className="hidden md:inline">Mark read</span>
-        </Button>
-      )}
     </div>
   )
 
@@ -243,13 +247,13 @@ export function NotificationListView({
       ) : (
         /* Select All Header (when no items selected) */
         notifications.length > 0 && (
-          <div className="flex items-center gap-3 px-4 py-3 bg-gray-50">
+          <div className="flex items-center gap-3 px-4 py-2 bg-gray-50">
             <Checkbox
               checked={allSelected}
               onCheckedChange={handleSelectAll}
               aria-label="Select all notifications"
             />
-            <span className="text-sm text-muted-foreground">
+            <span className="text-xs text-muted-foreground">
               {notifications.length} notification{notifications.length === 1 ? '' : 's'}
             </span>
           </div>
