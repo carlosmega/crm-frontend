@@ -4,6 +4,7 @@ import { SidebarProviderWrapper } from "@/components/providers/sidebar-provider-
 import { QueryProvider } from "@/components/providers/query-provider";
 import { SettingsProvider } from "@/core/providers/settings-provider";
 import { ThemeProvider } from "@/core/providers/theme-provider";
+import { ModuleProvider } from "@/core/providers/module-provider";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "sonner";
@@ -73,9 +74,11 @@ export default function RootLayout({
           <SettingsProvider>
             <ThemeProvider>
               <QueryProvider>
-                <SidebarProviderWrapper>
-                  {children}
-                </SidebarProviderWrapper>
+                <ModuleProvider>
+                  <SidebarProviderWrapper>
+                    {children}
+                  </SidebarProviderWrapper>
+                </ModuleProvider>
               </QueryProvider>
             </ThemeProvider>
           </SettingsProvider>

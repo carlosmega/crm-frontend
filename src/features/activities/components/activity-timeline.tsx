@@ -21,7 +21,7 @@ import { CreateActivityDialog } from './create-activity-dialog'
 
 interface ActivityTimelineProps {
   regardingId: string
-  regardingType: 'lead' | 'opportunity' | 'account' | 'contact' | 'quote' | 'order' | 'invoice' | 'product'
+  regardingType: 'lead' | 'opportunity' | 'account' | 'contact' | 'quote' | 'order' | 'invoice' | 'product' | 'case'
   regardingName?: string
 }
 

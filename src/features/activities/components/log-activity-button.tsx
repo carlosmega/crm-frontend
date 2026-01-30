@@ -24,7 +24,7 @@ import { ActivityTypeCode } from '@/core/contracts/enums'
 
 interface LogActivityButtonProps {
   regardingId: string
-  regardingType: 'lead' | 'opportunity' | 'account' | 'contact' | 'quote' | 'order'
+  regardingType: 'lead' | 'opportunity' | 'account' | 'contact' | 'quote' | 'order' | 'case'
   regardingName: string
   variant?: 'default' | 'outline' | 'ghost'
   size?: 'default' | 'sm' | 'lg'

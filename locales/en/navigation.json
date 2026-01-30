@@ -3,6 +3,7 @@
     "dashboard": "Dashboard",
     "notifications": "Notifications",
     "sales": "Sales",
+    "service": "Service",
     "customers": "Customers",
     "settings": "Settings"
   },
@@ -13,6 +14,10 @@
     "orders": "Orders",
     "invoices": "Invoices",
     "products": "Products"
+  },
+  "service": {
+    "cases": "Cases",
+    "support": "Support"
   },
   "customers": {
     "accounts": "Accounts",

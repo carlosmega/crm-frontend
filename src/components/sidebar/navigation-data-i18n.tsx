@@ -3,6 +3,7 @@
 /**
  * i18n Navigation Data
  * Provides translated navigation labels based on user locale
+ * Supports module-based filtering (Sales, Service)
  */
 
 import { useMemo } from 'react'
@@ -11,6 +12,7 @@ import {
   Bell,
   Building2,
   FileText,
+  Headphones,
   Inbox,
   LayoutDashboard,
   Package,
@@ -23,40 +25,55 @@ import {
 } from 'lucide-react'
 import { useTranslation } from '@/shared/hooks/use-translation'
 import { useNotifications } from '@/features/notifications/hooks/use-notifications'
+import { useModule, type ModuleId } from '@/core/providers/module-provider'
 
-// ✅ Define navigation data type explicitly to avoid circular reference
+// ===== TYPES =====
+
 type NavigationItem = {
   title: string
   url: string
   icon: LucideIcon
-  badge?: number // Optional badge count
+  badge?: number
 }
 
-type NavigationData = {
+type ModuleNavigationData = {
+  // Shared sections (always visible)
   dashboard: NavigationItem[]
   notifications: NavigationItem[]
-  sales: NavigationItem[]
   customers: NavigationItem[]
+  settings: NavigationItem[]
+
+  // Sales-specific sections
+  sales: NavigationItem[]
   quoteToCash: NavigationItem[]
   catalogActivities: NavigationItem[]
-  settings: NavigationItem[]
+
+  // Service-specific sections
+  support: NavigationItem[]
+
+  // Section labels (translated)
   labels: {
     sales: string
     customers: string
     quoteToCash: string
     catalogActivities: string
     settings: string
+    support: string
   }
 }
 
-// ✅ Cache for stable navigation data (prevents re-creation on re-renders)
-let cachedNavigationData: NavigationData | null = null
+// ===== CACHE =====
+
+let cachedNavigationData: ModuleNavigationData | null = null
+
+// ===== HOOK =====
 
 export function useNavigationData() {
   const { t, isLoading } = useTranslation('navigation')
   const { notifications } = useNotifications()
+  const { activeModule } = useModule()
 
-  // Calculate unread count
+  // Calculate unread notification count
   const unreadCount = useMemo(
     () => notifications.filter((n) => !n.isRead).length,
     [notifications]
@@ -69,7 +86,8 @@ export function useNavigationData() {
         return cachedNavigationData
       }
 
-      const data = {
+      const data: ModuleNavigationData = {
+        // ===== SHARED SECTIONS =====
         dashboard: [
           {
             title: t('main.dashboard'),
@@ -83,20 +101,7 @@ export function useNavigationData() {
             title: t('main.notifications'),
             url: '/notifications',
             icon: Bell,
-            badge: unreadCount > 0 ? unreadCount : undefined, // Only show badge when > 0
-          },
-        ],
-
-        sales: [
-          {
-            title: t('sales.leads'),
-            url: '/leads',
-            icon: Inbox,
-          },
-          {
-            title: t('sales.opportunities'),
-            url: '/opportunities',
-            icon: BarChart3,
+            badge: unreadCount > 0 ? unreadCount : undefined,
           },
         ],
 
@@ -110,6 +115,28 @@ export function useNavigationData() {
             title: t('customers.contacts'),
             url: '/contacts',
             icon: Users,
+          },
+        ],
+
+        settings: [
+          {
+            title: t('user.settings'),
+            url: '/settings',
+            icon: Settings,
+          },
+        ],
+
+        // ===== SALES MODULE SECTIONS =====
+        sales: [
+          {
+            title: t('sales.leads'),
+            url: '/leads',
+            icon: Inbox,
+          },
+          {
+            title: t('sales.opportunities'),
+            url: '/opportunities',
+            icon: BarChart3,
           },
         ],
 
@@ -144,11 +171,12 @@ export function useNavigationData() {
           },
         ],
 
-        settings: [
+        // ===== SERVICE MODULE SECTIONS =====
+        support: [
           {
-            title: t('user.settings'),
-            url: '/settings',
-            icon: Settings,
+            title: t('service.cases') || 'Cases',
+            url: '/cases',
+            icon: Headphones,
           },
         ],
 
@@ -159,10 +187,11 @@ export function useNavigationData() {
           quoteToCash: 'Quote-to-Cash', // Technical term, usually not translated
           catalogActivities: t('main.sales') + ' & Activities',
           settings: t('main.settings'),
+          support: t('main.service') || 'Service',
         },
       }
 
-      // ✅ Cache for future renders
+      // Cache for future renders
       if (!isLoading) {
         cachedNavigationData = data
       }
@@ -172,5 +201,5 @@ export function useNavigationData() {
     [t, isLoading, unreadCount]
   )
 
-  return { navigationData, isLoading }
+  return { navigationData, isLoading, activeModule }
 }

@@ -157,3 +157,14 @@ export type {
   CreateAppointmentDto,
   UpdateAppointmentDto
 } from './appointment';
+
+// ===== SERVICE MODULE ENTITIES =====
+
+// Case (Service Request/Ticket)
+export type {
+  Case,
+  CreateCaseDto,
+  UpdateCaseDto,
+  ResolveCaseDto,
+  CancelCaseDto
+} from './case';

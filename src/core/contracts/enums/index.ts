@@ -47,3 +47,9 @@ export { ContactStateCode } from './contact-state';
 // Activity Enums
 export { ActivityStateCode, getActivityStateLabel, getActivityStateColor } from './activity-state';
 export { ActivityTypeCode, getActivityTypeLabel, getActivityTypeIcon, getActivityTypeColor } from './activity-type';
+
+// Case Enums (Service Module)
+export { CaseStateCode, CaseStatusCode, getCaseStateLabel, getCaseStatusLabel, getCaseStateColor, getDefaultCaseStatusCode } from './case-state';
+export { CasePriorityCode, getCasePriorityLabel, getCasePriorityColor, isCasePriorityUrgent } from './case-priority';
+export { CaseOriginCode, getCaseOriginLabel, getCaseOriginIcon, getCaseOriginColor } from './case-origin';
+export { CaseTypeCode, getCaseTypeLabel, getCaseTypeIcon, getCaseTypeColor } from './case-type';

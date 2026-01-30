@@ -3,6 +3,7 @@
     "dashboard": "Panel de Control",
     "notifications": "Notificaciones",
     "sales": "Ventas",
+    "service": "Servicio",
     "customers": "Clientes",
     "settings": "Configuración"
   },
@@ -13,6 +14,10 @@
     "orders": "Pedidos",
     "invoices": "Facturas",
     "products": "Productos"
+  },
+  "service": {
+    "cases": "Casos",
+    "support": "Soporte"
   },
   "customers": {
     "accounts": "Cuentas",

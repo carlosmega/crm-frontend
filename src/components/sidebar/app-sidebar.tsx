@@ -5,30 +5,30 @@ import { memo } from "react"
 
 import { NavMain, NavSection } from "@/components/sidebar/nav-main"
 import { SidebarFooterActions } from "@/components/sidebar/sidebar-footer-actions"
-import { TeamSwitcher } from "@/components/sidebar/team-switcher"
+import { ModuleSwitcher } from "@/components/sidebar/module-switcher"
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
+  SidebarSeparator,
 } from "@/components/ui/sidebar"
-import { USER_DATA, COMPANIES_DATA } from "./navigation-data"
 import { useNavigationData } from "./navigation-data-i18n"
 
 /**
  * AppSidebar Component
  *
- * ✅ OPTIMIZED: Uses i18n navigation data with memoization
- * - Translates navigation labels based on user locale
- * - Memoized to prevent unnecessary re-renders on navigation
- * - Stable references prevent flickering during route changes
+ * Optimized sidebar with module-aware navigation:
+ * - ModuleSwitcher at top to switch between Sales/Service
+ * - Shared sections (Dashboard, Notifications, Customers) always visible
+ * - Module-specific sections filtered based on active module
+ * - Memoized to prevent unnecessary re-renders
  */
 const AppSidebarComponent = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
-  const { navigationData, isLoading } = useNavigationData()
+  const { navigationData, isLoading, activeModule } = useNavigationData()
 
-  // ✅ Keep sidebar visible during navigation to prevent flickering
-  // Only show loading state on first mount
+  // Keep sidebar visible during navigation to prevent flickering
   const [hasLoadedOnce, setHasLoadedOnce] = React.useState(false)
 
   React.useEffect(() => {
@@ -42,7 +42,8 @@ const AppSidebarComponent = ({ ...props }: React.ComponentProps<typeof Sidebar>)
     return (
       <Sidebar collapsible="icon" {...props}>
         <SidebarHeader>
-          <TeamSwitcher companies={COMPANIES_DATA} />
+          {/* Module Switcher with integrated branding */}
+          <ModuleSwitcher />
         </SidebarHeader>
         <SidebarContent className="gap-0">
           <div className="px-4 py-2 text-sm text-muted-foreground">Loading...</div>
@@ -58,30 +59,48 @@ const AppSidebarComponent = ({ ...props }: React.ComponentProps<typeof Sidebar>)
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher companies={COMPANIES_DATA} />
+        {/* Module Switcher with integrated app branding (CRM Dynamics) */}
+        <ModuleSwitcher />
       </SidebarHeader>
+
       <SidebarContent className="gap-0">
-        {/* Dashboard - Sin sección */}
+        {/* ===== SHARED SECTIONS (Always visible) ===== */}
+
+        {/* Dashboard - No section label */}
         <NavMain items={navigationData.dashboard} />
 
         {/* Notifications - Standalone (high priority) */}
         <NavMain items={navigationData.notifications} />
 
-        {/* Sales Section */}
-        <NavSection label={navigationData.labels.sales} items={navigationData.sales} />
+        {/* ===== MODULE-SPECIFIC SECTIONS ===== */}
 
-        {/* Customers Section */}
-        <NavSection label={navigationData.labels.customers} items={navigationData.customers} />
+        {activeModule === 'sales' && (
+          <>
+            {/* Sales Pipeline Section */}
+            <NavSection label={navigationData.labels.sales} items={navigationData.sales} />
 
-        {/* Quote-to-Cash Section */}
-        <NavSection label={navigationData.labels.quoteToCash} items={navigationData.quoteToCash} />
+            {/* Customers Section (shared but contextual to Sales) */}
+            <NavSection label={navigationData.labels.customers} items={navigationData.customers} />
 
-        {/* Catalog & Activities Section */}
-        <NavSection label={navigationData.labels.catalogActivities} items={navigationData.catalogActivities} />
+            {/* Quote-to-Cash Section */}
+            <NavSection label={navigationData.labels.quoteToCash} items={navigationData.quoteToCash} />
 
-        {/* Settings Section */}
-        <NavSection label={navigationData.labels.settings} items={navigationData.settings} />
+            {/* Catalog & Activities Section */}
+            <NavSection label={navigationData.labels.catalogActivities} items={navigationData.catalogActivities} />
+          </>
+        )}
+
+        {activeModule === 'service' && (
+          <>
+            {/* Support Section */}
+            <NavSection label={navigationData.labels.support} items={navigationData.support} />
+
+            {/* Customers Section (shared but contextual to Service) */}
+            <NavSection label={navigationData.labels.customers} items={navigationData.customers} />
+          </>
+        )}
       </SidebarContent>
+
       <SidebarFooter>
         <SidebarFooterActions />
       </SidebarFooter>
@@ -90,5 +109,5 @@ const AppSidebarComponent = ({ ...props }: React.ComponentProps<typeof Sidebar>)
   )
 }
 
-// ✅ Memoize to prevent re-renders on every navigation
+// Memoize to prevent re-renders on every navigation
 export const AppSidebar = memo(AppSidebarComponent)
