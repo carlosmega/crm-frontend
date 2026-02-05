@@ -158,7 +158,10 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
-        <DropdownMenuItem onClick={() => exportToPdf(id)} disabled={isExporting}>
+        <DropdownMenuItem
+          onClick={() => exportToPdf(id, order, orderDetails || [])}
+          disabled={isExporting}
+        >
           <FileDown className="mr-2 h-4 w-4" />
           {isExporting ? 'Exporting...' : 'Export PDF'}
         </DropdownMenuItem>
@@ -263,7 +266,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                 </Button>
                 <Button
                   variant="outline"
-                  onClick={() => exportToPdf(id)}
+                  onClick={() => exportToPdf(id, order, orderDetails || [])}
                   disabled={isExporting}
                 >
                   <FileText className="mr-2 h-4 w-4" />

@@ -3,9 +3,16 @@
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import type { Order } from '@/core/contracts'
+import { OrderStateCode } from '@/core/contracts/enums'
+import { useAccount } from '@/features/accounts/hooks/use-accounts'
+import { useContact } from '@/features/contacts/hooks/use-contacts'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Button } from '@/components/ui/button'
 import { OrderLineItemsTable } from '@/features/orders/components/order-line-items-table'
 import { ActivityTimeline } from '@/features/activities/components'
 import { cn } from '@/lib/utils'
@@ -21,7 +28,20 @@ import {
   Calendar,
   DollarSign,
   MapPin,
+  Mail,
+  Phone,
+  Globe,
+  Briefcase,
+  ExternalLink,
+  Pencil,
+  Plus,
 } from 'lucide-react'
+
+// Dynamic import for edit dialog
+const EditShippingDialog = dynamic(
+  () => import('./edit-shipping-dialog').then(mod => ({ default: mod.EditShippingDialog })),
+  { ssr: false }
+)
 
 export type OrderTabId = 'general' | 'products' | 'shipping' | 'related' | 'activities'
 
@@ -49,6 +69,22 @@ interface OrderDetailTabsProps {
 export function OrderDetailTabs({ order, orderLines = [] }: OrderDetailTabsProps) {
   const [activeTab, setActiveTab] = useState<OrderTabId>('general')
   const [tabsContainer, setTabsContainer] = useState<HTMLElement | null>(null)
+  const [showEditShipping, setShowEditShipping] = useState(false)
+
+  // Fetch customer data (Account or Contact)
+  const isAccountCustomer = order.customeridtype === 'account'
+  const { account, loading: accountLoading } = useAccount(isAccountCustomer ? order.customerid : '')
+  const { contact, loading: contactLoading } = useContact(!isAccountCustomer ? order.customerid : '')
+
+  // Can edit shipping only in Active state
+  const canEditShipping = order.statecode === OrderStateCode.Active
+
+  // Check if shipping info exists
+  const hasShippingAddress = order.shipto_line1 || order.shipto_city
+  const hasBillingAddress = order.billto_line1 || order.billto_city
+  const hasShippingDetails = order.freighttermscode !== undefined ||
+                             order.requestdeliveryby ||
+                             order.shippingmethodcode !== undefined
 
   // Find the tabs container in sticky header on mount
   useEffect(() => {
@@ -150,24 +186,148 @@ export function OrderDetailTabs({ order, orderLines = [] }: OrderDetailTabsProps
           {/* Customer Information Card */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-base font-semibold flex items-center gap-2">
-                {order.customeridtype === 'account' ? (
-                  <Building2 className="h-5 w-5" />
-                ) : (
-                  <User className="h-5 w-5" />
-                )}
-                Customer Information
+              <CardTitle className="text-base font-semibold flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  {isAccountCustomer ? (
+                    <Building2 className="h-5 w-5" />
+                  ) : (
+                    <User className="h-5 w-5" />
+                  )}
+                  Customer Information
+                </span>
+                <Badge variant="outline" className="capitalize font-normal">
+                  {order.customeridtype}
+                </Badge>
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <div>
-                <p className="text-sm text-muted-foreground">Customer Type</p>
-                <p className="font-medium capitalize">{order.customeridtype}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Customer ID</p>
-                <p className="font-mono text-sm">{order.customerid}</p>
-              </div>
+            <CardContent>
+              {(isAccountCustomer ? accountLoading : contactLoading) ? (
+                <div className="space-y-3">
+                  <Skeleton className="h-5 w-48" />
+                  <Skeleton className="h-4 w-36" />
+                  <Skeleton className="h-4 w-40" />
+                </div>
+              ) : isAccountCustomer && account ? (
+                <div className="space-y-3">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="font-semibold text-base">{account.name}</p>
+                      {account.industrycode !== undefined && (
+                        <p className="text-sm text-muted-foreground capitalize">
+                          {String(account.industrycode).replace(/_/g, ' ')}
+                        </p>
+                      )}
+                    </div>
+                    <Link
+                      href={`/accounts/${account.accountid}`}
+                      className="text-muted-foreground hover:text-foreground transition-colors"
+                      title="View Account"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                    </Link>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    {account.emailaddress1 && (
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Mail className="h-3.5 w-3.5 shrink-0" />
+                        <span>{account.emailaddress1}</span>
+                      </div>
+                    )}
+                    {account.telephone1 && (
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Phone className="h-3.5 w-3.5 shrink-0" />
+                        <span>{account.telephone1}</span>
+                      </div>
+                    )}
+                    {account.websiteurl && (
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Globe className="h-3.5 w-3.5 shrink-0" />
+                        <span>{account.websiteurl}</span>
+                      </div>
+                    )}
+                    {(account.address1_city || account.address1_country) && (
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <MapPin className="h-3.5 w-3.5 shrink-0" />
+                        <span>
+                          {[account.address1_city, account.address1_stateorprovince, account.address1_country]
+                            .filter(Boolean)
+                            .join(', ')}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="pt-2">
+                    <Link
+                      href={`/accounts/${account.accountid}`}
+                      className="text-sm text-primary hover:underline font-medium inline-flex items-center gap-1"
+                    >
+                      View Account Details
+                      <ExternalLink className="h-3.5 w-3.5" />
+                    </Link>
+                  </div>
+                </div>
+              ) : !isAccountCustomer && contact ? (
+                <div className="space-y-3">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="font-semibold text-base">
+                        {contact.fullname || `${contact.firstname} ${contact.lastname}`}
+                      </p>
+                      {contact.jobtitle && (
+                        <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                          <Briefcase className="h-3.5 w-3.5" />
+                          <span>{contact.jobtitle}</span>
+                        </div>
+                      )}
+                    </div>
+                    <Link
+                      href={`/contacts/${contact.contactid}`}
+                      className="text-muted-foreground hover:text-foreground transition-colors"
+                      title="View Contact"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                    </Link>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    {contact.emailaddress1 && (
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Mail className="h-3.5 w-3.5 shrink-0" />
+                        <span>{contact.emailaddress1}</span>
+                      </div>
+                    )}
+                    {(contact.telephone1 || contact.mobilephone) && (
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Phone className="h-3.5 w-3.5 shrink-0" />
+                        <span>{contact.mobilephone || contact.telephone1}</span>
+                      </div>
+                    )}
+                    {(contact.address1_city || contact.address1_country) && (
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <MapPin className="h-3.5 w-3.5 shrink-0" />
+                        <span>
+                          {[contact.address1_city, contact.address1_stateorprovince, contact.address1_country]
+                            .filter(Boolean)
+                            .join(', ')}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="pt-2">
+                    <Link
+                      href={`/contacts/${contact.contactid}`}
+                      className="text-sm text-primary hover:underline font-medium inline-flex items-center gap-1"
+                    >
+                      View Contact Details
+                      <ExternalLink className="h-3.5 w-3.5" />
+                    </Link>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-sm text-muted-foreground">
+                  <p>Customer data not available</p>
+                  <p className="font-mono text-xs mt-1">{order.customerid}</p>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -283,8 +443,22 @@ export function OrderDetailTabs({ order, orderLines = [] }: OrderDetailTabsProps
 
       {/* SHIPPING TAB */}
       <TabsContent value="shipping" className="mt-0 space-y-4">
+        {/* Edit Button - Only in Active state */}
+        {canEditShipping && (
+          <div className="flex justify-end">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowEditShipping(true)}
+            >
+              <Pencil className="h-4 w-4 mr-2" />
+              Edit Shipping Info
+            </Button>
+          </div>
+        )}
+
         {/* Shipping Address Card */}
-        {(order.shipto_line1 || order.shipto_city) && (
+        {hasShippingAddress ? (
           <Card>
             <CardHeader>
               <CardTitle className="text-base font-semibold flex items-center gap-2">
@@ -309,10 +483,35 @@ export function OrderDetailTabs({ order, orderLines = [] }: OrderDetailTabsProps
               </div>
             </CardContent>
           </Card>
+        ) : (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base font-semibold flex items-center gap-2">
+                <MapPin className="h-5 w-5" />
+                Shipping Address
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="py-6 text-center">
+                <MapPin className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
+                <p className="text-muted-foreground mb-3">No shipping address</p>
+                {canEditShipping && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowEditShipping(true)}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Shipping Address
+                  </Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
         )}
 
         {/* Billing Address Card */}
-        {(order.billto_line1 || order.billto_city) && (
+        {hasBillingAddress ? (
           <Card>
             <CardHeader>
               <CardTitle className="text-base font-semibold flex items-center gap-2">
@@ -337,6 +536,31 @@ export function OrderDetailTabs({ order, orderLines = [] }: OrderDetailTabsProps
               </div>
             </CardContent>
           </Card>
+        ) : (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base font-semibold flex items-center gap-2">
+                <MapPin className="h-5 w-5" />
+                Billing Address
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="py-6 text-center">
+                <MapPin className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
+                <p className="text-muted-foreground mb-3">No billing address</p>
+                {canEditShipping && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowEditShipping(true)}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Billing Address
+                  </Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
         )}
 
         {/* Shipping Details */}
@@ -347,46 +571,63 @@ export function OrderDetailTabs({ order, orderLines = [] }: OrderDetailTabsProps
               Shipping Details
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
-            {order.freighttermscode !== undefined && (
-              <div>
-                <p className="text-sm text-muted-foreground">Freight Terms</p>
-                <p className="font-medium">
-                  {order.freighttermscode === 1 ? 'FOB' : 'No Charge'}
-                </p>
+          <CardContent>
+            {hasShippingDetails ? (
+              <div className="space-y-3">
+                {order.shippingmethodcode !== undefined && (
+                  <div>
+                    <p className="text-sm text-muted-foreground">Shipping Method</p>
+                    <p className="font-medium">
+                      {order.shippingmethodcode === 1 ? 'Airborne' :
+                       order.shippingmethodcode === 2 ? 'DHL' :
+                       order.shippingmethodcode === 3 ? 'FedEx' :
+                       order.shippingmethodcode === 4 ? 'UPS' :
+                       order.shippingmethodcode === 5 ? 'Postal Mail' :
+                       order.shippingmethodcode === 6 ? 'Full Load' :
+                       order.shippingmethodcode === 7 ? 'Will Call' : 'Default Value'}
+                    </p>
+                  </div>
+                )}
+                {order.freighttermscode !== undefined && (
+                  <div>
+                    <p className="text-sm text-muted-foreground">Freight Terms</p>
+                    <p className="font-medium">
+                      {order.freighttermscode === 1 ? 'FOB' : 'No Charge'}
+                    </p>
+                  </div>
+                )}
+                {order.requestdeliveryby && (
+                  <div>
+                    <p className="text-sm text-muted-foreground">Requested Delivery By</p>
+                    <p className="font-medium">{formatDate(order.requestdeliveryby)}</p>
+                  </div>
+                )}
               </div>
-            )}
-            {order.requestdeliveryby && (
-              <div>
-                <p className="text-sm text-muted-foreground">Requested Delivery By</p>
-                <p className="font-medium">{formatDate(order.requestdeliveryby)}</p>
-              </div>
-            )}
-            {order.shippingmethodcode !== undefined && (
-              <div>
-                <p className="text-sm text-muted-foreground">Shipping Method</p>
-                <p className="font-medium">
-                  {order.shippingmethodcode === 1 ? 'Airborne' :
-                   order.shippingmethodcode === 2 ? 'DHL' :
-                   order.shippingmethodcode === 3 ? 'FedEx' :
-                   order.shippingmethodcode === 4 ? 'UPS' :
-                   order.shippingmethodcode === 5 ? 'Postal Mail' :
-                   order.shippingmethodcode === 6 ? 'Full Load' :
-                   order.shippingmethodcode === 7 ? 'Will Call' : 'Default Value'}
-                </p>
+            ) : (
+              <div className="py-6 text-center">
+                <Truck className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
+                <p className="text-muted-foreground mb-3">No shipping details configured</p>
+                {canEditShipping && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowEditShipping(true)}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Shipping Details
+                  </Button>
+                )}
               </div>
             )}
           </CardContent>
         </Card>
 
-        {!order.shipto_line1 && !order.shipto_city && !order.billto_line1 && !order.billto_city && (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <Truck className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">No shipping information available</p>
-            </CardContent>
-          </Card>
-        )}
+        {/* Edit Shipping Dialog */}
+        <EditShippingDialog
+          order={order}
+          open={showEditShipping}
+          onOpenChange={setShowEditShipping}
+        />
       </TabsContent>
 
       {/* RELATED TAB */}

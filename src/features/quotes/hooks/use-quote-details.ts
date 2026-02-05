@@ -1,14 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { quoteDetailService } from '../api/quote-detail-service'
-import { quoteService } from '../api/quote-service'
-import { quoteVersionService } from '../api/quote-version-service'
 import { quoteKeys } from './use-quotes'
-import { quoteVersionKeys } from './use-quote-versions'
-import { QuoteVersionChangeType } from '@/core/contracts'
 import type {
   CreateQuoteDetailDto,
   UpdateQuoteDetailDto,
-  Quote,
   QuoteDetail,
 } from '../types'
 import { toast } from 'sonner'
@@ -25,95 +20,73 @@ export const quoteDetailKeys = {
 }
 
 /**
- * Helper: Create version snapshot for product changes
+ * Helper: Invalidate quote and line caches after a product mutation.
+ *
+ * Only 2 invalidations needed — the backend (Django) handles
+ * version snapshots and total recalculations internally.
  */
-async function createProductVersionSnapshot(
-  quoteId: string,
-  changetype: QuoteVersionChangeType,
-  productDescription: string,
-  changedfields?: string[]
+function invalidateQuoteAndLines(
+  queryClient: ReturnType<typeof useQueryClient>,
+  quoteId: string
 ) {
-  try {
-    // Get current quote and lines
-    const quote = await quoteService.getById(quoteId)
-    if (!quote) return
+  // Re-fetch quote (totals changed on backend)
+  queryClient.invalidateQueries({
+    queryKey: quoteKeys.detail(quoteId),
+  })
 
-    const quoteLines = await quoteDetailService.getByQuote(quoteId)
-
-    // Create version snapshot
-    await quoteVersionService.createSnapshot(quote, quoteLines, changetype, {
-      changedescription: getProductChangeDescription(changetype, productDescription),
-      changedfields,
-      createdby: 'current-user',
-    })
-  } catch (error) {
-    console.warn('[Versioning] Failed to create product snapshot:', error)
-  }
-}
-
-/**
- * Get description for product changes
- */
-function getProductChangeDescription(
-  changetype: QuoteVersionChangeType,
-  productDescription: string
-): string {
-  switch (changetype) {
-    case QuoteVersionChangeType.ProductAdded:
-      return `Added product: ${productDescription}`
-    case QuoteVersionChangeType.ProductUpdated:
-      return `Updated product: ${productDescription}`
-    case QuoteVersionChangeType.ProductRemoved:
-      return `Removed product: ${productDescription}`
-    default:
-      return 'Product changed'
-  }
+  // Re-fetch line items list
+  queryClient.invalidateQueries({
+    queryKey: quoteDetailKeys.byQuote(quoteId),
+  })
 }
 
 /**
  * Get quote details by quote ID
- * ✅ OPTIMIZACIÓN: staleTime 1 minuto (quote lines cambian poco)
+ * staleTime 1 minuto (quote lines cambian poco)
  */
 export function useQuoteDetails(quoteId: string | undefined) {
   return useQuery({
     queryKey: quoteDetailKeys.byQuote(quoteId || ''),
     queryFn: () => quoteDetailService.getByQuote(quoteId!),
     enabled: !!quoteId,
-    staleTime: 1 * 60 * 1000, // 1 minuto
-    gcTime: 3 * 60 * 1000, // 3 minutos en cache
+    staleTime: 1 * 60 * 1000,
+    gcTime: 3 * 60 * 1000,
   })
 }
 
 /**
  * Get quote detail by ID
- * ✅ OPTIMIZACIÓN: staleTime 1 minuto
+ * staleTime 1 minuto
  */
 export function useQuoteDetail(id: string | undefined) {
   return useQuery({
     queryKey: quoteDetailKeys.detail(id || ''),
     queryFn: () => quoteDetailService.getById(id!),
     enabled: !!id,
-    staleTime: 1 * 60 * 1000, // 1 minuto
-    gcTime: 3 * 60 * 1000, // 3 minutos en cache
+    staleTime: 1 * 60 * 1000,
+    gcTime: 3 * 60 * 1000,
   })
 }
 
 /**
  * Get quote detail statistics
- * ✅ OPTIMIZACIÓN: staleTime 2 minutos (estadísticas cambian lentamente)
+ * staleTime 2 minutos
  */
 export function useQuoteDetailStatistics(quoteId: string | undefined) {
   return useQuery({
     queryKey: quoteDetailKeys.statistics(quoteId || ''),
     queryFn: () => quoteDetailService.getStatistics(quoteId!),
     enabled: !!quoteId,
-    staleTime: 2 * 60 * 1000, // 2 minutos
-    gcTime: 5 * 60 * 1000, // 5 minutos en cache
+    staleTime: 2 * 60 * 1000,
+    gcTime: 5 * 60 * 1000,
   })
 }
 
 /**
  * Create quote detail mutation
+ *
+ * POST → Backend saves product, recalculates totals, creates version snapshot.
+ * Frontend only invalidates quote + lines (2 GETs).
  */
 export function useCreateQuoteDetail() {
   const queryClient = useQueryClient()
@@ -121,35 +94,8 @@ export function useCreateQuoteDetail() {
   return useMutation({
     mutationFn: (data: CreateQuoteDetailDto) =>
       quoteDetailService.create(data),
-    onSuccess: async (newDetail) => {
-      // Invalidate quote details for this quote
-      queryClient.invalidateQueries({
-        queryKey: quoteDetailKeys.byQuote(newDetail.quoteid),
-      })
-
-      // Invalidate quote (totals changed)
-      queryClient.invalidateQueries({
-        queryKey: quoteKeys.detail(newDetail.quoteid),
-      })
-
-      // Invalidate statistics
-      queryClient.invalidateQueries({
-        queryKey: quoteDetailKeys.statistics(newDetail.quoteid),
-      })
-
-      // Create version snapshot
-      await createProductVersionSnapshot(
-        newDetail.quoteid,
-        QuoteVersionChangeType.ProductAdded,
-        newDetail.productdescription,
-        ['products', 'totalamount']
-      )
-
-      // Invalidate version queries
-      queryClient.invalidateQueries({
-        queryKey: quoteVersionKeys.byQuote(newDetail.quoteid),
-      })
-
+    onSuccess: (newDetail) => {
+      invalidateQuoteAndLines(queryClient, newDetail.quoteid)
       toast.success('Product added to quote')
     },
     onError: (error: Error) => {
@@ -162,6 +108,9 @@ export function useCreateQuoteDetail() {
 
 /**
  * Update quote detail mutation
+ *
+ * PATCH → Backend updates product, recalculates totals, creates version snapshot.
+ * Frontend only invalidates quote + lines (2 GETs).
  */
 export function useUpdateQuoteDetail() {
   const queryClient = useQueryClient()
@@ -174,40 +123,9 @@ export function useUpdateQuoteDetail() {
       id: string
       data: UpdateQuoteDetailDto
     }) => quoteDetailService.update(id, data),
-    onSuccess: async (updatedDetail) => {
+    onSuccess: (updatedDetail) => {
       if (!updatedDetail) return
-
-      // Invalidate quote details for this quote
-      queryClient.invalidateQueries({
-        queryKey: quoteDetailKeys.byQuote(updatedDetail.quoteid),
-      })
-
-      // Invalidate quote (totals changed)
-      queryClient.invalidateQueries({
-        queryKey: quoteKeys.detail(updatedDetail.quoteid),
-      })
-
-      // Invalidate statistics
-      queryClient.invalidateQueries({
-        queryKey: quoteDetailKeys.statistics(updatedDetail.quoteid),
-      })
-
-      // Determine changed fields
-      const changedfields = ['quantity', 'priceperunit', 'manualdiscountamount', 'tax', 'totalamount']
-
-      // Create version snapshot
-      await createProductVersionSnapshot(
-        updatedDetail.quoteid,
-        QuoteVersionChangeType.ProductUpdated,
-        updatedDetail.productdescription,
-        changedfields
-      )
-
-      // Invalidate version queries
-      queryClient.invalidateQueries({
-        queryKey: quoteVersionKeys.byQuote(updatedDetail.quoteid),
-      })
-
+      invalidateQuoteAndLines(queryClient, updatedDetail.quoteid)
       toast.success('Product updated')
     },
     onError: (error: Error) => {
@@ -220,46 +138,20 @@ export function useUpdateQuoteDetail() {
 
 /**
  * Delete quote detail mutation
+ *
+ * DELETE → Backend removes product, recalculates totals, creates version snapshot.
+ * Frontend only invalidates quote + lines (2 GETs).
  */
 export function useDeleteQuoteDetail() {
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async ({ id, quoteId }: { id: string; quoteId: string }) => {
-      // Get product info before deleting (for version history)
-      const detail = await quoteDetailService.getById(id)
       await quoteDetailService.delete(id)
-      return { quoteId, productDescription: detail?.productdescription || 'Unknown product' }
+      return { quoteId }
     },
-    onSuccess: async ({ quoteId, productDescription }) => {
-      // Invalidate quote details for this quote
-      queryClient.invalidateQueries({
-        queryKey: quoteDetailKeys.byQuote(quoteId),
-      })
-
-      // Invalidate quote (totals changed)
-      queryClient.invalidateQueries({
-        queryKey: quoteKeys.detail(quoteId),
-      })
-
-      // Invalidate statistics
-      queryClient.invalidateQueries({
-        queryKey: quoteDetailKeys.statistics(quoteId),
-      })
-
-      // Create version snapshot
-      await createProductVersionSnapshot(
-        quoteId,
-        QuoteVersionChangeType.ProductRemoved,
-        productDescription,
-        ['products', 'totalamount']
-      )
-
-      // Invalidate version queries
-      queryClient.invalidateQueries({
-        queryKey: quoteVersionKeys.byQuote(quoteId),
-      })
-
+    onSuccess: ({ quoteId }) => {
+      invalidateQuoteAndLines(queryClient, quoteId)
       toast.success('Product removed from quote')
     },
     onError: (error: Error) => {
@@ -272,6 +164,9 @@ export function useDeleteQuoteDetail() {
 
 /**
  * Bulk create quote details mutation
+ *
+ * Multiple POSTs → Backend handles each product + snapshot.
+ * Frontend invalidates once after all products are created.
  */
 export function useBulkCreateQuoteDetails() {
   const queryClient = useQueryClient()
@@ -279,39 +174,9 @@ export function useBulkCreateQuoteDetails() {
   return useMutation({
     mutationFn: (data: CreateQuoteDetailDto[]) =>
       quoteDetailService.bulkCreate(data),
-    onSuccess: async (newDetails) => {
+    onSuccess: (newDetails) => {
       if (newDetails.length === 0) return
-
-      const quoteId = newDetails[0].quoteid
-
-      // Invalidate quote details for this quote
-      queryClient.invalidateQueries({
-        queryKey: quoteDetailKeys.byQuote(quoteId),
-      })
-
-      // Invalidate quote (totals changed)
-      queryClient.invalidateQueries({
-        queryKey: quoteKeys.detail(quoteId),
-      })
-
-      // Invalidate statistics
-      queryClient.invalidateQueries({
-        queryKey: quoteDetailKeys.statistics(quoteId),
-      })
-
-      // Create version snapshot
-      await createProductVersionSnapshot(
-        quoteId,
-        QuoteVersionChangeType.ProductAdded,
-        `${newDetails.length} products`,
-        ['products', 'totalamount']
-      )
-
-      // Invalidate version queries
-      queryClient.invalidateQueries({
-        queryKey: quoteVersionKeys.byQuote(quoteId),
-      })
-
+      invalidateQuoteAndLines(queryClient, newDetails[0].quoteid)
       toast.success(`${newDetails.length} products added to quote`)
     },
     onError: (error: Error) => {
@@ -337,11 +202,9 @@ export function useReorderQuoteDetails() {
       detailIds: string[]
     }) => quoteDetailService.reorder(quoteId, detailIds),
     onSuccess: (_, { quoteId }) => {
-      // Invalidate quote details for this quote
       queryClient.invalidateQueries({
         queryKey: quoteDetailKeys.byQuote(quoteId),
       })
-
       toast.success('Product order updated')
     },
     onError: (error: Error) => {

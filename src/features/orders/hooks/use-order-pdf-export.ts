@@ -1,11 +1,14 @@
 /**
  * Order PDF Export Hook
  *
- * Hook para exportar sales orders a PDF
+ * Hook para exportar sales orders a PDF.
+ * Soporta tanto backend mode (GET simple) como mock mode (POST con datos).
  */
 
 import { useState } from 'react'
 import { toast } from 'sonner'
+import type { Order } from '@/core/contracts/entities/order'
+import type { OrderDetail } from '@/core/contracts/entities/order-detail'
 
 interface UseOrderPdfExportOptions {
   onSuccess?: () => void
@@ -19,7 +22,13 @@ interface UseOrderPdfExportOptions {
  * ```tsx
  * const { exportToPdf, isExporting } = useOrderPdfExport()
  *
+ * // Sin datos (backend mode - el API route obtiene los datos)
  * <Button onClick={() => exportToPdf(orderId)} disabled={isExporting}>
+ *   {isExporting ? 'Generating...' : 'Export PDF'}
+ * </Button>
+ *
+ * // Con datos (mock mode - el cliente envía los datos)
+ * <Button onClick={() => exportToPdf(orderId, order, orderLines)} disabled={isExporting}>
  *   {isExporting ? 'Generating...' : 'Export PDF'}
  * </Button>
  * ```
@@ -27,31 +36,45 @@ interface UseOrderPdfExportOptions {
 export function useOrderPdfExport(options?: UseOrderPdfExportOptions) {
   const [isExporting, setIsExporting] = useState(false)
 
-  const exportToPdf = async (orderId: string) => {
+  const exportToPdf = async (
+    orderId: string,
+    order?: Order,
+    orderLines?: OrderDetail[]
+  ) => {
     try {
       setIsExporting(true)
 
-      // Llamar al API endpoint
-      const response = await fetch(`/api/orders/${orderId}/pdf`)
+      let response: Response
+
+      // Si se proporcionan datos, enviarlos via POST (mock mode)
+      // Si no, hacer GET simple (backend mode)
+      if (order && orderLines) {
+        response = await fetch(`/api/orders/${orderId}/pdf`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ order, orderLines }),
+        })
+      } else {
+        response = await fetch(`/api/orders/${orderId}/pdf`)
+      }
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
 
-        // Log del error para debugging
         console.log('PDF Export Error:', {
           status: response.status,
           statusText: response.statusText,
           errorData,
         })
 
-        // Mensaje específico para orden sin productos
         if (errorData.error?.includes('no line items')) {
           throw new Error(
             'No se puede generar el PDF porque esta orden no tiene productos. Por favor agrega productos a la orden primero.'
           )
         }
 
-        // Mensaje específico para otros errores comunes
         if (response.status === 404) {
           throw new Error('Orden no encontrada.')
         }

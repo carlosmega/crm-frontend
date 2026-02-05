@@ -5,8 +5,12 @@ import { createPortal } from 'react-dom'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import type { Quote } from '@/core/contracts'
+import { useAccount } from '@/features/accounts/hooks/use-accounts'
+import { useContact } from '@/features/contacts/hooks/use-contacts'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { QuoteLineItemsTable } from '@/features/quotes/components/quote-line-items-table'
 import { QuoteLineItemForm } from '@/features/quotes/components/quote-line-item-form'
@@ -31,6 +35,12 @@ import {
   User,
   Clock,
   Plus,
+  Mail,
+  Phone,
+  MapPin,
+  Globe,
+  Briefcase,
+  ExternalLink,
 } from 'lucide-react'
 
 // Dynamic imports for version features
@@ -64,6 +74,11 @@ interface QuoteDetailTabsProps {
 export function QuoteDetailTabs({ quote, quoteLines = [], onCompareVersions }: QuoteDetailTabsProps) {
   const [activeTab, setActiveTab] = useState<QuoteTabId>('general')
   const [tabsContainer, setTabsContainer] = useState<HTMLElement | null>(null)
+
+  // Fetch customer data (Account or Contact)
+  const isAccountCustomer = quote.customeridtype === 'account'
+  const { account, loading: accountLoading } = useAccount(isAccountCustomer ? quote.customerid : '')
+  const { contact, loading: contactLoading } = useContact(!isAccountCustomer ? quote.customerid : '')
 
   // Dialog state for adding/editing products
   const [showLineItemForm, setShowLineItemForm] = useState(false)
@@ -207,24 +222,148 @@ export function QuoteDetailTabs({ quote, quoteLines = [], onCompareVersions }: Q
           {/* Customer Information Card */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-base font-semibold flex items-center gap-2">
-                {quote.customeridtype === 'account' ? (
-                  <Building2 className="h-5 w-5" />
-                ) : (
-                  <User className="h-5 w-5" />
-                )}
-                Customer Information
+              <CardTitle className="text-base font-semibold flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  {isAccountCustomer ? (
+                    <Building2 className="h-5 w-5" />
+                  ) : (
+                    <User className="h-5 w-5" />
+                  )}
+                  Customer Information
+                </span>
+                <Badge variant="outline" className="capitalize font-normal">
+                  {quote.customeridtype}
+                </Badge>
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <div>
-                <p className="text-sm text-muted-foreground">Customer Type</p>
-                <p className="font-medium capitalize">{quote.customeridtype}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Customer ID</p>
-                <p className="font-mono text-sm">{quote.customerid}</p>
-              </div>
+            <CardContent>
+              {(isAccountCustomer ? accountLoading : contactLoading) ? (
+                <div className="space-y-3">
+                  <Skeleton className="h-5 w-48" />
+                  <Skeleton className="h-4 w-36" />
+                  <Skeleton className="h-4 w-40" />
+                </div>
+              ) : isAccountCustomer && account ? (
+                <div className="space-y-3">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="font-semibold text-base">{account.name}</p>
+                      {account.industrycode !== undefined && (
+                        <p className="text-sm text-muted-foreground capitalize">
+                          {String(account.industrycode).replace(/_/g, ' ')}
+                        </p>
+                      )}
+                    </div>
+                    <Link
+                      href={`/accounts/${account.accountid}`}
+                      className="text-muted-foreground hover:text-foreground transition-colors"
+                      title="View Account"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                    </Link>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    {account.emailaddress1 && (
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Mail className="h-3.5 w-3.5 shrink-0" />
+                        <span>{account.emailaddress1}</span>
+                      </div>
+                    )}
+                    {account.telephone1 && (
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Phone className="h-3.5 w-3.5 shrink-0" />
+                        <span>{account.telephone1}</span>
+                      </div>
+                    )}
+                    {account.websiteurl && (
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Globe className="h-3.5 w-3.5 shrink-0" />
+                        <span>{account.websiteurl}</span>
+                      </div>
+                    )}
+                    {(account.address1_city || account.address1_country) && (
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <MapPin className="h-3.5 w-3.5 shrink-0" />
+                        <span>
+                          {[account.address1_city, account.address1_stateorprovince, account.address1_country]
+                            .filter(Boolean)
+                            .join(', ')}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="pt-2">
+                    <Link
+                      href={`/accounts/${account.accountid}`}
+                      className="text-sm text-primary hover:underline font-medium inline-flex items-center gap-1"
+                    >
+                      View Account Details
+                      <ExternalLink className="h-3.5 w-3.5" />
+                    </Link>
+                  </div>
+                </div>
+              ) : !isAccountCustomer && contact ? (
+                <div className="space-y-3">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="font-semibold text-base">
+                        {contact.fullname || `${contact.firstname} ${contact.lastname}`}
+                      </p>
+                      {contact.jobtitle && (
+                        <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                          <Briefcase className="h-3.5 w-3.5" />
+                          <span>{contact.jobtitle}</span>
+                        </div>
+                      )}
+                    </div>
+                    <Link
+                      href={`/contacts/${contact.contactid}`}
+                      className="text-muted-foreground hover:text-foreground transition-colors"
+                      title="View Contact"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                    </Link>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    {contact.emailaddress1 && (
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Mail className="h-3.5 w-3.5 shrink-0" />
+                        <span>{contact.emailaddress1}</span>
+                      </div>
+                    )}
+                    {(contact.telephone1 || contact.mobilephone) && (
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Phone className="h-3.5 w-3.5 shrink-0" />
+                        <span>{contact.mobilephone || contact.telephone1}</span>
+                      </div>
+                    )}
+                    {(contact.address1_city || contact.address1_country) && (
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <MapPin className="h-3.5 w-3.5 shrink-0" />
+                        <span>
+                          {[contact.address1_city, contact.address1_stateorprovince, contact.address1_country]
+                            .filter(Boolean)
+                            .join(', ')}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="pt-2">
+                    <Link
+                      href={`/contacts/${contact.contactid}`}
+                      className="text-sm text-primary hover:underline font-medium inline-flex items-center gap-1"
+                    >
+                      View Contact Details
+                      <ExternalLink className="h-3.5 w-3.5" />
+                    </Link>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-sm text-muted-foreground">
+                  <p>Customer data not available</p>
+                  <p className="font-mono text-xs mt-1">{quote.customerid}</p>
+                </div>
+              )}
             </CardContent>
           </Card>
 

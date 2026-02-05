@@ -285,6 +285,11 @@ export const orderServiceMock = {
    *
    * Esta es la función principal para generar Orders desde Quotes Won
    *
+   * Shipping info priority:
+   * 1. Quote shipping fields (if available)
+   * 2. Account address (if customer is account)
+   * 3. Contact address (if customer is contact)
+   *
    * @param quoteId - ID de la quote desde la cual crear la orden
    * @returns Order creada
    */
@@ -303,7 +308,52 @@ export const orderServiceMock = {
     const { quoteDetailService } = await import('../../quotes/api/quote-detail-service')
     const quoteLines = await quoteDetailService.getByQuote(quoteId)
 
-    // 3. Create Order from Quote data
+    // 3. Get shipping info from quote, or fallback to customer (Account/Contact)
+    let shippingInfo = {
+      shipto_name: quote.shipto_name,
+      shipto_line1: quote.shipto_line1,
+      shipto_line2: quote.shipto_line2,
+      shipto_city: quote.shipto_city,
+      shipto_stateorprovince: quote.shipto_stateorprovince,
+      shipto_postalcode: quote.shipto_postalcode,
+      shipto_country: quote.shipto_country,
+    }
+
+    // If quote has no shipping, get from customer
+    const hasQuoteShipping = shippingInfo.shipto_line1 || shippingInfo.shipto_city
+    if (!hasQuoteShipping && quote.customerid) {
+      if (quote.customeridtype === 'account') {
+        const { accountService } = await import('../../accounts/api/account-service')
+        const account = await accountService.getById(quote.customerid)
+        if (account) {
+          shippingInfo = {
+            shipto_name: account.name,
+            shipto_line1: account.address1_line1,
+            shipto_line2: account.address1_line2,
+            shipto_city: account.address1_city,
+            shipto_stateorprovince: account.address1_stateorprovince,
+            shipto_postalcode: account.address1_postalcode,
+            shipto_country: account.address1_country,
+          }
+        }
+      } else {
+        const { contactService } = await import('../../contacts/api/contact-service')
+        const contact = await contactService.getById(quote.customerid)
+        if (contact) {
+          shippingInfo = {
+            shipto_name: contact.fullname || `${contact.firstname} ${contact.lastname}`,
+            shipto_line1: contact.address1_line1,
+            shipto_line2: contact.address1_line2,
+            shipto_city: contact.address1_city,
+            shipto_stateorprovince: contact.address1_stateorprovince,
+            shipto_postalcode: contact.address1_postalcode,
+            shipto_country: contact.address1_country,
+          }
+        }
+      }
+    }
+
+    // 4. Create Order from Quote data
     const newOrder: Order = {
       salesorderid: `order-${Date.now()}`,
       ordernumber: generateOrderNumber(),
@@ -317,13 +367,7 @@ export const orderServiceMock = {
       totalamount: quote.totalamount || 0,
       totaltax: quote.totaltax,
       discountamount: quote.discountamount,
-      shipto_name: quote.shipto_name,
-      shipto_line1: quote.shipto_line1,
-      shipto_line2: quote.shipto_line2,
-      shipto_city: quote.shipto_city,
-      shipto_stateorprovince: quote.shipto_stateorprovince,
-      shipto_postalcode: quote.shipto_postalcode,
-      shipto_country: quote.shipto_country,
+      ...shippingInfo,
       createdon: new Date().toISOString(),
       modifiedon: new Date().toISOString(),
     }
@@ -332,7 +376,7 @@ export const orderServiceMock = {
     orders.push(newOrder)
     saveOrders(orders)
 
-    // 4. Copy Quote Lines to Order Lines
+    // 5. Copy Quote Lines to Order Lines
     if (quoteLines && quoteLines.length > 0) {
       const quoteLineData = quoteLines.map(line => ({
         productid: line.productid,
