@@ -64,6 +64,7 @@ Thumbs.db
 # Playwright
 /test-results/
 /playwright-report/
+.playwright-mcp/
 
 # Claude temp files
 tmpclaude-*
