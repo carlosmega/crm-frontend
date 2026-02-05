@@ -90,10 +90,12 @@ export const quoteDetailServiceMock = {
         ? Math.max(...existingLines.map((d) => d.lineitemnumber)) + 1
         : 1
 
-    // Calcular amounts
-    const baseamount = dto.priceperunit * dto.quantity
-    const manualdiscountamount = dto.manualdiscountamount || 0
-    const tax = dto.tax || 0
+    // Calcular amounts (ensure numeric types - hidden inputs may send strings)
+    const quantity = Number(dto.quantity)
+    const priceperunit = Number(dto.priceperunit)
+    const baseamount = priceperunit * quantity
+    const manualdiscountamount = Number(dto.manualdiscountamount) || 0
+    const tax = Number(dto.tax) || 0
     const extendedamount = baseamount - manualdiscountamount + tax
 
     const newDetail: QuoteDetail = {
@@ -101,8 +103,8 @@ export const quoteDetailServiceMock = {
       quoteid: dto.quoteid,
       productid: dto.productid,
       productdescription: dto.productdescription,
-      quantity: dto.quantity,
-      priceperunit: dto.priceperunit,
+      quantity,
+      priceperunit,
       baseamount,
       extendedamount,
       manualdiscountamount,
@@ -140,12 +142,12 @@ export const quoteDetailServiceMock = {
 
     const existingDetail = details[index]
 
-    // Recalcular amounts si cambiaron price/quantity/discount
-    const quantity = dto.quantity ?? existingDetail.quantity
-    const priceperunit = dto.priceperunit ?? existingDetail.priceperunit
+    // Recalcular amounts si cambiaron price/quantity/discount (ensure numeric types)
+    const quantity = Number(dto.quantity ?? existingDetail.quantity)
+    const priceperunit = Number(dto.priceperunit ?? existingDetail.priceperunit)
     const manualdiscountamount =
-      dto.manualdiscountamount ?? existingDetail.manualdiscountamount ?? 0
-    const tax = dto.tax ?? existingDetail.tax ?? 0
+      Number(dto.manualdiscountamount ?? existingDetail.manualdiscountamount) || 0
+    const tax = Number(dto.tax ?? existingDetail.tax) || 0
 
     const baseamount = priceperunit * quantity
     const extendedamount = baseamount - manualdiscountamount + tax
@@ -153,6 +155,10 @@ export const quoteDetailServiceMock = {
     const updatedDetail: QuoteDetail = {
       ...existingDetail,
       ...dto,
+      quantity,
+      priceperunit,
+      manualdiscountamount,
+      tax,
       baseamount,
       extendedamount,
       modifiedon: new Date().toISOString(),
@@ -223,9 +229,11 @@ export const quoteDetailServiceMock = {
         : 1
 
     const newDetails: QuoteDetail[] = dtos.map((dto) => {
-      const baseamount = dto.priceperunit * dto.quantity
-      const manualdiscountamount = dto.manualdiscountamount || 0
-      const tax = dto.tax || 0
+      const quantity = Number(dto.quantity)
+      const priceperunit = Number(dto.priceperunit)
+      const baseamount = priceperunit * quantity
+      const manualdiscountamount = Number(dto.manualdiscountamount) || 0
+      const tax = Number(dto.tax) || 0
       const extendedamount = baseamount - manualdiscountamount + tax
 
       const detail: QuoteDetail = {
@@ -233,8 +241,8 @@ export const quoteDetailServiceMock = {
         quoteid: dto.quoteid,
         productid: dto.productid,
         productdescription: dto.productdescription,
-        quantity: dto.quantity,
-        priceperunit: dto.priceperunit,
+        quantity,
+        priceperunit,
         baseamount,
         extendedamount,
         manualdiscountamount,

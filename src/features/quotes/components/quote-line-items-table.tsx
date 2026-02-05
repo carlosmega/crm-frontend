@@ -1,6 +1,6 @@
 'use client'
 
-import { memo, useCallback } from 'react'
+import { memo, useCallback, useMemo } from 'react'
 import {
   Table,
   TableBody,
@@ -10,6 +10,8 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
+import { SortableColumnHeader } from '@/shared/components/sortable-column-header'
+import { useSortableData, type SortableColumn } from '@/shared/hooks/use-sortable-data'
 import type { QuoteDetail } from '../types'
 import { formatCurrency } from '../utils/quote-calculations'
 import { Trash2, Edit } from 'lucide-react'
@@ -21,7 +23,18 @@ interface QuoteLineItemsTableProps {
   onDelete?: (lineId: string) => void
 }
 
-// ✅ OPTIMIZACIÓN: Memoizar row component individual
+// Sort column definitions (static, no re-creation)
+const SORT_COLUMNS: SortableColumn<QuoteDetail>[] = [
+  { id: 'product', accessor: (row) => row.productdescription },
+  { id: 'quantity', accessor: (row) => row.quantity },
+  { id: 'priceperunit', accessor: (row) => row.priceperunit },
+  { id: 'baseamount', accessor: (row) => row.baseamount },
+  { id: 'discount', accessor: (row) => row.manualdiscountamount },
+  { id: 'tax', accessor: (row) => row.tax },
+  { id: 'extendedamount', accessor: (row) => row.extendedamount },
+]
+
+// Memoized row component
 const QuoteLineRow = memo(function QuoteLineRow({
   line,
   canEdit,
@@ -111,12 +124,11 @@ const QuoteLineRow = memo(function QuoteLineRow({
 })
 
 /**
- * Quote Line Items Table (Optimizado)
+ * Quote Line Items Table
  *
- * Tabla de productos en el quote
- * ✅ Memoizado con React.memo
- * ✅ Rows individuales memoizados
- * ✅ Callbacks optimizados
+ * Tabla de productos en el quote con columnas ordenables.
+ * Usa useSortableData (hook ligero) en vez del DataTable completo
+ * para evitar importar la infraestructura de filtrado (~15-25KB).
  */
 export const QuoteLineItemsTable = memo(function QuoteLineItemsTable({
   quoteLines,
@@ -124,6 +136,11 @@ export const QuoteLineItemsTable = memo(function QuoteLineItemsTable({
   onEdit,
   onDelete,
 }: QuoteLineItemsTableProps) {
+  const { sortedData, sortConfig, handleSort } = useSortableData(
+    quoteLines,
+    SORT_COLUMNS
+  )
+
   if (quoteLines.length === 0) {
     return (
       <div className="border rounded-lg p-12 text-center">
@@ -132,7 +149,7 @@ export const QuoteLineItemsTable = memo(function QuoteLineItemsTable({
         </p>
         {canEdit && (
           <p className="text-sm text-muted-foreground mt-2">
-            Click "Add Product" to add items to this quote
+            Click &quot;Add Product&quot; to add items to this quote
           </p>
         )}
       </div>
@@ -145,20 +162,73 @@ export const QuoteLineItemsTable = memo(function QuoteLineItemsTable({
         <TableHeader>
           <TableRow>
             <TableHead className="w-[50px]">#</TableHead>
-            <TableHead>Product</TableHead>
-            <TableHead className="text-center w-[100px]">Quantity</TableHead>
-            <TableHead className="text-center w-[120px]">Price/Unit</TableHead>
-            <TableHead className="text-center w-[120px]">Base Amount</TableHead>
-            <TableHead className="text-center w-[120px]">Discount</TableHead>
-            <TableHead className="text-center w-[100px]">Tax</TableHead>
+            <TableHead>
+              <SortableColumnHeader
+                columnId="product"
+                label="Product"
+                sortConfig={sortConfig}
+                onSort={handleSort}
+              />
+            </TableHead>
+            <TableHead className="text-center w-[100px]">
+              <SortableColumnHeader
+                columnId="quantity"
+                label="Qty"
+                sortConfig={sortConfig}
+                onSort={handleSort}
+                className="justify-center"
+              />
+            </TableHead>
+            <TableHead className="text-center w-[120px]">
+              <SortableColumnHeader
+                columnId="priceperunit"
+                label="Price/Unit"
+                sortConfig={sortConfig}
+                onSort={handleSort}
+                className="justify-center"
+              />
+            </TableHead>
+            <TableHead className="text-center w-[120px]">
+              <SortableColumnHeader
+                columnId="baseamount"
+                label="Base Amt"
+                sortConfig={sortConfig}
+                onSort={handleSort}
+                className="justify-center"
+              />
+            </TableHead>
+            <TableHead className="text-center w-[120px]">
+              <SortableColumnHeader
+                columnId="discount"
+                label="Discount"
+                sortConfig={sortConfig}
+                onSort={handleSort}
+                className="justify-center"
+              />
+            </TableHead>
+            <TableHead className="text-center w-[100px]">
+              <SortableColumnHeader
+                columnId="tax"
+                label="Tax"
+                sortConfig={sortConfig}
+                onSort={handleSort}
+                className="justify-center"
+              />
+            </TableHead>
             <TableHead className="text-center w-[140px]">
-              Extended Amount
+              <SortableColumnHeader
+                columnId="extendedamount"
+                label="Extended"
+                sortConfig={sortConfig}
+                onSort={handleSort}
+                className="justify-center"
+              />
             </TableHead>
             {canEdit && <TableHead className="w-[100px]">Actions</TableHead>}
           </TableRow>
         </TableHeader>
         <TableBody>
-          {quoteLines.map((line) => (
+          {sortedData.map((line) => (
             <QuoteLineRow
               key={line.quotedetailid}
               line={line}

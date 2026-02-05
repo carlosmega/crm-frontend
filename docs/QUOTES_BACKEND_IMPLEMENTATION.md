@@ -105,6 +105,7 @@ La arquitectura sigue el patrón establecido en el proyecto:
 │  - useQuotes()                          │
 │  - useCreateQuote()                     │
 │  - useQuoteDetails()                    │
+│  - useQuoteTemplates()                  │
 └─────────────┬───────────────────────────┘
               │ imports
               ▼
@@ -112,6 +113,7 @@ La arquitectura sigue el patrón establecido en el proyecto:
 │  Switchers                              │
 │  - quote-service.ts                     │
 │  - quote-detail-service.ts              │
+│  - quote-template-service.ts            │
 └─────────────┬───────────────────────────┘
               │ selects based on featureFlags
               ▼
@@ -271,13 +273,179 @@ Todos los hooks existentes funcionan sin cambios:
 - `useReviseQuote()` - Revisar quote
 - `useCloneQuote()` - Clonar quote
 
+---
+
+## Quote Templates (Backend Connection)
+
+### Archivos del patrón mock/backend/switcher
+
+| Archivo | Rol | Descripción |
+|---------|-----|-------------|
+| `quote-template-service.ts` | **Switcher** | Selecciona mock o backend según `featureFlags.useBackendAPI` |
+| `quote-template-service-mock.ts` | **Mock** | Usa localStorage + mock data para desarrollo offline |
+| `quote-template-service-backend.ts` | **Backend** | Llama a Django REST API via apiClient (axios) |
+
+### Endpoints Django esperados
+
+```
+GET    /api/quote-templates/                → Lista todos los templates
+GET    /api/quote-templates/?shared=true    → Solo templates compartidos
+GET    /api/quote-templates/?owner={id}     → Templates por owner
+GET    /api/quote-templates/{id}/           → Template por ID
+POST   /api/quote-templates/               → Crear template
+PATCH  /api/quote-templates/{id}/           → Actualizar template
+DELETE /api/quote-templates/{id}/           → Eliminar template
+POST   /api/quote-templates/{id}/use/       → Crear Quote desde template (incrementa usage)
+POST   /api/quote-templates/from-quote/     → Guardar Quote existente como template
+```
+
+### Métodos del servicio
+
+| Método | Backend endpoint | Descripción |
+|--------|-----------------|-------------|
+| `getAll()` | `GET /quote-templates/` | Todos los templates |
+| `getShared()` | `GET /quote-templates/?shared=true` | Solo compartidos |
+| `getByOwner(id)` | `GET /quote-templates/?owner={id}` | Por propietario |
+| `getById(id)` | `GET /quote-templates/{id}/` | Template individual |
+| `create(dto)` | `POST /quote-templates/` | Crear template nuevo |
+| `update(id, dto)` | `PATCH /quote-templates/{id}/` | Actualizar template |
+| `delete(id)` | `DELETE /quote-templates/{id}/` | Eliminar template |
+| `createQuoteFromTemplate(id, overrides)` | `POST /quote-templates/{id}/use/` | Quote desde template |
+| `createFromQuote(quote, lines, data)` | `POST /quote-templates/from-quote/` | Guardar quote como template |
+
+### Flujo "Usar Template" (frontend → backend)
+
+```
+1. Usuario selecciona template en /quotes/templates
+   → Navega a /quotes/new?templateId={id}
+
+2. Página /quotes/new lee templateId de URL
+   → useQuoteTemplate(templateId) carga el template
+   → Pre-llena formulario con: name, description, effectivefrom, effectiveto
+
+3. Usuario completa datos faltantes (customer, etc.) y envía formulario
+   → useCreateQuote(data) crea la quote
+
+4. onSuccess: crea los productos del template
+   → useBulkCreateQuoteDetails(lines) crea todas las líneas
+   → Navega a /quotes/{newQuoteId} con productos ya poblados
+```
+
+### Modelo de datos: QuoteTemplate
+
+```typescript
+interface QuoteTemplate {
+  quotetemplateid: string
+  name: string
+  description?: string
+  category?: QuoteTemplateCategory    // 'standard' | 'custom' | 'service' | 'product' | 'bundle' | 'industry'
+  templatedata: {
+    name: string                      // Nombre default del quote
+    description?: string
+    effectivefrom?: string            // Fecha inicio validez
+    effectiveto?: string              // Fecha fin validez
+    lines: Array<{                    // Productos del template
+      productid?: string
+      productdescription: string
+      quantity: number
+      priceperunit: number
+      manualdiscountamount?: number
+      tax?: number
+    }>
+  }
+  ownerid: string
+  isshared: boolean                   // Visible para todos los usuarios
+  usagecount: number                  // Veces que se ha usado
+  createdon: string
+  modifiedon: string
+}
+```
+
+### Payload para `POST /quote-templates/from-quote/`
+
+```json
+{
+  "quoteid": "uuid-de-la-quote",
+  "name": "Standard Software License",
+  "description": "Template for standard licensing",
+  "category": "product",
+  "isshared": true,
+  "lines": [
+    {
+      "productid": "prod-001",
+      "productdescription": "Enterprise License (Annual)",
+      "quantity": 1,
+      "priceperunit": 9999.00,
+      "manualdiscountamount": 0,
+      "tax": 0
+    }
+  ]
+}
+```
+
+### Payload para `POST /quote-templates/{id}/use/`
+
+```json
+{
+  "name": "Custom Quote Name (optional override)",
+  "description": "Override description",
+  "customerid": "customer-uuid",
+  "customeridtype": "account",
+  "opportunityid": "opp-uuid",
+  "ownerid": "user-uuid"
+}
+```
+
+**Response esperada:**
+```json
+{
+  "quote": {
+    "name": "Software License Quote",
+    "description": "Annual software license...",
+    "customerid": "customer-uuid",
+    "customeridtype": "account",
+    "effectivefrom": "2024-01-01T00:00:00Z",
+    "effectiveto": "2024-03-31T00:00:00Z",
+    "ownerid": "user-uuid"
+  },
+  "templateLines": [
+    {
+      "productid": "prod-001",
+      "productdescription": "Enterprise License",
+      "quantity": 1,
+      "priceperunit": 9999.00,
+      "manualdiscountamount": 0,
+      "tax": 0
+    }
+  ]
+}
+```
+
+### Fallback si el backend no tiene `/use` endpoint
+
+El servicio backend tiene un fallback automático: si `POST /quote-templates/{id}/use/` retorna 404, obtiene el template por ID y arma los datos en el frontend (mismo comportamiento que el mock). Esto permite conectar gradualmente.
+
+### Hooks disponibles (sin cambios)
+
+```typescript
+useQuoteTemplates()           // Todos los templates
+useSharedQuoteTemplates()     // Solo compartidos
+useQuoteTemplate(id)          // Template por ID
+useCreateQuoteTemplate()      // Mutation: crear
+useUpdateQuoteTemplate()      // Mutation: actualizar
+useDeleteQuoteTemplate()      // Mutation: eliminar
+useSaveQuoteAsTemplate()      // Mutation: guardar quote como template
+```
+
+---
+
 ## Próximos Pasos
 
-1. ✅ Implementación completada
+1. ✅ Implementación completada (quotes + quote details + quote templates)
 2. ⏳ Testing con backend Django real
-3. ⏳ Validar flujo completo Quote → Order → Invoice
-4. ⏳ Ajustar transformaciones de datos si es necesario
-5. ⏳ Documentar endpoints faltantes (si los hay)
+3. ⏳ Implementar endpoints de templates en Django
+4. ⏳ Validar flujo completo Quote → Order → Invoice
+5. ⏳ Ajustar transformaciones de datos si es necesario
 
 ## Notas Técnicas
 

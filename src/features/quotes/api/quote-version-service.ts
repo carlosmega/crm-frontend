@@ -127,13 +127,13 @@ export const quoteVersionService = {
     const existingVersions = await this.getVersionsByQuote({ quoteid: quote.quoteid })
     const nextVersionNumber = existingVersions.length + 1
 
-    // Calculate totals
-    const totalamount = quoteLines.reduce((sum, line) => sum + line.extendedamount, 0)
+    // Calculate totals (ensure numeric types to prevent string concatenation)
+    const totalamount = quoteLines.reduce((sum, line) => sum + (Number(line.extendedamount) || 0), 0)
     const totaldiscountamount = quoteLines.reduce(
-      (sum, line) => sum + (line.manualdiscountamount || 0),
+      (sum, line) => sum + (Number(line.manualdiscountamount) || 0),
       0
     )
-    const totaltax = quoteLines.reduce((sum, line) => sum + (line.tax || 0), 0)
+    const totaltax = quoteLines.reduce((sum, line) => sum + (Number(line.tax) || 0), 0)
 
     return this.create({
       quoteid: quote.quoteid,
@@ -155,12 +155,12 @@ export const quoteVersionService = {
           quotedetailid: line.quotedetailid,
           productid: line.productid,
           productdescription: line.productdescription,
-          quantity: line.quantity,
-          priceperunit: line.priceperunit,
-          manualdiscountamount: line.manualdiscountamount,
-          tax: line.tax,
-          baseamount: line.baseamount,
-          extendedamount: line.extendedamount,
+          quantity: Number(line.quantity) || 0,
+          priceperunit: Number(line.priceperunit) || 0,
+          manualdiscountamount: Number(line.manualdiscountamount) || 0,
+          tax: Number(line.tax) || 0,
+          baseamount: Number(line.baseamount) || 0,
+          extendedamount: Number(line.extendedamount) || 0,
         })),
       },
       changetype,

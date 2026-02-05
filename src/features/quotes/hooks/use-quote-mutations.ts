@@ -1,13 +1,46 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { quoteService } from '../api/quote-service'
+import { quoteDetailService } from '../api/quote-detail-service'
+import { quoteVersionService } from '../api/quote-version-service'
 import { quoteKeys } from './use-quotes'
+import { quoteDetailKeys } from './use-quote-details'
+import { quoteVersionKeys } from './use-quote-versions'
+import { QuoteVersionChangeType } from '@/core/contracts'
 import type {
   CreateQuoteDto,
   UpdateQuoteDto,
   ActivateQuoteDto,
   CloseQuoteDto,
+  Quote,
 } from '../types'
 import { toast } from 'sonner'
+
+/**
+ * Helper: Create version snapshot after quote operation
+ */
+async function createVersionSnapshot(
+  quote: Quote,
+  changetype: QuoteVersionChangeType,
+  options?: {
+    changedescription?: string
+    changedfields?: string[]
+    changereason?: string
+  }
+) {
+  try {
+    // Get current quote lines
+    const quoteLines = await quoteDetailService.getByQuote(quote.quoteid)
+
+    // Create version snapshot
+    await quoteVersionService.createSnapshot(quote, quoteLines, changetype, {
+      ...options,
+      createdby: 'current-user', // TODO: Get from auth context
+    })
+  } catch (error) {
+    // Don't fail the main operation if versioning fails
+    console.warn('[Versioning] Failed to create snapshot:', error)
+  }
+}
 
 /**
  * Create quote mutation
@@ -17,7 +50,7 @@ export function useCreateQuote() {
 
   return useMutation({
     mutationFn: (data: CreateQuoteDto) => quoteService.create(data),
-    onSuccess: (newQuote) => {
+    onSuccess: async (newQuote) => {
       // Invalidate quotes list
       queryClient.invalidateQueries({ queryKey: quoteKeys.lists() })
 
@@ -27,6 +60,16 @@ export function useCreateQuote() {
           queryKey: quoteKeys.byOpportunity(newQuote.opportunityid),
         })
       }
+
+      // Create version snapshot
+      await createVersionSnapshot(newQuote, QuoteVersionChangeType.Created, {
+        changedescription: 'Quote created',
+      })
+
+      // Invalidate version queries
+      queryClient.invalidateQueries({
+        queryKey: quoteVersionKeys.byQuote(newQuote.quoteid),
+      })
 
       toast.success('Quote created successfully', {
         description: `Quote "${newQuote.name}" has been created.`,
@@ -54,7 +97,7 @@ export function useUpdateQuote() {
       id: string
       data: UpdateQuoteDto
     }) => quoteService.update(id, data),
-    onSuccess: (updatedQuote) => {
+    onSuccess: async (updatedQuote) => {
       // Invalidate specific quote
       queryClient.invalidateQueries({
         queryKey: quoteKeys.detail(updatedQuote.quoteid),
@@ -62,6 +105,22 @@ export function useUpdateQuote() {
 
       // Invalidate lists
       queryClient.invalidateQueries({ queryKey: quoteKeys.lists() })
+
+      // Determine changed fields
+      const changedfields = Object.keys(updatedQuote).filter(
+        key => !['quoteid', 'createdon', 'modifiedon', 'quotenumber'].includes(key)
+      )
+
+      // Create version snapshot
+      await createVersionSnapshot(updatedQuote, QuoteVersionChangeType.Updated, {
+        changedescription: 'Quote information updated',
+        changedfields,
+      })
+
+      // Invalidate version queries
+      queryClient.invalidateQueries({
+        queryKey: quoteVersionKeys.byQuote(updatedQuote.quoteid),
+      })
 
       toast.success('Quote updated successfully')
     },
@@ -81,7 +140,10 @@ export function useDeleteQuote() {
 
   return useMutation({
     mutationFn: (id: string) => quoteService.delete(id),
-    onSuccess: (_, id) => {
+    onSuccess: async (_, id) => {
+      // Delete version history too
+      await quoteVersionService.deleteByQuote(id)
+
       // Invalidate lists
       queryClient.invalidateQueries({ queryKey: quoteKeys.lists() })
 
@@ -114,7 +176,7 @@ export function useActivateQuote() {
       id: string
       data?: ActivateQuoteDto
     }) => quoteService.activate(id, data),
-    onSuccess: (activatedQuote) => {
+    onSuccess: async (activatedQuote) => {
       // Invalidate specific quote
       queryClient.invalidateQueries({
         queryKey: quoteKeys.detail(activatedQuote.quoteid),
@@ -125,6 +187,17 @@ export function useActivateQuote() {
 
       // Invalidate statistics
       queryClient.invalidateQueries({ queryKey: quoteKeys.statistics() })
+
+      // Create version snapshot
+      await createVersionSnapshot(activatedQuote, QuoteVersionChangeType.Activated, {
+        changedescription: 'Quote activated and sent to customer',
+        changedfields: ['statecode', 'statuscode'],
+      })
+
+      // Invalidate version queries
+      queryClient.invalidateQueries({
+        queryKey: quoteVersionKeys.byQuote(activatedQuote.quoteid),
+      })
 
       toast.success('Quote activated successfully', {
         description: `Quote "${activatedQuote.name}" is now Active.`,
@@ -165,6 +238,17 @@ export function useWinQuote() {
 
       // Invalidate statistics
       queryClient.invalidateQueries({ queryKey: quoteKeys.statistics() })
+
+      // Create version snapshot
+      await createVersionSnapshot(wonQuote, QuoteVersionChangeType.Won, {
+        changedescription: 'Quote won - Customer accepted',
+        changedfields: ['statecode', 'statuscode'],
+      })
+
+      // Invalidate version queries
+      queryClient.invalidateQueries({
+        queryKey: quoteVersionKeys.byQuote(wonQuote.quoteid),
+      })
 
       // ✅ NEW: Update linked Opportunity if exists
       if (wonQuote.opportunityid) {
@@ -221,7 +305,7 @@ export function useLoseQuote() {
       id: string
       data?: CloseQuoteDto
     }) => quoteService.lose(id, data),
-    onSuccess: (lostQuote) => {
+    onSuccess: async (lostQuote) => {
       // Invalidate specific quote
       queryClient.invalidateQueries({
         queryKey: quoteKeys.detail(lostQuote.quoteid),
@@ -232,6 +316,17 @@ export function useLoseQuote() {
 
       // Invalidate statistics
       queryClient.invalidateQueries({ queryKey: quoteKeys.statistics() })
+
+      // Create version snapshot
+      await createVersionSnapshot(lostQuote, QuoteVersionChangeType.Lost, {
+        changedescription: 'Quote lost - Customer declined',
+        changedfields: ['statecode', 'statuscode'],
+      })
+
+      // Invalidate version queries
+      queryClient.invalidateQueries({
+        queryKey: quoteVersionKeys.byQuote(lostQuote.quoteid),
+      })
 
       toast.success('Quote closed as Lost')
     },
@@ -252,7 +347,7 @@ export function useCancelQuote() {
   return useMutation({
     mutationFn: ({ id, reason }: { id: string; reason?: string }) =>
       quoteService.cancel(id, reason),
-    onSuccess: (canceledQuote) => {
+    onSuccess: async (canceledQuote, { reason }) => {
       // Invalidate specific quote
       queryClient.invalidateQueries({
         queryKey: quoteKeys.detail(canceledQuote.quoteid),
@@ -260,6 +355,18 @@ export function useCancelQuote() {
 
       // Invalidate lists (state changed)
       queryClient.invalidateQueries({ queryKey: quoteKeys.lists() })
+
+      // Create version snapshot
+      await createVersionSnapshot(canceledQuote, QuoteVersionChangeType.Canceled, {
+        changedescription: 'Quote canceled',
+        changedfields: ['statecode', 'statuscode'],
+        changereason: reason,
+      })
+
+      // Invalidate version queries
+      queryClient.invalidateQueries({
+        queryKey: quoteVersionKeys.byQuote(canceledQuote.quoteid),
+      })
 
       toast.success('Quote canceled')
     },
@@ -279,7 +386,7 @@ export function useReviseQuote() {
 
   return useMutation({
     mutationFn: (id: string) => quoteService.revise(id),
-    onSuccess: (revisedQuote) => {
+    onSuccess: async (revisedQuote) => {
       // Invalidate specific quote
       queryClient.invalidateQueries({
         queryKey: quoteKeys.detail(revisedQuote.quoteid),
@@ -287,6 +394,17 @@ export function useReviseQuote() {
 
       // Invalidate lists (state changed)
       queryClient.invalidateQueries({ queryKey: quoteKeys.lists() })
+
+      // Create version snapshot
+      await createVersionSnapshot(revisedQuote, QuoteVersionChangeType.Revised, {
+        changedescription: 'Quote reopened for revision',
+        changedfields: ['statecode', 'statuscode'],
+      })
+
+      // Invalidate version queries
+      queryClient.invalidateQueries({
+        queryKey: quoteVersionKeys.byQuote(revisedQuote.quoteid),
+      })
 
       toast.success('Quote reopened for revision', {
         description: `Quote "${revisedQuote.name}" is now in Draft state.`,
@@ -311,7 +429,7 @@ export function useCloneQuote() {
 
   return useMutation({
     mutationFn: (id: string) => quoteService.clone(id),
-    onSuccess: (clonedQuote) => {
+    onSuccess: async (clonedQuote) => {
       // Invalidate lists (new quote added)
       queryClient.invalidateQueries({ queryKey: quoteKeys.lists() })
 
@@ -324,6 +442,16 @@ export function useCloneQuote() {
 
       // Invalidate statistics
       queryClient.invalidateQueries({ queryKey: quoteKeys.statistics() })
+
+      // Create version snapshot for the new cloned quote
+      await createVersionSnapshot(clonedQuote, QuoteVersionChangeType.Created, {
+        changedescription: 'Quote created from clone',
+      })
+
+      // Invalidate version queries
+      queryClient.invalidateQueries({
+        queryKey: quoteVersionKeys.byQuote(clonedQuote.quoteid),
+      })
 
       toast.success('Quote cloned successfully', {
         description: `"${clonedQuote.name}" has been created as a draft. You can now edit and activate it.`,

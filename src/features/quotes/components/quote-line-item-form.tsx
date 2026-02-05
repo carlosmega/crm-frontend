@@ -13,11 +13,12 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
 import type { QuoteDetail, CreateQuoteDetailDto, UpdateQuoteDetailDto } from '../types'
 import type { Product } from '@/core/contracts/entities/product'
-import { useLineTotals } from '../hooks/use-quote-calculations'
+import { useLineTotalsWithIVA } from '../hooks/use-quote-calculations'
 import { formatCurrency } from '../utils/quote-calculations'
-import { AlertCircle, Package } from 'lucide-react'
+import { AlertCircle, Package, Info } from 'lucide-react'
 import { ProductSelector } from '@/features/products/components/product-selector'
 
 interface QuoteLineItemFormProps {
@@ -34,6 +35,7 @@ interface QuoteLineItemFormProps {
  * Quote Line Item Form Dialog
  *
  * Formulario para agregar o editar líneas de productos en quote
+ * Incluye cálculo automático de IVA 16% (México)
  */
 export function QuoteLineItemForm({
   quoteId,
@@ -46,6 +48,7 @@ export function QuoteLineItemForm({
 }: QuoteLineItemFormProps) {
   const isEdit = !!quoteLine
   const [selectedProduct, setSelectedProduct] = useState<Product | undefined>(preselectedProduct)
+  const [applyIVA, setApplyIVA] = useState(true) // IVA activado por defecto
 
   const {
     register,
@@ -87,25 +90,67 @@ export function QuoteLineItemForm({
   const quantity = watch('quantity')
   const pricePerUnit = watch('priceperunit')
   const discount = watch('manualdiscountamount')
-  const tax = watch('tax')
 
-  // Calculate totals in real-time
-  const { baseAmount, extendedAmount, discountPercentage } = useLineTotals(
-    pricePerUnit,
-    quantity,
-    discount,
-    tax
-  )
+  // Calculate totals with IVA in real-time
+  const {
+    baseAmount,
+    subtotalAfterDiscount,
+    ivaAmount,
+    extendedAmount,
+    discountPercentage,
+  } = useLineTotalsWithIVA(pricePerUnit, quantity, discount, applyIVA)
 
-  // Set preselected product data when dialog opens
+  // Sync tax to form (as number, not via DOM)
   useEffect(() => {
-    if (preselectedProduct && !quoteLine) {
-      setSelectedProduct(preselectedProduct)
-      setValue('productid', preselectedProduct.productid)
-      setValue('productdescription', preselectedProduct.name)
-      setValue('priceperunit', preselectedProduct.price)
+    setValue('tax', ivaAmount, { shouldValidate: false })
+  }, [ivaAmount, setValue])
+
+  // Reset form state when dialog opens/closes
+  useEffect(() => {
+    if (open) {
+      if (quoteLine) {
+        // Edit mode: populate form with existing data
+        reset({
+          quoteid: quoteLine.quoteid,
+          productid: quoteLine.productid,
+          productdescription: quoteLine.productdescription,
+          quantity: quoteLine.quantity,
+          priceperunit: quoteLine.priceperunit,
+          manualdiscountamount: quoteLine.manualdiscountamount || 0,
+          tax: quoteLine.tax || 0,
+        })
+        // Detect if IVA was applied: tax ≈ 16% of (base - discount)
+        const calculatedSubtotal = (quoteLine.baseamount || quoteLine.quantity * quoteLine.priceperunit) - (quoteLine.manualdiscountamount || 0)
+        const expectedIVA = calculatedSubtotal * 0.16
+        const hasIVA = quoteLine.tax > 0 && Math.abs(quoteLine.tax - expectedIVA) < 1
+        setApplyIVA(hasIVA)
+      } else if (preselectedProduct) {
+        // New with preselected product
+        reset({
+          quoteid: quoteId,
+          productid: preselectedProduct.productid,
+          productdescription: preselectedProduct.name,
+          quantity: 1,
+          priceperunit: preselectedProduct.price,
+          manualdiscountamount: 0,
+          tax: 0,
+        })
+        setSelectedProduct(preselectedProduct)
+        setApplyIVA(true)
+      } else {
+        // New blank form
+        reset({
+          quoteid: quoteId,
+          quantity: 1,
+          priceperunit: 0,
+          manualdiscountamount: 0,
+          tax: 0,
+        })
+        setSelectedProduct(undefined)
+        setApplyIVA(true)
+      }
     }
-  }, [preselectedProduct, quoteLine, setValue])
+  }, [open, quoteLine, preselectedProduct, quoteId, reset])
 
   // Handle product selection from ProductSelector
   const handleProductSelect = (product: Product) => {
@@ -116,20 +161,23 @@ export function QuoteLineItemForm({
   }
 
   const handleFormSubmit = (data: CreateQuoteDetailDto) => {
-    onSubmit(data)
-    reset()
-    setSelectedProduct(undefined)
+    // Ensure all numeric fields are numbers (hidden inputs can return strings)
+    onSubmit({
+      ...data,
+      quantity: Number(data.quantity),
+      priceperunit: Number(data.priceperunit),
+      manualdiscountamount: Number(data.manualdiscountamount) || 0,
+      tax: Number(ivaAmount),
+    })
   }
 
-  const handleCancel = () => {
-    reset()
-    setSelectedProduct(undefined)
-    onOpenChange(false)
+  const handleDialogOpenChange = (isOpen: boolean) => {
+    onOpenChange(isOpen)
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
+    <Dialog open={open} onOpenChange={handleDialogOpenChange}>
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {isEdit ? 'Edit Quote Line' : 'Add Product to Quote'}
@@ -191,6 +239,7 @@ export function QuoteLineItemForm({
                 required: 'Product is required',
               })}
             />
+            <input type="hidden" {...register('tax', { valueAsNumber: true })} />
 
             {/* Quantity and Price */}
             <div className="grid grid-cols-2 gap-4">
@@ -249,51 +298,86 @@ export function QuoteLineItemForm({
               </div>
             </div>
 
-            {/* Discount and Tax */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="manualdiscountamount">Discount</Label>
-                <Input
-                  id="manualdiscountamount"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  {...register('manualdiscountamount', {
-                    valueAsNumber: true,
-                  })}
-                />
-                {discountPercentage > 0 && (
-                  <p className="text-xs text-muted-foreground">
-                    {discountPercentage.toFixed(2)}% discount
-                  </p>
-                )}
-              </div>
+            {/* Discount */}
+            <div className="space-y-2">
+              <Label htmlFor="manualdiscountamount">Discount</Label>
+              <Input
+                id="manualdiscountamount"
+                type="number"
+                step="0.01"
+                min="0"
+                {...register('manualdiscountamount', {
+                  valueAsNumber: true,
+                })}
+              />
+              {discountPercentage > 0 && (
+                <p className="text-xs text-muted-foreground">
+                  {discountPercentage.toFixed(2)}% discount
+                </p>
+              )}
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="tax">Tax</Label>
-                <Input
-                  id="tax"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  {...register('tax', {
-                    valueAsNumber: true,
-                  })}
-                />
+            {/* Subtotal after Discount */}
+            <div className="rounded-lg bg-muted p-3">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Subtotal (after discount):</span>
+                <span className="font-semibold">{formatCurrency(subtotalAfterDiscount)}</span>
               </div>
             </div>
 
-            {/* Extended Amount (Calculated) */}
+            {/* IVA Toggle */}
+            <div className="rounded-lg border bg-card p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Switch
+                    id="apply-iva"
+                    checked={applyIVA}
+                    onCheckedChange={setApplyIVA}
+                  />
+                  <div>
+                    <Label htmlFor="apply-iva" className="cursor-pointer font-medium">
+                      Apply IVA 16%
+                    </Label>
+                    <p className="text-xs text-muted-foreground">
+                      Mexican Value Added Tax
+                    </p>
+                  </div>
+                </div>
+                {applyIVA && (
+                  <span className="text-sm font-medium text-primary">
+                    +{formatCurrency(ivaAmount)}
+                  </span>
+                )}
+              </div>
+
+              {!applyIVA && (
+                <div className="flex items-start gap-2 rounded-md bg-muted/50 p-2">
+                  <Info className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                  <p className="text-xs text-muted-foreground">
+                    IVA disabled. Use only for tax-exempt customers or international sales.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Total Amount (Calculated) */}
             <div className="rounded-lg bg-primary/10 border border-primary p-4">
               <div className="flex justify-between items-center">
-                <span className="font-medium">Extended Amount:</span>
-                <span className="font-bold text-xl">
+                <span className="font-medium">Total Amount:</span>
+                <span className="font-bold text-2xl">
                   {formatCurrency(extendedAmount)}
                 </span>
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                = Base Amount - Discount + Tax
-              </p>
+              <div className="text-xs text-muted-foreground mt-2 space-y-0.5">
+                <p>Base: {formatCurrency(baseAmount)}</p>
+                {discount > 0 && (
+                  <p>- Discount: {formatCurrency(discount)}</p>
+                )}
+                <p>= Subtotal: {formatCurrency(subtotalAfterDiscount)}</p>
+                {applyIVA && (
+                  <p>+ IVA (16%): {formatCurrency(ivaAmount)}</p>
+                )}
+              </div>
             </div>
 
             {/* Validation Warning */}
@@ -313,7 +397,7 @@ export function QuoteLineItemForm({
             <Button
               type="button"
               variant="outline"
-              onClick={handleCancel}
+              onClick={() => handleDialogOpenChange(false)}
               disabled={isSubmitting}
             >
               Cancel

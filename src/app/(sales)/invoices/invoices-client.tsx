@@ -41,6 +41,7 @@ export function InvoicesClient() {
   const [filter, setFilter] = useState<string>('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedInvoices, setSelectedInvoices] = useState<string[]>([])
+  const [columnFilters, setColumnFilters] = useState<ActiveFilters>({})
 
   // ✅ Cargar invoices desde el hook (con cookies del navegador)
   const { data: invoices = [], isLoading, error } = useInvoices()
@@ -269,6 +270,8 @@ export function InvoicesClient() {
             onSelectionChange={setSelectedInvoices}
             loading={false}
             bulkActions={bulkActions}
+            filters={columnFilters}
+            onFiltersChange={setColumnFilters}
           />
         </div>
       </div>

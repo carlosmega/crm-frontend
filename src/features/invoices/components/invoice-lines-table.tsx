@@ -1,6 +1,8 @@
 'use client'
 
 import type { InvoiceDetail } from '@/core/contracts/entities/invoice-detail'
+import { useSortableData, type SortableColumn } from '@/shared/hooks/use-sortable-data'
+import { SortableColumnHeader } from '@/shared/components/sortable-column-header'
 import {
   Table,
   TableBody,
@@ -13,12 +15,23 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { formatCurrency, calculateInvoiceTotals } from '../utils/invoice-calculations'
 
+// Sort column definitions
+const SORT_COLUMNS: SortableColumn<InvoiceDetail>[] = [
+  { id: 'product', accessor: (row) => row.productdescription || '' },
+  { id: 'quantity', accessor: (row) => row.quantity },
+  { id: 'priceperunit', accessor: (row) => row.priceperunit },
+  { id: 'discount', accessor: (row) => (row.manualdiscountamount || 0) + (row.volumediscountamount || 0) },
+  { id: 'tax', accessor: (row) => row.tax || 0 },
+  { id: 'amount', accessor: (row) => row.extendedamount },
+]
+
 interface InvoiceLinesTableProps {
   lines: InvoiceDetail[]
 }
 
 export function InvoiceLinesTable({ lines }: InvoiceLinesTableProps) {
   const totals = calculateInvoiceTotals(lines)
+  const { sortedData, sortConfig, handleSort } = useSortableData(lines, SORT_COLUMNS)
 
   if (lines.length === 0) {
     return (
@@ -34,16 +47,28 @@ export function InvoiceLinesTable({ lines }: InvoiceLinesTableProps) {
         <TableHeader>
           <TableRow>
             <TableHead className="w-12">#</TableHead>
-            <TableHead>Product</TableHead>
-            <TableHead className="text-center">Quantity</TableHead>
-            <TableHead className="text-center">Unit Price</TableHead>
-            <TableHead className="text-center">Discount</TableHead>
-            <TableHead className="text-center">Tax</TableHead>
-            <TableHead className="text-center">Amount</TableHead>
+            <TableHead>
+              <SortableColumnHeader columnId="product" label="Product" sortConfig={sortConfig} onSort={handleSort} />
+            </TableHead>
+            <TableHead className="text-center">
+              <SortableColumnHeader columnId="quantity" label="Qty" sortConfig={sortConfig} onSort={handleSort} className="justify-center" />
+            </TableHead>
+            <TableHead className="text-center">
+              <SortableColumnHeader columnId="priceperunit" label="Unit Price" sortConfig={sortConfig} onSort={handleSort} className="justify-center" />
+            </TableHead>
+            <TableHead className="text-center">
+              <SortableColumnHeader columnId="discount" label="Discount" sortConfig={sortConfig} onSort={handleSort} className="justify-center" />
+            </TableHead>
+            <TableHead className="text-center">
+              <SortableColumnHeader columnId="tax" label="Tax" sortConfig={sortConfig} onSort={handleSort} className="justify-center" />
+            </TableHead>
+            <TableHead className="text-center">
+              <SortableColumnHeader columnId="amount" label="Amount" sortConfig={sortConfig} onSort={handleSort} className="justify-center" />
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {lines.map((line) => {
+          {sortedData.map((line) => {
             const totalDiscount =
               (line.manualdiscountamount || 0) + (line.volumediscountamount || 0)
 

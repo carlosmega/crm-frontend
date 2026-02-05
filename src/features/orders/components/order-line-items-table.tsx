@@ -4,6 +4,8 @@ import { useState } from 'react'
 import type { OrderDetail } from '@/core/contracts/entities/order-detail'
 import { formatCurrency } from '@/features/quotes/utils/quote-calculations'
 import { useDeleteOrderDetail } from '../hooks/use-order-details'
+import { useSortableData, type SortableColumn } from '@/shared/hooks/use-sortable-data'
+import { SortableColumnHeader } from '@/shared/components/sortable-column-header'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -26,6 +28,16 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Trash2, Package, Edit, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
+
+// Sort column definitions
+const SORT_COLUMNS: SortableColumn<OrderDetail>[] = [
+  { id: 'product', accessor: (row) => row.productdescription || '' },
+  { id: 'quantity', accessor: (row) => row.quantity },
+  { id: 'priceperunit', accessor: (row) => row.priceperunit },
+  { id: 'discount', accessor: (row) => (row.manualdiscountamount || 0) + (row.volumediscountamount || 0) },
+  { id: 'tax', accessor: (row) => row.tax || 0 },
+  { id: 'amount', accessor: (row) => row.extendedamount },
+]
 
 interface OrderLineItemsTableProps {
   orderId: string
@@ -55,6 +67,7 @@ export function OrderLineItemsTable({
   const [itemToDelete, setItemToDelete] = useState<OrderDetail | null>(null)
 
   const deleteMutation = useDeleteOrderDetail()
+  const { sortedData, sortConfig, handleSort } = useSortableData(items, SORT_COLUMNS)
 
   const handleDeleteClick = (item: OrderDetail) => {
     setItemToDelete(item)
@@ -123,17 +136,29 @@ export function OrderLineItemsTable({
           <TableHeader>
             <TableRow>
               <TableHead className="w-[50px]">#</TableHead>
-              <TableHead>Product</TableHead>
-              <TableHead className="text-center">Qty</TableHead>
-              <TableHead className="text-center">Unit Price</TableHead>
-              <TableHead className="text-center">Discount</TableHead>
-              <TableHead className="text-center">Tax</TableHead>
-              <TableHead className="text-center">Amount</TableHead>
+              <TableHead>
+                <SortableColumnHeader columnId="product" label="Product" sortConfig={sortConfig} onSort={handleSort} />
+              </TableHead>
+              <TableHead className="text-center">
+                <SortableColumnHeader columnId="quantity" label="Qty" sortConfig={sortConfig} onSort={handleSort} className="justify-center" />
+              </TableHead>
+              <TableHead className="text-center">
+                <SortableColumnHeader columnId="priceperunit" label="Unit Price" sortConfig={sortConfig} onSort={handleSort} className="justify-center" />
+              </TableHead>
+              <TableHead className="text-center">
+                <SortableColumnHeader columnId="discount" label="Discount" sortConfig={sortConfig} onSort={handleSort} className="justify-center" />
+              </TableHead>
+              <TableHead className="text-center">
+                <SortableColumnHeader columnId="tax" label="Tax" sortConfig={sortConfig} onSort={handleSort} className="justify-center" />
+              </TableHead>
+              <TableHead className="text-center">
+                <SortableColumnHeader columnId="amount" label="Amount" sortConfig={sortConfig} onSort={handleSort} className="justify-center" />
+              </TableHead>
               {canEdit && <TableHead className="w-[100px]">Actions</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
-            {items.map((item) => (
+            {sortedData.map((item) => (
               <TableRow key={item.salesorderdetailid}>
                 {/* Line Number */}
                 <TableCell className="font-medium text-muted-foreground">

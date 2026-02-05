@@ -76,7 +76,7 @@ export function QuoteVersionTimeline({
 
   if (isLoading) {
     return (
-      <Card>
+      <Card className="min-h-[calc(100vh-12rem)]">
         <CardHeader>
           <CardTitle>Version History</CardTitle>
         </CardHeader>
@@ -93,7 +93,7 @@ export function QuoteVersionTimeline({
 
   if (!versions || versions.length === 0) {
     return (
-      <Card>
+      <Card className="min-h-[calc(100vh-12rem)]">
         <CardHeader>
           <CardTitle>Version History</CardTitle>
         </CardHeader>
@@ -111,7 +111,7 @@ export function QuoteVersionTimeline({
   }
 
   return (
-    <Card>
+    <Card className="min-h-[calc(100vh-12rem)] flex flex-col">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>Version History ({versions.length})</CardTitle>
@@ -122,8 +122,8 @@ export function QuoteVersionTimeline({
           )}
         </div>
       </CardHeader>
-      <CardContent>
-        <ScrollArea className="h-[600px] pr-4">
+      <CardContent className="flex-1">
+        <ScrollArea className="h-full pr-4">
           <div className="space-y-4">
             {versions.map((version, index) => {
               const isSelected = selectedVersions.includes(version.quoteversionid)
@@ -234,12 +234,15 @@ function VersionTimelineItem({
           <div className="flex items-center gap-4 text-sm">
             <div className="flex items-center gap-1">
               <Package className="h-4 w-4 text-muted-foreground" />
-              <span>{version.versiondata.lines.length} items</span>
+              <span>
+                {version.versiondata.lines.length} product{version.versiondata.lines.length !== 1 ? 's' : ''}
+                {' '}({version.versiondata.lines.reduce((sum, l) => sum + (Number(l.quantity) || 0), 0)} units)
+              </span>
             </div>
             <div className="flex items-center gap-1">
               <DollarSign className="h-4 w-4 text-muted-foreground" />
               <span className="font-medium">
-                {formatCurrency(version.versiondata.totalamount)}
+                {formatCurrency(Number(version.versiondata.totalamount) || 0)}
               </span>
             </div>
           </div>

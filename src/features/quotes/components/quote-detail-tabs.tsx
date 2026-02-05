@@ -1,16 +1,24 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import type { Quote } from '@/core/contracts'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 import { QuoteLineItemsTable } from '@/features/quotes/components/quote-line-items-table'
+import { QuoteLineItemForm } from '@/features/quotes/components/quote-line-item-form'
 import { QuoteTotalsSummary } from '@/features/quotes/components/quote-totals-summary'
 import { CreateOrderFromQuoteButton } from '@/features/orders/components/create-order-from-quote-button'
 import { ActivityTimeline } from '@/features/activities/components'
+import {
+  useCreateQuoteDetail,
+  useUpdateQuoteDetail,
+  useDeleteQuoteDetail,
+} from '@/features/quotes/hooks/use-quote-details'
+import type { QuoteDetail, CreateQuoteDetailDto, UpdateQuoteDetailDto } from '@/features/quotes/types'
 import { cn } from '@/lib/utils'
 import { formatCurrency } from '@/features/quotes/utils/quote-calculations'
 import {
@@ -22,6 +30,7 @@ import {
   Building2,
   User,
   Clock,
+  Plus,
 } from 'lucide-react'
 
 // Dynamic imports for version features
@@ -32,7 +41,7 @@ const QuoteVersionTimeline = dynamic(
   { ssr: false }
 )
 
-export type QuoteTabId = 'general' | 'products' | 'details' | 'versions' | 'related' | 'activities'
+export type QuoteTabId = 'general' | 'details' | 'versions' | 'related' | 'activities'
 
 interface QuoteDetailTabsProps {
   quote: Quote
@@ -46,9 +55,8 @@ interface QuoteDetailTabsProps {
  * Tabbed view for Quote details.
  *
  * Tabs:
- * - General: Quote overview with key information
- * - Products: Quote lines table
- * - Details: Dates, metadata
+ * - General: Quote overview with key information and products
+ * - Details: Validity period, dates, metadata
  * - Versions: Version timeline and history
  * - Related: Related records (opportunity)
  * - Activities: Activity timeline
@@ -57,11 +65,53 @@ export function QuoteDetailTabs({ quote, quoteLines = [], onCompareVersions }: Q
   const [activeTab, setActiveTab] = useState<QuoteTabId>('general')
   const [tabsContainer, setTabsContainer] = useState<HTMLElement | null>(null)
 
+  // Dialog state for adding/editing products
+  const [showLineItemForm, setShowLineItemForm] = useState(false)
+  const [editingLine, setEditingLine] = useState<QuoteDetail | undefined>()
+
+  // Mutations for quote line items
+  const { mutate: createQuoteDetail, isPending: isCreating } = useCreateQuoteDetail()
+  const { mutate: updateQuoteDetail, isPending: isUpdating } = useUpdateQuoteDetail()
+  const { mutate: deleteQuoteDetail } = useDeleteQuoteDetail()
+
+  // Check if quote can be edited (only Draft state)
+  const canEdit = quote.statecode === 0
+
   // Find the tabs container in sticky header on mount
   useEffect(() => {
     const container = document.getElementById('quote-tabs-nav-container')
     setTabsContainer(container)
   }, [])
+
+  // Handlers for product management
+  const handleAddProduct = useCallback(() => {
+    setEditingLine(undefined)
+    setShowLineItemForm(true)
+  }, [])
+
+  const handleEditProduct = useCallback((line: QuoteDetail) => {
+    setEditingLine(line)
+    setShowLineItemForm(true)
+  }, [])
+
+  const handleDeleteProduct = useCallback((lineId: string) => {
+    if (confirm('Are you sure you want to remove this product from the quote?')) {
+      deleteQuoteDetail({ id: lineId, quoteId: quote.quoteid })
+    }
+  }, [deleteQuoteDetail, quote.quoteid])
+
+  const handleLineItemSubmit = useCallback((data: CreateQuoteDetailDto | UpdateQuoteDetailDto) => {
+    if (editingLine) {
+      updateQuoteDetail(
+        { id: editingLine.quotedetailid, data: data as UpdateQuoteDetailDto },
+        { onSuccess: () => setShowLineItemForm(false) }
+      )
+    } else {
+      createQuoteDetail(data as CreateQuoteDetailDto, {
+        onSuccess: () => setShowLineItemForm(false)
+      })
+    }
+  }, [editingLine, createQuoteDetail, updateQuoteDetail])
 
   // Format helpers
   const formatDate = (dateString?: string) => {
@@ -88,19 +138,6 @@ export function QuoteDetailTabs({ quote, quoteLines = [], onCompareVersions }: Q
         >
           <FileText className="w-4 h-4 mr-2" />
           General
-        </TabsTrigger>
-
-        <TabsTrigger
-          value="products"
-          className={cn(
-            "relative rounded-none border-0 px-4 md:px-6 py-3 text-sm font-medium transition-colors",
-            "data-[state=active]:bg-transparent data-[state=active]:text-purple-600",
-            "data-[state=inactive]:text-gray-500 hover:text-gray-900",
-            "data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-purple-600"
-          )}
-        >
-          <Package className="w-4 h-4 mr-2" />
-          Products ({quoteLines.length})
         </TabsTrigger>
 
         <TabsTrigger
@@ -195,28 +232,6 @@ export function QuoteDetailTabs({ quote, quoteLines = [], onCompareVersions }: Q
           <QuoteTotalsSummary quote={quote} />
         </div>
 
-        {/* Validity Period Card */}
-        {quote.effectivefrom && quote.effectiveto && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <Calendar className="h-5 w-5" />
-                Validity Period
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-4 md:grid-cols-2">
-              <div>
-                <p className="text-sm text-muted-foreground">Effective From</p>
-                <p className="font-medium">{formatDate(quote.effectivefrom)}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Effective To</p>
-                <p className="font-medium">{formatDate(quote.effectiveto)}</p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
         {/* Create Order Section (if Quote is Won) */}
         {quote.statecode === 2 && quoteLines.length > 0 && (
           <Card className="border-primary/50 bg-primary/5">
@@ -258,25 +273,68 @@ export function QuoteDetailTabs({ quote, quoteLines = [], onCompareVersions }: Q
             </CardContent>
           </Card>
         )}
-      </TabsContent>
 
-      {/* PRODUCTS TAB */}
-      <TabsContent value="products" className="mt-0">
+        {/* Products */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Package className="h-5 w-5" />
-              Products ({quoteLines.length})
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <Package className="h-5 w-5" />
+                Products ({quoteLines.length})
+              </CardTitle>
+              {canEdit && (
+                <Button onClick={handleAddProduct} className="bg-purple-600 hover:bg-purple-700">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Product
+                </Button>
+              )}
+            </div>
           </CardHeader>
           <CardContent>
-            <QuoteLineItemsTable quoteLines={quoteLines} canEdit={false} />
+            <QuoteLineItemsTable
+              quoteLines={quoteLines}
+              canEdit={canEdit}
+              onEdit={handleEditProduct}
+              onDelete={handleDeleteProduct}
+            />
           </CardContent>
         </Card>
+
+        {/* Quote Line Item Form Dialog */}
+        <QuoteLineItemForm
+          quoteId={quote.quoteid}
+          quoteLine={editingLine}
+          open={showLineItemForm}
+          onOpenChange={setShowLineItemForm}
+          onSubmit={handleLineItemSubmit}
+          isSubmitting={isCreating || isUpdating}
+        />
       </TabsContent>
 
       {/* DETAILS TAB */}
       <TabsContent value="details" className="mt-0 space-y-4">
+        {/* Validity Period Card */}
+        {(quote.effectivefrom || quote.effectiveto) && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base font-semibold flex items-center gap-2">
+                <Calendar className="h-5 w-5" />
+                Validity Period
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-4 md:grid-cols-2">
+              <div>
+                <p className="text-sm text-muted-foreground">Effective From</p>
+                <p className="font-medium">{formatDate(quote.effectivefrom)}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Effective To</p>
+                <p className="font-medium">{formatDate(quote.effectiveto)}</p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         <Card>
           <CardHeader>
             <CardTitle className="text-base font-semibold">Metadata</CardTitle>
@@ -294,18 +352,6 @@ export function QuoteDetailTabs({ quote, quoteLines = [], onCompareVersions }: Q
                 {new Date(quote.modifiedon).toLocaleString()}
               </p>
             </div>
-            {quote.effectivefrom && (
-              <div>
-                <p className="text-muted-foreground">Effective From</p>
-                <p className="font-medium">{formatDate(quote.effectivefrom)}</p>
-              </div>
-            )}
-            {quote.effectiveto && (
-              <div>
-                <p className="text-muted-foreground">Effective To</p>
-                <p className="font-medium">{formatDate(quote.effectiveto)}</p>
-              </div>
-            )}
           </CardContent>
         </Card>
       </TabsContent>

@@ -8,7 +8,7 @@ import { OrderCard } from '@/features/orders/components/order-card'
 import { OrderDataTable } from '@/features/orders/components/order-data-table'
 import { OrderStateCode } from '@/core/contracts/enums'
 import { useDebouncedValue } from '@/shared/hooks/use-debounced-value'
-import { BulkAction } from '@/shared/components/data-table'
+import { BulkAction, type ActiveFilters } from '@/shared/components/data-table'
 import { Download, Loader2, WifiOff, Search } from 'lucide-react'
 import { ErrorState } from '@/shared/components/error-state'
 import { PageHeader } from '@/components/layout/page-header'
@@ -44,6 +44,7 @@ export function OrdersClient() {
   const [filter, setFilter] = useState<string>('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedOrders, setSelectedOrders] = useState<string[]>([])
+  const [columnFilters, setColumnFilters] = useState<ActiveFilters>({})
 
   // ✅ Cargar orders desde el hook (con cookies del navegador)
   const { data: orders = [], isLoading, error } = useOrders()
@@ -261,6 +262,8 @@ export function OrdersClient() {
             onSelectionChange={setSelectedOrders}
             loading={false}
             bulkActions={bulkActions}
+            filters={columnFilters}
+            onFiltersChange={setColumnFilters}
           />
         </div>
       </div>

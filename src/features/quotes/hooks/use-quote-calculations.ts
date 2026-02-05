@@ -57,6 +57,37 @@ export function useLineTotals(
 }
 
 /**
+ * Hook for calculating individual line totals WITH IVA (Mexico)
+ *
+ * El IVA se calcula sobre el subtotal después del descuento:
+ * IVA = (Base Amount - Discount) × 16%
+ */
+export function useLineTotalsWithIVA(
+  pricePerUnit: number,
+  quantity: number,
+  discount: number = 0,
+  applyIVA: boolean = true
+) {
+  return useMemo(() => {
+    const baseAmount = calculateLineBaseAmount(pricePerUnit, quantity)
+    const subtotalAfterDiscount = Math.max(0, baseAmount - discount)
+    const ivaAmount = applyIVA ? calculateTaxAmount(subtotalAfterDiscount, 16) : 0
+    const extendedAmount = subtotalAfterDiscount + ivaAmount
+    const discountPercentage = calculateDiscountPercentage(baseAmount, discount)
+
+    return {
+      baseAmount,
+      subtotalAfterDiscount,
+      ivaAmount,
+      extendedAmount,
+      discount,
+      discountPercentage,
+      applyIVA,
+    }
+  }, [pricePerUnit, quantity, discount, applyIVA])
+}
+
+/**
  * Hook for calculating discount from percentage
  */
 export function useDiscountFromPercentage(

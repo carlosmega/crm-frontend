@@ -31,13 +31,14 @@ import { ErrorState } from '@/shared/components/error-state'
 import { QuoteStateCode } from '@/core/contracts/enums'
 import { useDebouncedValue } from '@/shared/hooks/use-debounced-value'
 import type { Quote } from '@/core/contracts/entities'
-import { BulkAction } from '@/shared/components/data-table'
+import { BulkAction, type ActiveFilters } from '@/shared/components/data-table'
 
 export function QuotesClient() {
   const router = useRouter()
   const [filter, setFilter] = useState<string>('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedQuotes, setSelectedQuotes] = useState<string[]>([])
+  const [columnFilters, setColumnFilters] = useState<ActiveFilters>({})
 
   // ✅ Cargar quotes desde el hook (con cookies del navegador)
   const { data: quotes = [], isLoading, error } = useQuotes()
@@ -325,6 +326,8 @@ export function QuotesClient() {
             onSelectionChange={setSelectedQuotes}
             loading={false}
             bulkActions={bulkActions}
+            filters={columnFilters}
+            onFiltersChange={setColumnFilters}
           />
         </div>
       </div>
