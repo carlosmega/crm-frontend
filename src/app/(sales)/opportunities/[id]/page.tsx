@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
@@ -56,7 +57,7 @@ export default function OpportunityDetailPageFinal() {
       refetch()
     } catch (error) {
       console.error('Error moving to next stage:', error)
-      alert('Failed to move to next stage. Please try again.')
+      toast.error('Failed to move to next stage. Please try again.')
     }
   }
 
@@ -66,7 +67,7 @@ export default function OpportunityDetailPageFinal() {
       refetch()
     } catch (error) {
       console.error('Error moving to previous stage:', error)
-      alert('Failed to move to previous stage. Please try again.')
+      toast.error('Failed to move to previous stage. Please try again.')
     }
   }
 

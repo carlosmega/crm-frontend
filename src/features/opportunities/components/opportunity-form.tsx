@@ -1,5 +1,6 @@
 "use client"
 
+import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -227,10 +228,10 @@ export function OpportunityForm({
           handleSubmit,
           (errors) => {
             console.error('Form validation errors:', errors)
-            alert('Please fix the following errors:\n' +
+            toast.error('Please fix the following errors: ' +
               Object.entries(errors)
-                .map(([field, error]) => `- ${field}: ${error?.message}`)
-                .join('\n')
+                .map(([field, error]) => `${field}: ${error?.message}`)
+                .join(', ')
             )
           }
         )}

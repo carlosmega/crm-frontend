@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo, useCallback, useEffect } from 'react'
+import { toast } from 'sonner'
 import Link from 'next/link'
 import type { Contact } from '@/core/contracts'
 import { ContactStateCode } from '@/core/contracts'
@@ -145,7 +146,7 @@ export function ContactsClient() {
       setSelectedContacts([])
     } catch (error) {
       console.error('Error deleting contacts:', error)
-      alert('Failed to delete some contacts. Please try again.')
+      toast.error('Failed to delete some contacts. Please try again.')
     }
   }, [deleteContact])
 
@@ -183,7 +184,7 @@ export function ContactsClient() {
 
   // ✅ Optimized with useCallback
   const handleBulkAssign = useCallback(async (selectedIds: string[]) => {
-    alert(`Assign ${selectedIds.length} contacts to a user (feature not yet implemented)`)
+    toast.info(`Assign ${selectedIds.length} contacts to a user (feature not yet implemented)`)
   }, [])
 
   // ✅ Optimized: Define bulk actions

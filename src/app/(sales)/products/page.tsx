@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo, useCallback } from 'react'
+import { toast } from 'sonner'
 import Link from 'next/link'
 import { useProducts } from '@/features/products/hooks/use-products'
 import { useProductMutations } from '@/features/products/hooks/use-product-mutations'
@@ -101,7 +102,7 @@ export default function ProductsPage() {
         refetch()
       } catch (error) {
         console.error('Error deleting products:', error)
-        alert('Failed to delete some products. Please try again.')
+        toast.error('Failed to delete some products. Please try again.')
       }
     },
     [bulkDelete, refetch]

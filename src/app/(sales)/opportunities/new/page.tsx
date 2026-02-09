@@ -1,6 +1,7 @@
 "use client"
 
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import dynamic from 'next/dynamic'
 import { useOpportunityMutations } from '@/features/opportunities/hooks/use-opportunity-mutations'
 import { DetailPageHeader } from '@/components/layout/detail-page-header'
@@ -29,7 +30,7 @@ export default function NewOpportunityPage() {
       router.push(`/opportunities/${newOpportunity.opportunityid}`)
     } catch (error) {
       console.error('Error creating opportunity:', error)
-      alert('Failed to create opportunity. Please try again.')
+      toast.error('Failed to create opportunity. Please try again.')
     }
   }
 

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo, useCallback } from 'react'
+import { toast } from 'sonner'
 import Link from 'next/link'
 import type { Account } from '@/core/contracts'
 import { AccountStateCode } from '@/core/contracts'
@@ -116,7 +117,7 @@ export function AccountsClient() {
       setSelectedAccounts([])
     } catch (error) {
       console.error('Error deleting accounts:', error)
-      alert('Failed to delete some accounts. Please try again.')
+      toast.error('Failed to delete some accounts. Please try again.')
     }
   }, [deleteAccount, refetch])
 
@@ -152,7 +153,7 @@ export function AccountsClient() {
 
   // ✅ Optimized with useCallback
   const handleBulkAssign = useCallback(async (selectedIds: string[]) => {
-    alert(`Assign ${selectedIds.length} accounts to a user (feature not yet implemented)`)
+    toast.info(`Assign ${selectedIds.length} accounts to a user (feature not yet implemented)`)
   }, [])
 
   // ✅ Optimized: Define bulk actions

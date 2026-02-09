@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import {
   Dialog,
@@ -97,7 +98,7 @@ export function RequestReturnDialog({ order, children }: RequestReturnDialogProp
       router.refresh()
     } catch (error) {
       console.error('Error creating return request:', error)
-      alert('Failed to create return request. Please try again.')
+      toast.error('Failed to create return request. Please try again.')
     } finally {
       setIsSubmitting(false)
     }

@@ -1,16 +1,11 @@
-'use client'
-
+import type { Metadata } from 'next'
 import { OpportunitiesClient } from './opportunities-client'
 
-/**
- * ✅ Client Component - Fetches data on the client with authentication
- *
- * IMPORTANTE: Debe ser Client Component porque:
- * - Django requiere cookies de sesión para autenticación
- * - Las cookies solo están disponibles en el navegador (no en SSR)
- * - El hook useOpportunities() maneja la autenticación correctamente
- */
+export const metadata: Metadata = {
+  title: 'Opportunities | CRM Sales',
+  description: 'Manage sales opportunities, track pipeline stages and revenue forecasts',
+}
+
 export default function OpportunitiesPage() {
-  // OpportunitiesClient maneja su propia carga de datos con useOpportunities()
   return <OpportunitiesClient />
 }

@@ -1,5 +1,6 @@
 'use client'
 
+import { toast } from 'sonner'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
@@ -41,7 +42,7 @@ export default function InvoiceNewPage() {
 
       if (!ownerid) {
         console.error('No authenticated user found')
-        alert('Authentication required. Please sign in to create an invoice.')
+        toast.error('Authentication required. Please sign in to create an invoice.')
         return
       }
 
@@ -62,11 +63,11 @@ export default function InvoiceNewPage() {
       // const newInvoice = await response.json()
       // router.push(`/invoices/${newInvoice.invoiceid}`)
 
-      alert('Invoice creation is pending backend implementation. Data logged to console.')
+      toast.info('Invoice creation is pending backend implementation.')
       router.push('/invoices')
     } catch (error) {
       console.error('Error creating invoice:', error)
-      alert('Failed to create invoice. Please try again.')
+      toast.error('Failed to create invoice. Please try again.')
     }
   }
 

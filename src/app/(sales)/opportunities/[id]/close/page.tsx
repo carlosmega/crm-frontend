@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo } from 'react'
+import { toast } from 'sonner'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
@@ -93,7 +94,7 @@ export default function CloseOpportunityPage() {
       router.push(`/opportunities/${id}`)
     } catch (error) {
       console.error('Error closing opportunity:', error)
-      alert('Failed to close opportunity. Please try again.')
+      toast.error('Failed to close opportunity. Please try again.')
     }
   }
 

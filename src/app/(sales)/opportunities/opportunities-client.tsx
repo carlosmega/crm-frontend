@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo, useCallback } from 'react'
+import { toast } from 'sonner'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -138,7 +139,7 @@ export function OpportunitiesClient() {
       router.refresh()
     } catch (error) {
       console.error('Error deleting opportunities:', error)
-      alert('Failed to delete some opportunities. Please try again.')
+      toast.error('Failed to delete some opportunities. Please try again.')
     }
   }, [deleteOpportunity, router])
 
@@ -179,7 +180,7 @@ export function OpportunitiesClient() {
 
   // Handle bulk assign
   const handleBulkAssign = useCallback(async (selectedIds: string[]) => {
-    alert(`Assign ${selectedIds.length} opportunities to a user (feature not yet implemented)`)
+    toast.info(`Assign ${selectedIds.length} opportunities to a user (feature not yet implemented)`)
   }, [])
 
   // Define bulk actions

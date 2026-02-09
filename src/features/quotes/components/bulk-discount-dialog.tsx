@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { toast } from 'sonner'
 import {
   Dialog,
   DialogContent,
@@ -57,12 +58,12 @@ export function BulkDiscountDialog({
 
   const handleApply = () => {
     if (discountValue <= 0) {
-      alert('Discount must be greater than 0')
+      toast.warning('Discount must be greater than 0')
       return
     }
 
     if (discountType === 'percentage' && discountValue > 100) {
-      alert('Percentage cannot exceed 100%')
+      toast.warning('Percentage cannot exceed 100%')
       return
     }
 

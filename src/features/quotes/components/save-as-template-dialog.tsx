@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { toast } from 'sonner'
 import {
   Dialog,
   DialogContent,
@@ -54,12 +55,12 @@ export function SaveAsTemplateDialog({
 
   const handleSave = () => {
     if (!name.trim()) {
-      alert('Template name is required')
+      toast.warning('Template name is required')
       return
     }
 
     if (quoteLines.length === 0) {
-      alert('Cannot save empty quote as template')
+      toast.warning('Cannot save empty quote as template')
       return
     }
 

@@ -1,6 +1,7 @@
 'use client'
 
 import { memo, useState, useCallback, useEffect } from 'react'
+import { toast } from 'sonner'
 import {
   Table,
   TableBody,
@@ -74,22 +75,22 @@ const EditableQuoteLineRow = memo(function EditableQuoteLineRow({
 
     // Validations
     if (editedQuantity < 1) {
-      alert('Quantity must be at least 1')
+      toast.warning('Quantity must be at least 1')
       return
     }
 
     if (editedPrice < 0) {
-      alert('Price cannot be negative')
+      toast.warning('Price cannot be negative')
       return
     }
 
     if (editedDiscount < 0) {
-      alert('Discount cannot be negative')
+      toast.warning('Discount cannot be negative')
       return
     }
 
     if (editedDiscount > baseAmount) {
-      alert('Discount cannot exceed base amount')
+      toast.warning('Discount cannot exceed base amount')
       return
     }
 

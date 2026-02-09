@@ -1,6 +1,7 @@
 "use client"
 
 import { use, useState } from 'react'
+import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
@@ -49,7 +50,7 @@ export default function EditOpportunityPage({ params }: { params: Promise<{ id: 
     } catch (error: any) {
       console.error('Error updating opportunity:', error)
       const errorMessage = error?.message || 'Failed to update opportunity. Please try again.'
-      alert(errorMessage)
+      toast.error(errorMessage)
     }
   }
 

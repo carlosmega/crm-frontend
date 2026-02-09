@@ -1,16 +1,11 @@
-'use client'
-
+import type { Metadata } from 'next'
 import { AccountsClient } from './accounts-client'
 
-/**
- * ✅ Client Component - Fetches data on the client with authentication
- *
- * IMPORTANTE: Debe ser Client Component porque:
- * - Django requiere cookies de sesión para autenticación
- * - Las cookies solo están disponibles en el navegador (no en SSR)
- * - El hook useAccounts() maneja la autenticación correctamente
- */
+export const metadata: Metadata = {
+  title: 'Accounts | CRM Sales',
+  description: 'Manage customer accounts, track business relationships and company information',
+}
+
 export default function AccountsPage() {
-  // AccountsClient maneja su propia carga de datos con useAccounts()
   return <AccountsClient />
 }

@@ -1,6 +1,12 @@
+import type { Metadata } from 'next'
 import { PageHeader } from '@/components/layout/page-header'
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { DashboardClient } from './dashboard-client'
+
+export const metadata: Metadata = {
+  title: 'Dashboard | CRM Sales',
+  description: 'Sales overview with pipeline metrics, revenue forecasts and team performance',
+}
 
 export default function DashboardPage() {
   return (

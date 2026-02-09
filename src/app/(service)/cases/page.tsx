@@ -1,13 +1,11 @@
-'use client'
-
+import type { Metadata } from 'next'
 import { CasesClient } from './cases-client'
 
-/**
- * Cases List Page
- *
- * Client Component for loading and displaying cases.
- * Requires client-side rendering for authentication cookies.
- */
+export const metadata: Metadata = {
+  title: 'Cases | CRM Service',
+  description: 'Manage support cases, track resolutions and monitor service level agreements',
+}
+
 export default function CasesPage() {
   return <CasesClient />
 }
