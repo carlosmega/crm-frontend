@@ -1,5 +1,6 @@
 "use client"
 
+import { useSession } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -73,6 +74,8 @@ interface LeadFormProps {
 }
 
 export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, section = 'all' }: LeadFormProps) {
+  const { data: session } = useSession()
+
   const form = useForm<LeadFormValues>({
     resolver: zodResolver(leadFormSchema),
     defaultValues: lead
@@ -129,7 +132,7 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, sec
   const handleSubmit = async (values: LeadFormValues) => {
     const data = {
       ...values,
-      ownerid: 'user-001', // Hardcoded for now
+      ownerid: session?.user?.id || 'anonymous',
     }
     await onSubmit(data as CreateLeadDto | UpdateLeadDto)
   }

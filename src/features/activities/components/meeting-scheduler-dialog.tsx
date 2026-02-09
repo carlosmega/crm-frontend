@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useSession } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
 import {
   Dialog,
@@ -78,6 +79,7 @@ export function MeetingSchedulerDialog({
   regardingType,
   regardingName,
 }: MeetingSchedulerDialogProps) {
+  const { data: session } = useSession()
   const { toast } = useToast()
   const createMutation = useCreateActivity()
   const [startDate, setStartDate] = useState<Date>()
@@ -163,7 +165,7 @@ ${data.description ? `\nNOTES:\n${data.description}` : ''}
         scheduledend: endDateTime.toISOString(),
         regardingobjectid: regardingId,
         regardingobjectidtype: regardingType,
-        ownerid: 'user-1', // TODO: Get from auth context
+        ownerid: session?.user?.id || 'anonymous',
       }
 
       await createMutation.mutateAsync(dto)

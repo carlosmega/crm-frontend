@@ -1,5 +1,6 @@
 "use client"
 
+import { useSession } from 'next-auth/react'
 import { useForm, UseFormReturn } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -59,6 +60,8 @@ export function CaseForm({
   section = 'all',
   sharedForm,
 }: CaseFormProps) {
+  const { data: session } = useSession()
+
   // Use shared form if provided, otherwise create local form
   const localForm = useForm<CaseFormValues>({
     resolver: zodResolver(caseFormSchema),
@@ -70,7 +73,7 @@ export function CaseForm({
   const handleSubmit = async (values: CaseFormValues) => {
     const data = {
       ...values,
-      ownerid: 'user-001', // Hardcoded for now
+      ownerid: session?.user?.id || 'anonymous',
     }
     await onSubmit(data as CreateCaseDto | UpdateCaseDto)
   }

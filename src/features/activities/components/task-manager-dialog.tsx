@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useSession } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
 import {
   Dialog,
@@ -66,6 +67,7 @@ export function TaskManagerDialog({
   regardingType,
   regardingName,
 }: TaskManagerDialogProps) {
+  const { data: session } = useSession()
   const { toast } = useToast()
   const createMutation = useCreateActivity()
   const [dueDate, setDueDate] = useState<Date>()
@@ -167,7 +169,7 @@ ${data.description || 'No description provided'}
         prioritycode: data.priority,
         regardingobjectid: regardingId,
         regardingobjectidtype: regardingType,
-        ownerid: 'user-1', // TODO: Get from auth context
+        ownerid: session?.user?.id || 'anonymous',
       }
 
       await createMutation.mutateAsync(dto)

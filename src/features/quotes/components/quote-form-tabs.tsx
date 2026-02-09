@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react'
+import { useSession } from 'next-auth/react'
 import { createPortal } from 'react-dom'
 import { useForm, Controller } from 'react-hook-form'
 import type { Quote, CreateQuoteDto, UpdateQuoteDto } from '../types'
@@ -58,6 +59,7 @@ interface QuoteFormTabsProps {
  * - Each tab shows only relevant fields (via CSS visibility)
  */
 export function QuoteFormTabs({ quote, defaultData, onSubmit, onCancel, isSubmitting, hideActions }: QuoteFormTabsProps) {
+  const { data: session } = useSession()
   const [activeTab, setActiveTab] = useState<QuoteFormTabId>('general')
   const [tabsContainer, setTabsContainer] = useState<HTMLElement | null>(null)
   const isEdit = !!quote
@@ -88,7 +90,7 @@ export function QuoteFormTabs({ quote, defaultData, onSubmit, onCancel, isSubmit
           effectivefrom: defaultData?.effectivefrom,
           effectiveto: defaultData?.effectiveto,
           customeridtype: CustomerType.Account,
-          ownerid: 'current-user-id',
+          ownerid: session?.user?.id || 'anonymous',
         },
   })
 

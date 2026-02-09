@@ -1,3 +1,4 @@
+import { useSession } from 'next-auth/react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { quoteService } from '../api/quote-service'
 import { quoteDetailService } from '../api/quote-detail-service'
@@ -25,6 +26,7 @@ async function createVersionSnapshot(
     changedescription?: string
     changedfields?: string[]
     changereason?: string
+    createdby?: string
   }
 ) {
   try {
@@ -34,7 +36,7 @@ async function createVersionSnapshot(
     // Create version snapshot
     await quoteVersionService.createSnapshot(quote, quoteLines, changetype, {
       ...options,
-      createdby: 'current-user', // TODO: Get from auth context
+      createdby: options?.createdby || 'anonymous',
     })
   } catch (error) {
     // Don't fail the main operation if versioning fails
@@ -47,6 +49,7 @@ async function createVersionSnapshot(
  */
 export function useCreateQuote() {
   const queryClient = useQueryClient()
+  const { data: session } = useSession()
 
   return useMutation({
     mutationFn: (data: CreateQuoteDto) => quoteService.create(data),
@@ -64,6 +67,7 @@ export function useCreateQuote() {
       // Create version snapshot
       await createVersionSnapshot(newQuote, QuoteVersionChangeType.Created, {
         changedescription: 'Quote created',
+        createdby: session?.user?.id,
       })
 
       // Invalidate version queries
@@ -88,6 +92,7 @@ export function useCreateQuote() {
  */
 export function useUpdateQuote() {
   const queryClient = useQueryClient()
+  const { data: session } = useSession()
 
   return useMutation({
     mutationFn: ({
@@ -115,6 +120,7 @@ export function useUpdateQuote() {
       await createVersionSnapshot(updatedQuote, QuoteVersionChangeType.Updated, {
         changedescription: 'Quote information updated',
         changedfields,
+        createdby: session?.user?.id,
       })
 
       // Invalidate version queries
@@ -167,6 +173,7 @@ export function useDeleteQuote() {
  */
 export function useActivateQuote() {
   const queryClient = useQueryClient()
+  const { data: session } = useSession()
 
   return useMutation({
     mutationFn: ({
@@ -192,6 +199,7 @@ export function useActivateQuote() {
       await createVersionSnapshot(activatedQuote, QuoteVersionChangeType.Activated, {
         changedescription: 'Quote activated and sent to customer',
         changedfields: ['statecode', 'statuscode'],
+        createdby: session?.user?.id,
       })
 
       // Invalidate version queries
@@ -218,6 +226,7 @@ export function useActivateQuote() {
  */
 export function useWinQuote() {
   const queryClient = useQueryClient()
+  const { data: session } = useSession()
 
   return useMutation({
     mutationFn: ({
@@ -243,6 +252,7 @@ export function useWinQuote() {
       await createVersionSnapshot(wonQuote, QuoteVersionChangeType.Won, {
         changedescription: 'Quote won - Customer accepted',
         changedfields: ['statecode', 'statuscode'],
+        createdby: session?.user?.id,
       })
 
       // Invalidate version queries
@@ -296,6 +306,7 @@ export function useWinQuote() {
  */
 export function useLoseQuote() {
   const queryClient = useQueryClient()
+  const { data: session } = useSession()
 
   return useMutation({
     mutationFn: ({
@@ -321,6 +332,7 @@ export function useLoseQuote() {
       await createVersionSnapshot(lostQuote, QuoteVersionChangeType.Lost, {
         changedescription: 'Quote lost - Customer declined',
         changedfields: ['statecode', 'statuscode'],
+        createdby: session?.user?.id,
       })
 
       // Invalidate version queries
@@ -343,6 +355,7 @@ export function useLoseQuote() {
  */
 export function useCancelQuote() {
   const queryClient = useQueryClient()
+  const { data: session } = useSession()
 
   return useMutation({
     mutationFn: ({ id, reason }: { id: string; reason?: string }) =>
@@ -361,6 +374,7 @@ export function useCancelQuote() {
         changedescription: 'Quote canceled',
         changedfields: ['statecode', 'statuscode'],
         changereason: reason,
+        createdby: session?.user?.id,
       })
 
       // Invalidate version queries
@@ -383,6 +397,7 @@ export function useCancelQuote() {
  */
 export function useReviseQuote() {
   const queryClient = useQueryClient()
+  const { data: session } = useSession()
 
   return useMutation({
     mutationFn: (id: string) => quoteService.revise(id),
@@ -399,6 +414,7 @@ export function useReviseQuote() {
       await createVersionSnapshot(revisedQuote, QuoteVersionChangeType.Revised, {
         changedescription: 'Quote reopened for revision',
         changedfields: ['statecode', 'statuscode'],
+        createdby: session?.user?.id,
       })
 
       // Invalidate version queries
@@ -426,6 +442,7 @@ export function useReviseQuote() {
  */
 export function useCloneQuote() {
   const queryClient = useQueryClient()
+  const { data: session } = useSession()
 
   return useMutation({
     mutationFn: (id: string) => quoteService.clone(id),
@@ -446,6 +463,7 @@ export function useCloneQuote() {
       // Create version snapshot for the new cloned quote
       await createVersionSnapshot(clonedQuote, QuoteVersionChangeType.Created, {
         changedescription: 'Quote created from clone',
+        createdby: session?.user?.id,
       })
 
       // Invalidate version queries

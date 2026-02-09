@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSession } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
 import {
   Dialog,
@@ -62,6 +63,7 @@ export function PhoneCallLoggerDialog({
   regardingName,
   phoneNumber: defaultPhoneNumber,
 }: PhoneCallLoggerDialogProps) {
+  const { data: session } = useSession()
   const { toast } = useToast()
   const createMutation = useCreateActivity()
 
@@ -155,7 +157,7 @@ ${data.nextSteps ? `NEXT STEPS:\n${data.nextSteps}` : ''}
         scheduledend: new Date(Date.now() + elapsedSeconds * 1000).toISOString(),
         regardingobjectid: regardingId,
         regardingobjectidtype: regardingType,
-        ownerid: 'user-1', // TODO: Get from auth context
+        ownerid: session?.user?.id || 'anonymous',
       }
 
       await createMutation.mutateAsync(dto)

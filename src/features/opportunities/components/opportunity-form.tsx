@@ -1,6 +1,7 @@
 "use client"
 
 import { toast } from 'sonner'
+import { useSession } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -87,6 +88,7 @@ export function OpportunityForm({
   hideActions,
   section = 'all'
 }: OpportunityFormProps) {
+  const { data: session } = useSession()
 
   const form = useForm<OpportunityFormValues>({
     resolver: zodResolver(opportunityFormSchema),
@@ -200,7 +202,7 @@ export function OpportunityForm({
         estimatedvalue: values.estimatedvalue,
         estimatedclosedate: values.estimatedclosedate,
         description: values.description || undefined,
-        ownerid: 'user-001', // Hardcoded for now
+        ownerid: session?.user?.id || 'anonymous',
       }
 
       // Eliminar campos undefined

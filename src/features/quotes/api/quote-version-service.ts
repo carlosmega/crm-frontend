@@ -161,7 +161,7 @@ export const quoteVersionService = {
       changetype,
       changedescription: options?.changedescription,
       changedfields: options?.changedfields,
-      createdby: options?.createdby || 'current-user',
+      createdby: options?.createdby || 'anonymous',
       changereason: options?.changereason,
     })
   },

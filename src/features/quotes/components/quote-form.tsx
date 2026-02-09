@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useSession } from 'next-auth/react'
 import { useForm, Controller } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -44,6 +45,7 @@ export function QuoteForm({
   hideActions = false,
   section = 'all',
 }: QuoteFormProps) {
+  const { data: session } = useSession()
   const isEdit = !!quote
 
   const showGeneral = section === 'all' || section === 'general'
@@ -70,7 +72,7 @@ export function QuoteForm({
         }
       : {
           customeridtype: CustomerType.Account,
-          ownerid: 'current-user-id', // TODO: Get from auth context
+          ownerid: session?.user?.id || 'anonymous',
         },
   })
 

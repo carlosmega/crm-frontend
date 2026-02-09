@@ -2,6 +2,7 @@
 
 import { useForm, Controller } from 'react-hook-form'
 import { useState } from 'react'
+import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -31,6 +32,7 @@ export function InvoiceForm({
   hideActions = false,
   section = 'all',
 }: InvoiceFormProps) {
+  const { data: session } = useSession()
   const isEdit = !!invoice
 
   const showGeneral = section === 'all' || section === 'general'
@@ -56,7 +58,7 @@ export function InvoiceForm({
         }
       : {
           customeridtype: CustomerType.Account,
-          ownerid: 'current-user-id', // TODO: Get from auth context
+          ownerid: session?.user?.id || 'anonymous',
           duedate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // Default: 30 days from now
         },
   })

@@ -1,5 +1,6 @@
 'use client'
 
+import { useSession } from 'next-auth/react'
 import { useForm, Controller } from 'react-hook-form'
 import {
   Dialog,
@@ -55,6 +56,7 @@ export function CreateActivityDialog({
   regardingType,
   regardingName,
 }: CreateActivityDialogProps) {
+  const { data: session } = useSession()
   const { toast } = useToast()
   const createMutation = useCreateActivity()
 
@@ -84,7 +86,7 @@ export function CreateActivityDialog({
         scheduledend: data.scheduledend?.toISOString(),
         regardingobjectid: regardingId,
         regardingobjectidtype: regardingType,
-        ownerid: 'user-1', // TODO: Get from auth context
+        ownerid: session?.user?.id || 'anonymous',
       }
 
       await createMutation.mutateAsync(dto)

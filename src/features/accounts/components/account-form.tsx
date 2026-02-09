@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react'
+import { useSession } from 'next-auth/react'
 import { useForm, type UseFormReturn } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -122,6 +123,7 @@ interface AccountFormProps {
 }
 
 export function AccountForm({ account, onSubmit, onCancel, isLoading, hideActions, section = 'all', sharedForm }: AccountFormProps) {
+  const { data: session } = useSession()
   const [selectedContact, setSelectedContact] = useState<SelectedCustomer | undefined>()
 
   // Fetch contacts for contact lookup
@@ -161,7 +163,7 @@ export function AccountForm({ account, onSubmit, onCancel, isLoading, hideAction
   const handleSubmit = async (values: AccountFormValues) => {
     const data = {
       ...values,
-      ownerid: 'user-001', // Hardcoded for now
+      ownerid: session?.user?.id || 'anonymous',
     }
     await onSubmit(data as CreateAccountDto | UpdateAccountDto)
   }
