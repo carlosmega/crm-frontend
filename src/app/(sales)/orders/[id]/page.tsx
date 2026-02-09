@@ -53,6 +53,7 @@ import {
   XCircle,
   FileDown,
   Package,
+  Pencil,
   Send,
 } from 'lucide-react'
 
@@ -165,6 +166,17 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
           <FileDown className="mr-2 h-4 w-4" />
           {isExporting ? 'Exporting...' : 'Export PDF'}
         </DropdownMenuItem>
+        {canEditLines && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link href={`/orders/${id}/edit`}>
+                <Pencil className="mr-2 h-4 w-4" />
+                Edit Order
+              </Link>
+            </DropdownMenuItem>
+          </>
+        )}
         {canSubmit && (
           <>
             <DropdownMenuSeparator />
@@ -264,6 +276,14 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                     Back
                   </Link>
                 </Button>
+                {canEditLines && (
+                  <Button variant="outline" asChild>
+                    <Link href={`/orders/${id}/edit`}>
+                      <Pencil className="mr-2 h-4 w-4" />
+                      Edit Order
+                    </Link>
+                  </Button>
+                )}
                 <Button
                   variant="outline"
                   onClick={() => exportToPdf(id, order, orderDetails || [])}

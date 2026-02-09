@@ -26,7 +26,10 @@ export type TranslationNamespace =
   | 'contacts'    // Contact management
   | 'products'    // Product catalog
   | 'activities'  // Activity tracking
-  | 'analytics'   // Dashboard & reports
+  | 'cases'       // Case management
+  | 'dashboard'   // Dashboard & reports
+  | 'notifications' // Notifications
+  | 'analytics'   // Analytics & reports
 
 /**
  * Get locale display name

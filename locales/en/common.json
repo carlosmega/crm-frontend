@@ -16,7 +16,11 @@
     "submit": "Submit",
     "reset": "Reset",
     "apply": "Apply",
-    "clear": "Clear"
+    "clear": "Clear",
+    "viewDetails": "View details",
+    "clearFilters": "Clear Filters",
+    "clearAllFilters": "Clear All Filters",
+    "retry": "Retry"
   },
   "states": {
     "active": "Active",
@@ -24,7 +28,17 @@
     "pending": "Pending",
     "completed": "Completed",
     "cancelled": "Cancelled",
-    "draft": "Draft"
+    "draft": "Draft",
+    "open": "Open",
+    "closed": "Closed",
+    "won": "Won",
+    "lost": "Lost",
+    "qualified": "Qualified",
+    "disqualified": "Disqualified",
+    "resolved": "Resolved",
+    "paid": "Paid",
+    "canceled": "Canceled",
+    "scheduled": "Scheduled"
   },
   "messages": {
     "loading": "Loading...",
@@ -36,7 +50,8 @@
     "confirmDelete": "Are you sure you want to delete this item?",
     "unsavedChanges": "You have unsaved changes",
     "required": "This field is required",
-    "invalid": "Invalid value"
+    "invalid": "Invalid value",
+    "noContactInfo": "No contact info"
   },
   "pagination": {
     "previous": "Previous",
@@ -70,5 +85,29 @@
     "lastWeek": "Last week",
     "lastMonth": "Last month",
     "custom": "Custom"
+  },
+  "columns": {
+    "name": "Name",
+    "status": "Status",
+    "created": "Created",
+    "actions": "Actions",
+    "customer": "Customer",
+    "priority": "Priority",
+    "type": "Type"
+  },
+  "priority": {
+    "high": "High",
+    "normal": "Normal",
+    "low": "Low"
+  },
+  "filters": {
+    "amountPlaceholder": "Enter amount...",
+    "numberPlaceholder": "Enter number...",
+    "searchPlaceholder": "Search..."
+  },
+  "notApplicable": "N/A",
+  "emptyState": {
+    "adjustSearch": "Try adjusting your search",
+    "noFiltersDescription": "Try adjusting your search criteria or filters to find what you're looking for."
   }
 }

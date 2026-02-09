@@ -184,10 +184,10 @@ function calculateSourceMetrics(
   const qualifiedCount = qualifiedLeads.length
   const qualifiedRate = totalLeads > 0 ? (qualifiedCount / totalLeads) * 100 : 0
 
-  // Opportunities creadas desde estos leads
-  const sourceLeadIds = sourceLeads.map((l) => l.leadid)
+  // Opportunities creadas desde estos leads (Set for O(1) lookups)
+  const sourceLeadIdSet = new Set(sourceLeads.map((l) => l.leadid))
   const sourceOpportunities = opportunities.filter((o) =>
-    sourceLeadIds.includes(o.originatingleadid || '')
+    sourceLeadIdSet.has(o.originatingleadid || '')
   )
 
   const opportunitiesCreated = sourceOpportunities.length

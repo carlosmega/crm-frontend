@@ -3,6 +3,7 @@
 import { useCallback, useMemo } from 'react'
 import Link from 'next/link'
 import type { Case } from '@/core/contracts'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import {
   CaseStateCode,
   CasePriorityCode,
@@ -75,6 +76,9 @@ export function CaseList({
   bulkActions = [],
   hasLoadedData = true,
 }: CaseListProps) {
+  const { t: tCase } = useTranslation('cases')
+  const { t: tCommon } = useTranslation('common')
+
   const formatDate = useCallback((dateString?: string) => {
     if (!dateString) return '-'
     return DATE_FORMATTER.format(new Date(dateString))
@@ -84,36 +88,35 @@ export function CaseList({
     () => [
       {
         id: 'ticketnumber',
-        header: 'Ticket #',
+        header: tCase('columns.ticketNumber'),
         accessorFn: (c) => c.ticketnumber || '-',
         sortable: true,
         filterable: true,
         filter: {
           type: 'text',
           operators: ['contains', 'equals', 'startsWith'],
-          placeholder: 'Search ticket...',
+          placeholder: tCase('filters.searchTicket'),
         },
         cell: (c) => (
           <Link
             href={`/cases/${c.incidentid}`}
             className="font-mono text-sm font-medium hover:underline"
             onClick={(e) => e.stopPropagation()}
-            prefetch={true}
-          >
+                     >
             {c.ticketnumber || '-'}
           </Link>
         ),
       },
       {
         id: 'title',
-        header: 'Title',
+        header: tCase('columns.title'),
         accessorFn: (c) => c.title,
         sortable: true,
         filterable: true,
         filter: {
           type: 'text',
           operators: ['contains', 'equals', 'startsWith'],
-          placeholder: 'Search title...',
+          placeholder: tCase('filters.searchTitle'),
         },
         cell: (c) => (
           <div className="flex flex-col max-w-[300px]">
@@ -121,8 +124,7 @@ export function CaseList({
               href={`/cases/${c.incidentid}`}
               className="font-medium hover:underline truncate"
               onClick={(e) => e.stopPropagation()}
-              prefetch={true}
-            >
+                         >
               {c.title}
             </Link>
             {c.description && (
@@ -135,14 +137,14 @@ export function CaseList({
       },
       {
         id: 'customer',
-        header: 'Customer',
+        header: tCase('columns.customer'),
         accessorFn: (c) => c.customername || '-',
         sortable: true,
         filterable: true,
         filter: {
           type: 'text',
           operators: ['contains', 'equals'],
-          placeholder: 'Search customer...',
+          placeholder: tCase('filters.searchCustomer'),
         },
         cell: (c) => (
           <div className="flex items-center gap-2">
@@ -157,32 +159,32 @@ export function CaseList({
       },
       {
         id: 'priority',
-        header: 'Priority',
+        header: tCase('columns.priority'),
         accessorFn: (c) => c.prioritycode,
         sortable: true,
         filterable: true,
         filter: {
           type: 'multiselect',
           options: [
-            { label: 'High', value: CasePriorityCode.High, icon: AlertTriangle },
-            { label: 'Normal', value: CasePriorityCode.Normal, icon: Minus },
-            { label: 'Low', value: CasePriorityCode.Low, icon: ArrowDown },
+            { label: tCase('priority.high'), value: CasePriorityCode.High, icon: AlertTriangle },
+            { label: tCase('priority.normal'), value: CasePriorityCode.Normal, icon: Minus },
+            { label: tCase('priority.low'), value: CasePriorityCode.Low, icon: ArrowDown },
           ],
         },
         cell: (c) => <CasePriorityBadge priority={c.prioritycode} />,
       },
       {
         id: 'status',
-        header: 'Status',
+        header: tCase('columns.status'),
         accessorFn: (c) => c.statecode,
         sortable: true,
         filterable: true,
         filter: {
           type: 'multiselect',
           options: [
-            { label: 'Active', value: CaseStateCode.Active },
-            { label: 'Resolved', value: CaseStateCode.Resolved },
-            { label: 'Cancelled', value: CaseStateCode.Cancelled },
+            { label: tCase('status.active'), value: CaseStateCode.Active },
+            { label: tCase('status.resolved'), value: CaseStateCode.Resolved },
+            { label: tCase('status.cancelled'), value: CaseStateCode.Cancelled },
           ],
         },
         cell: (c) => (
@@ -191,39 +193,39 @@ export function CaseList({
       },
       {
         id: 'origin',
-        header: 'Origin',
+        header: tCase('columns.origin'),
         accessorFn: (c) => c.caseorigincode,
         sortable: true,
         filterable: true,
         filter: {
           type: 'multiselect',
           options: [
-            { label: 'Phone', value: CaseOriginCode.Phone, icon: Phone },
-            { label: 'Email', value: CaseOriginCode.Email, icon: Mail },
-            { label: 'Web', value: CaseOriginCode.Web, icon: Globe },
+            { label: tCase('origin.phone'), value: CaseOriginCode.Phone, icon: Phone },
+            { label: tCase('origin.email'), value: CaseOriginCode.Email, icon: Mail },
+            { label: tCase('origin.web'), value: CaseOriginCode.Web, icon: Globe },
           ],
         },
         cell: (c) => <CaseOriginBadge origin={c.caseorigincode} />,
       },
       {
         id: 'type',
-        header: 'Type',
+        header: tCase('columns.type'),
         accessorFn: (c) => c.casetypecode,
         sortable: true,
         filterable: true,
         filter: {
           type: 'multiselect',
           options: [
-            { label: 'Question', value: CaseTypeCode.Question, icon: HelpCircle },
-            { label: 'Problem', value: CaseTypeCode.Problem, icon: AlertTriangle },
-            { label: 'Request', value: CaseTypeCode.Request, icon: FileText },
+            { label: tCase('type.question'), value: CaseTypeCode.Question, icon: HelpCircle },
+            { label: tCase('type.problem'), value: CaseTypeCode.Problem, icon: AlertTriangle },
+            { label: tCase('type.request'), value: CaseTypeCode.Request, icon: FileText },
           ],
         },
         cell: (c) => <CaseTypeBadge type={c.casetypecode} />,
       },
       {
         id: 'createdon',
-        header: 'Created',
+        header: tCase('columns.created'),
         accessorFn: (c) => (c.createdon ? new Date(c.createdon) : null),
         sortable: true,
         filterable: true,
@@ -239,7 +241,7 @@ export function CaseList({
       },
       {
         id: 'actions',
-        header: 'Actions',
+        header: tCase('columns.actions'),
         className: 'text-right',
         headerClassName: 'text-right',
         cell: (c) => (
@@ -247,13 +249,13 @@ export function CaseList({
             className="flex justify-end gap-1"
             onClick={(e) => e.stopPropagation()}
           >
-            <Button asChild variant="ghost" size="icon-sm" title="View details">
-              <Link href={`/cases/${c.incidentid}`} prefetch={true}>
+            <Button asChild variant="ghost" size="icon-sm" title={tCommon('buttons.viewDetails')}>
+              <Link href={`/cases/${c.incidentid}`}>
                 <Eye className="size-4" />
               </Link>
             </Button>
-            <Button asChild variant="ghost" size="icon-sm" title="Edit case">
-              <Link href={`/cases/${c.incidentid}/edit`} prefetch={true}>
+            <Button asChild variant="ghost" size="icon-sm" title={tCase('buttons.editCase')}>
+              <Link href={`/cases/${c.incidentid}/edit`}>
                 <Edit className="size-4" />
               </Link>
             </Button>

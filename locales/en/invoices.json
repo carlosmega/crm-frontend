@@ -1,0 +1,34 @@
+{
+  "columns": {
+    "invoiceNumber": "Invoice Number",
+    "name": "Name",
+    "status": "Status",
+    "dueDate": "Due Date",
+    "amount": "Amount",
+    "balance": "Balance",
+    "created": "Created",
+    "actions": "Actions"
+  },
+  "filters": {
+    "searchInvoiceNumber": "Search invoice #...",
+    "searchName": "Search name...",
+    "enterAmount": "Enter amount...",
+    "enterBalance": "Enter balance..."
+  },
+  "status": {
+    "active": "Active",
+    "paid": "Paid",
+    "canceled": "Canceled"
+  },
+  "labels": {
+    "orderPrefix": "Order:",
+    "partial": "Partial"
+  },
+  "buttons": {
+    "editInvoice": "Edit invoice"
+  },
+  "emptyState": {
+    "title": "No invoices found",
+    "description": "No invoices match your current filters. Try adjusting your search criteria."
+  }
+}

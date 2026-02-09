@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, memo, useMemo, useCallback } from 'react'
 import type { Activity } from '@/core/contracts/entities/activity'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -36,27 +36,24 @@ const iconMap = {
  *
  * Representa un item individual en el timeline
  */
-export function ActivityTimelineItem({ activity, isLast = false }: ActivityTimelineItemProps) {
+export const ActivityTimelineItem = memo(function ActivityTimelineItem({ activity, isLast = false }: ActivityTimelineItemProps) {
   const [expanded, setExpanded] = useState(false)
   const completeMutation = useCompleteActivity()
 
-  const iconName = getActivityTypeIcon(activity.activitytypecode)
-  const Icon = iconMap[iconName as keyof typeof iconMap] || Circle
-  const iconColor = getActivityTypeColor(activity.activitytypecode)
-  const stateColor = getActivityStateColor(activity.statecode)
+  const { Icon, iconColor, stateColor, displayDate, isOverdue } = useMemo(() => {
+    const iconName = getActivityTypeIcon(activity.activitytypecode)
+    return {
+      Icon: iconMap[iconName as keyof typeof iconMap] || Circle,
+      iconColor: getActivityTypeColor(activity.activitytypecode),
+      stateColor: getActivityStateColor(activity.statecode),
+      displayDate: activity.actualend || activity.actualstart || activity.scheduledstart || activity.createdon,
+      isOverdue: activity.statecode === ActivityStateCode.Open &&
+        activity.scheduledend &&
+        new Date(activity.scheduledend) < new Date(),
+    }
+  }, [activity])
 
-  const displayDate =
-    activity.actualend ||
-    activity.actualstart ||
-    activity.scheduledstart ||
-    activity.createdon
-
-  const isOverdue =
-    activity.statecode === ActivityStateCode.Open &&
-    activity.scheduledend &&
-    new Date(activity.scheduledend) < new Date()
-
-  const handleComplete = async () => {
+  const handleComplete = useCallback(async () => {
     try {
       await completeMutation.mutateAsync({
         id: activity.activityid,
@@ -68,7 +65,7 @@ export function ActivityTimelineItem({ activity, isLast = false }: ActivityTimel
     } catch (error) {
       console.error('Error completing activity:', error)
     }
-  }
+  }, [completeMutation, activity.activityid])
 
   return (
     <div className="relative flex gap-4">
@@ -157,4 +154,4 @@ export function ActivityTimelineItem({ activity, isLast = false }: ActivityTimel
       </div>
     </div>
   )
-}
+})

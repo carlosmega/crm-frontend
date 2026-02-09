@@ -1,0 +1,42 @@
+{
+  "columns": {
+    "name": "Nombre",
+    "customer": "Cliente",
+    "salesStage": "Etapa de Venta",
+    "probability": "Probabilidad",
+    "estValue": "Valor Est.",
+    "estClose": "Cierre Est.",
+    "status": "Estado",
+    "created": "Creado",
+    "actions": "Acciones"
+  },
+  "filters": {
+    "searchNames": "Buscar nombres...",
+    "searchCustomer": "Buscar cliente...",
+    "enterPercent": "Ingrese %...",
+    "enterAmount": "Ingrese monto..."
+  },
+  "salesStages": {
+    "qualify": "Calificar (25%)",
+    "develop": "Desarrollar (50%)",
+    "propose": "Proponer (75%)",
+    "close": "Cerrar (100%)"
+  },
+  "status": {
+    "open": "Abierto",
+    "won": "Ganado",
+    "lost": "Perdido"
+  },
+  "buttons": {
+    "editOpportunity": "Editar oportunidad",
+    "createFirst": "Crea Tu Primera Oportunidad",
+    "createNew": "Crear Nueva Oportunidad"
+  },
+  "emptyState": {
+    "title": "A\u00fan no hay oportunidades",
+    "description": "Comienza a rastrear tu pipeline de ventas creando tu primera oportunidad. Las oportunidades representan acuerdos potenciales que est\u00e1s trabajando para cerrar.",
+    "helpText": "Consejo: Las oportunidades avanzan por etapas (Calificar \u2192 Desarrollar \u2192 Proponer \u2192 Cerrar) a medida que progresas hacia ganar el acuerdo.",
+    "noFiltersTitle": "Ninguna oportunidad coincide con tus filtros",
+    "noFiltersDescription": "Intenta ajustar tus criterios de b\u00fasqueda o filtros para encontrar lo que buscas."
+  }
+}

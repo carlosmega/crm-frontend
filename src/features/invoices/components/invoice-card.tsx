@@ -1,5 +1,6 @@
 'use client'
 
+import { memo, useMemo } from 'react'
 import Link from 'next/link'
 import type { Invoice } from '@/core/contracts/entities/invoice'
 import { Badge } from '@/components/ui/badge'
@@ -20,11 +21,13 @@ interface InvoiceCardProps {
   invoice: Invoice
 }
 
-export function InvoiceCard({ invoice }: InvoiceCardProps) {
-  const status = getInvoiceStatusColor(invoice)
-  const paymentProgress = getPaymentProgress(invoice)
-  const daysUntilDue = getDaysUntilDue(invoice)
-  const overdue = isInvoiceOverdue(invoice)
+export const InvoiceCard = memo(function InvoiceCard({ invoice }: InvoiceCardProps) {
+  const { status, paymentProgress, daysUntilDue, overdue } = useMemo(() => ({
+    status: getInvoiceStatusColor(invoice),
+    paymentProgress: getPaymentProgress(invoice),
+    daysUntilDue: getDaysUntilDue(invoice),
+    overdue: isInvoiceOverdue(invoice),
+  }), [invoice])
 
   return (
     <Card>
@@ -102,4 +105,4 @@ export function InvoiceCard({ invoice }: InvoiceCardProps) {
       </CardContent>
     </Card>
   )
-}
+})

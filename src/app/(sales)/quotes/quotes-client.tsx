@@ -92,7 +92,8 @@ export function QuotesClient() {
       icon: Download,
       variant: 'outline',
       onClick: async (selectedIds: string[]) => {
-        const selectedData = filteredQuotes.filter((q) => selectedIds.includes(q.quoteid))
+        const selectedIdSet = new Set(selectedIds)
+        const selectedData = filteredQuotes.filter((q) => selectedIdSet.has(q.quoteid))
         const csv = [
           ['Quote Number', 'Name', 'Customer', 'Amount', 'Valid Until', 'State'].join(','),
           ...selectedData.map((q) =>

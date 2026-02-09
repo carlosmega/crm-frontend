@@ -1,0 +1,42 @@
+{
+  "columns": {
+    "name": "Name",
+    "customer": "Customer",
+    "salesStage": "Sales Stage",
+    "probability": "Probability",
+    "estValue": "Est. Value",
+    "estClose": "Est. Close",
+    "status": "Status",
+    "created": "Created",
+    "actions": "Actions"
+  },
+  "filters": {
+    "searchNames": "Search names...",
+    "searchCustomer": "Search customer...",
+    "enterPercent": "Enter %...",
+    "enterAmount": "Enter amount..."
+  },
+  "salesStages": {
+    "qualify": "Qualify (25%)",
+    "develop": "Develop (50%)",
+    "propose": "Propose (75%)",
+    "close": "Close (100%)"
+  },
+  "status": {
+    "open": "Open",
+    "won": "Won",
+    "lost": "Lost"
+  },
+  "buttons": {
+    "editOpportunity": "Edit opportunity",
+    "createFirst": "Create Your First Opportunity",
+    "createNew": "Create New Opportunity"
+  },
+  "emptyState": {
+    "title": "No opportunities yet",
+    "description": "Start tracking your sales pipeline by creating your first opportunity. Opportunities represent potential deals you're working to close.",
+    "helpText": "Tip: Opportunities move through stages (Qualify \u2192 Develop \u2192 Propose \u2192 Close) as you progress toward winning the deal.",
+    "noFiltersTitle": "No opportunities match your filters",
+    "noFiltersDescription": "Try adjusting your search criteria or filters to find what you're looking for."
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "columns": {
+    "productName": "Product Name",
+    "price": "Price",
+    "cost": "Cost",
+    "margin": "Margin",
+    "inventory": "Inventory",
+    "status": "Status",
+    "created": "Created",
+    "actions": "Actions"
+  },
+  "filters": {
+    "searchProducts": "Search products...",
+    "enterPrice": "Enter price...",
+    "enterCost": "Enter cost...",
+    "enterPercent": "Enter %...",
+    "enterQuantity": "Enter quantity..."
+  },
+  "labels": {
+    "skuPrefix": "SKU:"
+  },
+  "inventory": {
+    "outOfStock": "Out",
+    "lowStock": "Low"
+  },
+  "buttons": {
+    "editProduct": "Edit product",
+    "create": "Create Product"
+  },
+  "emptyState": {
+    "title": "No products found",
+    "description": "No products match your current filters. Try adjusting your search criteria or create a new product to get started."
+  }
+}

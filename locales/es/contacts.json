@@ -1,0 +1,28 @@
+{
+  "columns": {
+    "contactName": "Nombre de Contacto",
+    "contactInfo": "Info de Contacto",
+    "account": "Cuenta",
+    "status": "Estado",
+    "createdOn": "Fecha de Creaci\u00f3n",
+    "actions": "Acciones"
+  },
+  "filters": {
+    "searchContacts": "Buscar contactos...",
+    "searchAccount": "Buscar cuenta..."
+  },
+  "type": {
+    "b2c": "B2C"
+  },
+  "buttons": {
+    "editContact": "Editar contacto",
+    "create": "Crear Contacto",
+    "new": "Nuevo Contacto"
+  },
+  "emptyState": {
+    "title": "No se encontraron contactos",
+    "description": "Ning\u00fan contacto coincide con tus filtros actuales. Intenta ajustar tus criterios de b\u00fasqueda o crea un nuevo contacto para comenzar.",
+    "notFound": "No se encontraron contactos",
+    "notAvailable": "No hay contactos disponibles"
+  }
+}

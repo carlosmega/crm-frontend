@@ -1,0 +1,38 @@
+{
+  "columns": {
+    "type": "Type",
+    "subject": "Subject",
+    "regarding": "Regarding",
+    "scheduled": "Scheduled",
+    "status": "Status",
+    "priority": "Priority",
+    "created": "Created",
+    "actions": "Actions"
+  },
+  "filters": {
+    "searchSubject": "Search subject...",
+    "searchRegarding": "Search regarding..."
+  },
+  "types": {
+    "email": "Email",
+    "phoneCall": "Phone Call",
+    "task": "Task",
+    "appointment": "Appointment",
+    "meeting": "Meeting"
+  },
+  "status": {
+    "open": "Open",
+    "completed": "Completed",
+    "canceled": "Canceled",
+    "scheduled": "Scheduled",
+    "overdue": "Overdue"
+  },
+  "buttons": {
+    "editActivity": "Edit activity",
+    "create": "Create Activity"
+  },
+  "emptyState": {
+    "title": "No activities found",
+    "description": "No activities match your current filters. Try adjusting your search criteria or create a new activity to get started."
+  }
+}

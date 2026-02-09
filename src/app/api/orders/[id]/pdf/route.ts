@@ -83,8 +83,11 @@ export async function GET(request: NextRequest, context: RouteContext) {
       )
     }
 
-    // Obtener order usando el servicio
-    const order = await orderService.getById(id)
+    // Obtener order y líneas en paralelo
+    const [order, orderLines] = await Promise.all([
+      orderService.getById(id),
+      orderDetailService.getByOrder(id),
+    ])
 
     if (!order) {
       return NextResponse.json(
@@ -92,9 +95,6 @@ export async function GET(request: NextRequest, context: RouteContext) {
         { status: 404 }
       )
     }
-
-    // Obtener líneas de la orden
-    const orderLines = await orderDetailService.getByOrder(id)
 
     return generateOrderPdf(order, orderLines, id)
   } catch (error) {

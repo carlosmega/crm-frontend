@@ -1,0 +1,37 @@
+{
+  "columns": {
+    "accountName": "Nombre de Cuenta",
+    "contact": "Contacto",
+    "location": "Ubicaci\u00f3n",
+    "category": "Categor\u00eda",
+    "status": "Estado",
+    "revenue": "Ingresos",
+    "employees": "Empleados",
+    "created": "Creado",
+    "actions": "Acciones"
+  },
+  "filters": {
+    "searchAccounts": "Buscar cuentas...",
+    "searchLocation": "Buscar ubicaci\u00f3n...",
+    "enterAmount": "Ingrese monto...",
+    "enterNumber": "Ingrese n\u00famero..."
+  },
+  "category": {
+    "preferredCustomer": "Cliente Preferido",
+    "standard": "Est\u00e1ndar"
+  },
+  "buttons": {
+    "editAccount": "Editar cuenta",
+    "createFirst": "Crea Tu Primera Cuenta",
+    "createNew": "Crear Nueva Cuenta"
+  },
+  "emptyState": {
+    "title": "A\u00fan no hay cuentas",
+    "description": "Comienza a gestionar tus relaciones comerciales creando tu primera cuenta. Las cuentas representan empresas u organizaciones con las que haces negocios.",
+    "helpText": "Consejo: Las cuentas pueden tener m\u00faltiples contactos, oportunidades y pedidos asociados. Son la base de tus relaciones B2B.",
+    "noFiltersTitle": "Ninguna cuenta coincide con tus filtros",
+    "noFiltersDescription": "Intenta ajustar tus criterios de b\u00fasqueda o filtros para encontrar lo que buscas.",
+    "notFound": "No se encontraron cuentas",
+    "notAvailable": "No hay cuentas disponibles"
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "columns": {
+    "name": "Name",
+    "company": "Company",
+    "contact": "Contact",
+    "source": "Source",
+    "quality": "Quality",
+    "status": "Status",
+    "estValue": "Est. Value",
+    "estClose": "Est. Close",
+    "created": "Created",
+    "actions": "Actions"
+  },
+  "filters": {
+    "searchNames": "Search names...",
+    "searchCompanies": "Search companies...",
+    "enterAmount": "Enter amount..."
+  },
+  "sources": {
+    "web": "Web",
+    "employeeReferral": "Employee Referral",
+    "externalReferral": "External Referral",
+    "partner": "Partner",
+    "advertisement": "Advertisement",
+    "publicRelations": "Public Relations",
+    "seminar": "Seminar",
+    "tradeShow": "Trade Show",
+    "wordOfMouth": "Word of Mouth",
+    "other": "Other"
+  },
+  "quality": {
+    "hot": "Hot",
+    "warm": "Warm",
+    "cold": "Cold"
+  },
+  "status": {
+    "open": "Open",
+    "qualified": "Qualified",
+    "disqualified": "Disqualified"
+  },
+  "buttons": {
+    "editLead": "Edit lead",
+    "createFirst": "Create Your First Lead",
+    "createNew": "Create New Lead"
+  },
+  "emptyState": {
+    "title": "No leads yet",
+    "description": "Start building your sales pipeline by adding your first lead. Leads represent potential customers and are the first step in the sales process.",
+    "badge": "Getting Started",
+    "helpText": "Pro tip: Leads with complete contact information and clear source attribution convert to opportunities 3x faster.",
+    "suggestions": [
+      "Import leads from CSV or Excel files",
+      "Capture leads from web forms and landing pages",
+      "Add leads manually from business cards or meetings",
+      "Connect with marketing automation tools"
+    ],
+    "noFiltersTitle": "No leads match your filters",
+    "noFiltersDescription": "Try adjusting your search criteria or filters to find what you're looking for.",
+    "filterSuggestions": [
+      "Broaden your search by removing some filters",
+      "Check for typos in your search query",
+      "Try searching by company name instead of contact name"
+    ]
+  }
+}

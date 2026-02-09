@@ -2,6 +2,7 @@
 
 import { memo, useMemo } from 'react'
 import Link from 'next/link'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import type { Account} from '@/core/contracts'
 import { AccountStateCode, AccountCategoryCode } from '@/core/contracts'
 import {
@@ -38,19 +39,22 @@ export const AccountList = memo(function AccountList({
   bulkActions = [],
   hasLoadedData = false
 }: AccountListProps) {
+  const { t: tAcc } = useTranslation('accounts')
+  const { t: tCommon } = useTranslation('common')
+
   // ✅ PERFORMANCE: Memoize columns to prevent recreation on every render
   // Saves ~10-15ms per render with 100+ accounts
   const columns: DataTableColumn<Account>[] = useMemo(() => [
     {
       id: 'name',
-      header: 'Account Name',
+      header: tAcc('columns.accountName'),
       accessorFn: (account) => account.name,
       sortable: true,
       filterable: true,
       filter: {
         type: 'text',
         operators: ['contains', 'equals', 'startsWith', 'endsWith'],
-        placeholder: 'Search accounts...',
+        placeholder: tAcc('filters.searchAccounts'),
       },
       cell: (account) => (
         <div className="flex flex-col">
@@ -58,8 +62,7 @@ export const AccountList = memo(function AccountList({
             href={`/accounts/${account.accountid}`}
             className="font-medium hover:underline"
             onClick={(e) => e.stopPropagation()}
-            prefetch={true}
-          >
+                     >
             {account.name}
           </Link>
           {account.accountnumber && (
@@ -72,7 +75,7 @@ export const AccountList = memo(function AccountList({
     },
     {
       id: 'contact',
-      header: 'Contact',
+      header: tAcc('columns.contact'),
       cell: (account) => (
         <div className="flex flex-col gap-1">
           {account.emailaddress1 && (
@@ -96,21 +99,21 @@ export const AccountList = memo(function AccountList({
             </a>
           )}
           {!account.emailaddress1 && !account.telephone1 && (
-            <span className="text-xs text-muted-foreground">No contact info</span>
+            <span className="text-xs text-muted-foreground">{tCommon('messages.noContactInfo')}</span>
           )}
         </div>
       ),
     },
     {
       id: 'location',
-      header: 'Location',
+      header: tAcc('columns.location'),
       accessorFn: (account) => account.address1_city || '-',
       sortable: true,
       filterable: true,
       filter: {
         type: 'text',
         operators: ['contains', 'equals'],
-        placeholder: 'Search location...',
+        placeholder: tAcc('filters.searchLocation'),
       },
       cell: (account) => {
         if (!account.address1_city && !account.address1_country) {
@@ -129,44 +132,44 @@ export const AccountList = memo(function AccountList({
     },
     {
       id: 'category',
-      header: 'Category',
+      header: tAcc('columns.category'),
       accessorFn: (account) => account.accountcategorycode,
       sortable: true,
       filterable: true,
       filter: {
         type: 'multiselect',
         options: [
-          { label: 'Preferred Customer', value: AccountCategoryCode.Preferred_Customer },
-          { label: 'Standard', value: AccountCategoryCode.Standard },
+          { label: tAcc('category.preferredCustomer'), value: AccountCategoryCode.Preferred_Customer },
+          { label: tAcc('category.standard'), value: AccountCategoryCode.Standard },
         ],
       },
       cell: (account) => <AccountCategoryBadge categorycode={account.accountcategorycode} />,
     },
     {
       id: 'status',
-      header: 'Status',
+      header: tAcc('columns.status'),
       accessorFn: (account) => account.statecode,
       sortable: true,
       filterable: true,
       filter: {
         type: 'multiselect',
         options: [
-          { label: 'Active', value: AccountStateCode.Active },
-          { label: 'Inactive', value: AccountStateCode.Inactive },
+          { label: tCommon('states.active'), value: AccountStateCode.Active },
+          { label: tCommon('states.inactive'), value: AccountStateCode.Inactive },
         ],
       },
       cell: (account) => <AccountStatusBadge statecode={account.statecode} />,
     },
     {
       id: 'revenue',
-      header: 'Revenue',
+      header: tAcc('columns.revenue'),
       accessorFn: (account) => account.revenue || 0,
       sortable: true,
       filterable: true,
       filter: {
         type: 'number',
         operators: ['equals', 'greaterThan', 'lessThan', 'between'],
-        placeholder: 'Enter amount...',
+        placeholder: tAcc('filters.enterAmount'),
         min: 0,
       },
       className: 'text-center',
@@ -225,12 +228,12 @@ export const AccountList = memo(function AccountList({
       cell: (account) => (
         <div className="flex justify-end gap-1" onClick={(e) => e.stopPropagation()}>
           <Button asChild variant="ghost" size="icon-sm" title="View details">
-            <Link href={`/accounts/${account.accountid}`} prefetch={true}>
+            <Link href={`/accounts/${account.accountid}`}>
               <Eye className="size-4" />
             </Link>
           </Button>
           <Button asChild variant="ghost" size="icon-sm" title="Edit account">
-            <Link href={`/accounts/${account.accountid}/edit`} prefetch={true}>
+            <Link href={`/accounts/${account.accountid}/edit`}>
               <Edit className="size-4" />
             </Link>
           </Button>

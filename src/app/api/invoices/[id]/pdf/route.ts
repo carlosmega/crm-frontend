@@ -34,16 +34,18 @@ export async function GET(request: NextRequest, context: RouteContext) {
       )
     }
 
-    // Obtener invoice y sus líneas
-    const invoice = await invoiceService.getById(id)
+    // Obtener invoice y sus líneas en paralelo
+    const [invoice, invoiceLines] = await Promise.all([
+      invoiceService.getById(id),
+      invoiceDetailService.getByInvoice(id),
+    ])
+
     if (!invoice) {
       return NextResponse.json(
         { error: 'Invoice not found' },
         { status: 404 }
       )
     }
-
-    const invoiceLines = await invoiceDetailService.getByInvoice(id)
 
     // Validar que la factura tenga líneas
     if (invoiceLines.length === 0) {

@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useMemo, useCallback, memo } from 'react'
+import { useDebouncedValue } from '@/shared/hooks/use-debounced-value'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -11,12 +12,25 @@ import type { Product } from '../types'
 import { useProducts, useProductSearch } from '../hooks/use-products'
 import { Search, Package, Check, Loader2 } from 'lucide-react'
 
+const CURRENCY_FORMATTER = new Intl.NumberFormat('es-ES', {
+  style: 'currency',
+  currency: 'EUR',
+  minimumFractionDigits: 0,
+})
+
+const formatCurrencyValue = (value?: number) => {
+  if (value === undefined || value === null) return 'N/A'
+  return CURRENCY_FORMATTER.format(value)
+}
+
 interface ProductSelectorProps {
   onSelect: (product: Product) => void
   selectedProductIds?: string[]
   trigger?: React.ReactNode
   disabled?: boolean
 }
+
+const DEFAULT_SELECTED_IDS: string[] = []
 
 /**
  * Product Selector Component
@@ -31,54 +45,40 @@ interface ProductSelectorProps {
  */
 export function ProductSelector({
   onSelect,
-  selectedProductIds = [],
+  selectedProductIds = DEFAULT_SELECTED_IDS,
   trigger,
   disabled = false,
 }: ProductSelectorProps) {
   const [open, setOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
-  const [debouncedQuery, setDebouncedQuery] = useState('')
+
+  const debouncedQuery = useDebouncedValue(searchQuery, 300)
 
   const { products: allProducts, loading: loadingAll } = useProducts(true) // Only active products
   const { results: searchResults, loading: loadingSearch, search } = useProductSearch()
 
-  // Debounce search
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedQuery(searchQuery)
-    }, 300)
-
-    return () => clearTimeout(timer)
-  }, [searchQuery])
-
   // Trigger search when debounced query changes
-  useEffect(() => {
-    if (debouncedQuery.trim()) {
-      search(debouncedQuery)
+  const trimmedQuery = debouncedQuery.trim()
+  useMemo(() => {
+    if (trimmedQuery) {
+      search(trimmedQuery)
     }
-  }, [debouncedQuery])
+  }, [trimmedQuery])
 
-  // Filter products
-  const displayProducts = searchQuery.trim()
-    ? searchResults.filter((p) => !selectedProductIds.includes(p.productid))
-    : allProducts.filter((p) => !selectedProductIds.includes(p.productid))
+  // Filter products using Set for O(1) lookups
+  const selectedSet = useMemo(() => new Set(selectedProductIds), [selectedProductIds])
+  const displayProducts = useMemo(() => {
+    const source = trimmedQuery ? searchResults : allProducts
+    return source.filter((p) => !selectedSet.has(p.productid))
+  }, [trimmedQuery, searchResults, allProducts, selectedSet])
 
   const isLoading = searchQuery.trim() ? loadingSearch : loadingAll
 
-  const formatCurrency = (value?: number) => {
-    if (value === undefined || value === null) return 'N/A'
-    return new Intl.NumberFormat('es-ES', {
-      style: 'currency',
-      currency: 'EUR',
-      minimumFractionDigits: 0,
-    }).format(value)
-  }
-
-  const handleSelectProduct = (product: Product) => {
+  const handleSelectProduct = useCallback((product: Product) => {
     onSelect(product)
     setOpen(false)
-    setSearchQuery('') // Reset search
-  }
+    setSearchQuery('')
+  }, [onSelect])
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -135,7 +135,7 @@ export function ProductSelector({
                   key={product.productid}
                   product={product}
                   onSelect={handleSelectProduct}
-                  formatCurrency={formatCurrency}
+                  formatCurrency={formatCurrencyValue}
                 />
               ))}
             </div>
@@ -166,10 +166,15 @@ interface ProductSelectorItemProps {
   formatCurrency: (value?: number) => string
 }
 
-function ProductSelectorItem({ product, onSelect, formatCurrency }: ProductSelectorItemProps) {
-  const hasInventory = product.quantityonhand !== undefined
-  const isLowStock = hasInventory && product.quantityonhand! < 10 && product.quantityonhand! > 0
-  const isOutOfStock = hasInventory && product.quantityonhand! === 0
+const ProductSelectorItem = memo(function ProductSelectorItem({ product, onSelect, formatCurrency }: ProductSelectorItemProps) {
+  const { hasInventory, isLowStock, isOutOfStock } = useMemo(() => {
+    const has = product.quantityonhand !== undefined
+    return {
+      hasInventory: has,
+      isLowStock: has && product.quantityonhand! < 10 && product.quantityonhand! > 0,
+      isOutOfStock: has && product.quantityonhand! === 0,
+    }
+  }, [product.quantityonhand])
 
   return (
     <Button
@@ -245,4 +250,4 @@ function ProductSelectorItem({ product, onSelect, formatCurrency }: ProductSelec
       </div>
     </Button>
   )
-}
+})

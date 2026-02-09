@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useCallback, memo } from 'react'
 import { Bell, Check, X, User, Briefcase, FileText, CheckSquare, AtSign, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -21,6 +21,7 @@ import { formatDistanceToNow } from 'date-fns'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import Link from 'next/link'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 // ============================================================================
 // Types
@@ -180,7 +181,7 @@ interface NotificationItemProps {
   onDismiss: (id: string) => void
 }
 
-function NotificationItem({ notification, onMarkAsRead, onDismiss }: NotificationItemProps) {
+const NotificationItem = memo(function NotificationItem({ notification, onMarkAsRead, onDismiss }: NotificationItemProps) {
   const Icon = getNotificationIcon(notification.type)
   const iconColor = getNotificationIconColor(notification.type)
   const bgColor = getNotificationBgColor(notification.type)
@@ -236,7 +237,7 @@ function NotificationItem({ notification, onMarkAsRead, onDismiss }: Notificatio
   }
 
   return content
-}
+})
 
 // ============================================================================
 // Empty State Component
@@ -247,21 +248,22 @@ interface EmptyStateProps {
 }
 
 function EmptyState({ type }: EmptyStateProps) {
+  const { t } = useTranslation('notifications')
   const config = {
     all: {
       icon: Bell,
-      title: 'No notifications',
-      description: "You're all caught up!",
+      title: t('emptyState.allTitle'),
+      description: t('emptyState.allDescription'),
     },
     unread: {
       icon: Check,
-      title: 'No unread notifications',
-      description: 'All notifications have been read',
+      title: t('emptyState.unreadTitle'),
+      description: t('emptyState.unreadDescription'),
     },
     mentions: {
       icon: AtSign,
-      title: 'No mentions',
-      description: "You haven't been mentioned recently",
+      title: t('emptyState.mentionsTitle'),
+      description: t('emptyState.mentionsDescription'),
     },
   }
 
@@ -305,17 +307,19 @@ function NotificationContent({
   handleMarkAllAsRead,
   onClose,
 }: NotificationContentProps) {
+  const { t } = useTranslation('notifications')
+
   return (
     <>
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b">
-        <h2 className="text-base font-semibold">Notifications</h2>
+        <h2 className="text-base font-semibold">{t('title')}</h2>
         {unreadCount > 0 && (
           <button
             className="text-xs text-purple-600 hover:text-purple-700 font-medium transition-colors"
             onClick={handleMarkAllAsRead}
           >
-            Mark all as read
+            {t('buttons.markAllAsRead')}
           </button>
         )}
       </div>
@@ -328,13 +332,13 @@ function NotificationContent({
               value="all"
               className="relative rounded-none border-0 px-0 py-2 text-sm font-medium data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-purple-600"
             >
-              All
+              {t('tabs.all')}
             </TabsTrigger>
             <TabsTrigger
               value="unread"
               className="relative rounded-none border-0 px-0 py-2 text-sm font-medium data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-purple-600"
             >
-              Unread
+              {t('tabs.unread')}
               {unreadCount > 0 && (
                 <Badge variant="secondary" className="ml-1.5 h-5 min-w-5 px-1 text-[10px]">
                   {unreadCount}
@@ -345,7 +349,7 @@ function NotificationContent({
               value="mentions"
               className="relative rounded-none border-0 px-0 py-2 text-sm font-medium data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-purple-600"
             >
-              Mentions
+              {t('tabs.mentions')}
               {unreadMentions > 0 && (
                 <Badge variant="secondary" className="ml-1.5 h-5 min-w-5 px-1 text-[10px]">
                   {unreadMentions}
@@ -418,7 +422,7 @@ function NotificationContent({
           className="block text-center text-sm font-medium text-purple-600 hover:text-purple-700 transition-colors"
           onClick={onClose}
         >
-          View all notifications
+          {t('buttons.viewAll')}
         </Link>
       </div>
     </>
@@ -430,6 +434,7 @@ function NotificationContent({
 // ============================================================================
 
 export function NotificationMenu() {
+  const { t } = useTranslation('notifications')
   const [open, setOpen] = useState(false)
   const [notifications, setNotifications] = useState<Notification[]>(MOCK_NOTIFICATIONS)
   const [activeTab, setActiveTab] = useState<'all' | 'unread' | 'mentions'>('all')
@@ -468,20 +473,20 @@ export function NotificationMenu() {
     [notifications]
   )
 
-  // Handlers
-  const handleMarkAsRead = (id: string) => {
+  // Handlers (stable references for memoized children)
+  const handleMarkAsRead = useCallback((id: string) => {
     setNotifications(prev =>
       prev.map(n => (n.id === id ? { ...n, isRead: true } : n))
     )
-  }
+  }, [])
 
-  const handleDismiss = (id: string) => {
+  const handleDismiss = useCallback((id: string) => {
     setNotifications(prev => prev.filter(n => n.id !== id))
-  }
+  }, [])
 
-  const handleMarkAllAsRead = () => {
+  const handleMarkAllAsRead = useCallback(() => {
     setNotifications(prev => prev.map(n => ({ ...n, isRead: true })))
-  }
+  }, [])
 
   // Trigger button (shared between Popover and Sheet)
   const triggerButton = (
@@ -541,7 +546,7 @@ export function NotificationMenu() {
 
         <SheetContent side="right" className="w-full p-0 sm:max-w-md">
           <SheetHeader className="sr-only">
-            <SheetTitle>Notifications</SheetTitle>
+            <SheetTitle>{t('title')}</SheetTitle>
           </SheetHeader>
           <NotificationContent
             activeTab={activeTab}

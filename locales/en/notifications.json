@@ -1,0 +1,20 @@
+{
+  "title": "Notifications",
+  "tabs": {
+    "all": "All",
+    "unread": "Unread",
+    "mentions": "Mentions"
+  },
+  "buttons": {
+    "markAllAsRead": "Mark all as read",
+    "viewAll": "View all notifications"
+  },
+  "emptyState": {
+    "allTitle": "No notifications",
+    "allDescription": "You're all caught up!",
+    "unreadTitle": "No unread notifications",
+    "unreadDescription": "All notifications have been read",
+    "mentionsTitle": "No mentions",
+    "mentionsDescription": "You haven't been mentioned recently"
+  }
+}

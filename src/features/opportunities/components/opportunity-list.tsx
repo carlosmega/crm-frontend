@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo } from 'react'
 import Link from 'next/link'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import type { Opportunity } from '@/core/contracts'
 import { OpportunityStateCode, SalesStageCode } from '@/core/contracts'
 import {
@@ -59,6 +60,9 @@ export function OpportunityList({
   bulkActions = [],
   hasLoadedData = false
 }: OpportunityListProps) {
+  const { t: tOpp } = useTranslation('opportunities')
+  const { t: tCommon } = useTranslation('common')
+
   // ✅ OPTIMIZACIÓN: Helpers memoizados con useCallback
   const formatCurrency = useCallback((value?: number) => {
     if (!value) return '-'
@@ -75,14 +79,14 @@ export function OpportunityList({
   const columns: DataTableColumn<Opportunity>[] = useMemo(() => [
     {
       id: 'name',
-      header: 'Name',
+      header: tOpp('columns.name'),
       accessorFn: (opp) => opp.name,
       sortable: true,
       filterable: true,
       filter: {
         type: 'text',
         operators: ['contains', 'equals', 'startsWith', 'endsWith'],
-        placeholder: 'Search names...',
+        placeholder: tOpp('filters.searchNames'),
       },
       cell: (opp) => (
         <div className="flex flex-col">
@@ -90,8 +94,7 @@ export function OpportunityList({
             href={`/opportunities/${opp.opportunityid}`}
             className="font-medium hover:underline"
             onClick={(e) => e.stopPropagation()}
-            prefetch={true}
-          >
+                     >
             {opp.name}
           </Link>
           {opp.description && (
@@ -104,14 +107,14 @@ export function OpportunityList({
     },
     {
       id: 'customer',
-      header: 'Customer',
+      header: tOpp('columns.customer'),
       accessorFn: (opp) => opp.customerid,
       sortable: true,
       filterable: true,
       filter: {
         type: 'text',
         operators: ['contains', 'equals'],
-        placeholder: 'Search customer...',
+        placeholder: tOpp('filters.searchCustomer'),
       },
       cell: (opp) => (
         <div className="flex flex-col">
@@ -124,17 +127,17 @@ export function OpportunityList({
     },
     {
       id: 'stage',
-      header: 'Sales Stage',
+      header: tOpp('columns.salesStage'),
       accessorFn: (opp) => opp.salesstage,
       sortable: true,
       filterable: true,
       filter: {
         type: 'multiselect',
         options: [
-          { label: 'Qualify (25%)', value: SalesStageCode.Qualify, icon: Target },
-          { label: 'Develop (50%)', value: SalesStageCode.Develop, icon: Lightbulb },
-          { label: 'Propose (75%)', value: SalesStageCode.Propose, icon: FileText },
-          { label: 'Close (100%)', value: SalesStageCode.Close, icon: Trophy },
+          { label: tOpp('salesStages.qualify'), value: SalesStageCode.Qualify, icon: Target },
+          { label: tOpp('salesStages.develop'), value: SalesStageCode.Develop, icon: Lightbulb },
+          { label: tOpp('salesStages.propose'), value: SalesStageCode.Propose, icon: FileText },
+          { label: tOpp('salesStages.close'), value: SalesStageCode.Close, icon: Trophy },
         ],
       },
       cell: (opp) => (
@@ -146,14 +149,14 @@ export function OpportunityList({
     },
     {
       id: 'probability',
-      header: 'Probability',
+      header: tOpp('columns.probability'),
       accessorFn: (opp) => opp.closeprobability,
       sortable: true,
       filterable: true,
       filter: {
         type: 'number',
         operators: ['equals', 'greaterThan', 'lessThan', 'between'],
-        placeholder: 'Enter %...',
+        placeholder: tOpp('filters.enterPercent'),
         min: 0,
         max: 100,
       },
@@ -166,14 +169,14 @@ export function OpportunityList({
     },
     {
       id: 'estimatedValue',
-      header: 'Est. Value',
+      header: tOpp('columns.estValue'),
       accessorFn: (opp) => opp.estimatedvalue || 0,
       sortable: true,
       filterable: true,
       filter: {
         type: 'number',
         operators: ['equals', 'greaterThan', 'lessThan', 'between'],
-        placeholder: 'Enter amount...',
+        placeholder: tOpp('filters.enterAmount'),
         min: 0,
       },
       numeric: true, // ✅ Auto-aplica text-center + tabular-nums
@@ -185,7 +188,7 @@ export function OpportunityList({
     },
     {
       id: 'closeDate',
-      header: 'Est. Close',
+      header: tOpp('columns.estClose'),
       accessorFn: (opp) => opp.estimatedclosedate ? new Date(opp.estimatedclosedate) : null,
       sortable: true,
       filterable: true,
@@ -201,16 +204,16 @@ export function OpportunityList({
     },
     {
       id: 'status',
-      header: 'Status',
+      header: tOpp('columns.status'),
       accessorFn: (opp) => opp.statecode,
       sortable: true,
       filterable: true,
       filter: {
         type: 'multiselect',
         options: [
-          { label: 'Open', value: OpportunityStateCode.Open },
-          { label: 'Won', value: OpportunityStateCode.Won },
-          { label: 'Lost', value: OpportunityStateCode.Lost },
+          { label: tOpp('status.open'), value: OpportunityStateCode.Open },
+          { label: tOpp('status.won'), value: OpportunityStateCode.Won },
+          { label: tOpp('status.lost'), value: OpportunityStateCode.Lost },
         ],
       },
       cell: (opp) => (
@@ -222,7 +225,7 @@ export function OpportunityList({
     },
     {
       id: 'createdon',
-      header: 'Created',
+      header: tOpp('columns.created'),
       accessorFn: (opp) => opp.createdon ? new Date(opp.createdon) : null,
       sortable: true,
       filterable: true,
@@ -244,12 +247,12 @@ export function OpportunityList({
       cell: (opp) => (
         <div className="flex justify-end gap-1" onClick={(e) => e.stopPropagation()}>
           <Button asChild variant="ghost" size="icon-sm" title="View details">
-            <Link href={`/opportunities/${opp.opportunityid}`} prefetch={true}>
+            <Link href={`/opportunities/${opp.opportunityid}`}>
               <Eye className="size-4" />
             </Link>
           </Button>
           <Button asChild variant="ghost" size="icon-sm" title="Edit opportunity">
-            <Link href={`/opportunities/${opp.opportunityid}/edit`} prefetch={true}>
+            <Link href={`/opportunities/${opp.opportunityid}/edit`}>
               <Edit className="size-4" />
             </Link>
           </Button>

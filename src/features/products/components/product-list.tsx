@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react'
 import Link from 'next/link'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import type { Product } from '../types'
 import {
   DataTableWithToolbar,
@@ -43,19 +44,22 @@ export function ProductList({
   loading = false,
   bulkActions = []
 }: ProductListProps) {
+  const { t: tProd } = useTranslation('products')
+  const { t: tCommon } = useTranslation('common')
+
   // ✅ PERFORMANCE: Memoize columns to prevent recreation on every render
   // Saves ~10-15ms per render with 100+ products
   const columns: DataTableColumn<Product>[] = useMemo(() => [
     {
       id: 'name',
-      header: 'Product Name',
+      header: tProd('columns.productName'),
       accessorFn: (product) => product.name,
       sortable: true,
       filterable: true,
       filter: {
         type: 'text',
         operators: ['contains', 'equals', 'startsWith', 'endsWith'],
-        placeholder: 'Search products...',
+        placeholder: tProd('filters.searchProducts'),
       },
       cell: (product) => (
         <div className="flex flex-col">
@@ -63,13 +67,12 @@ export function ProductList({
             href={`/products/${product.productid}`}
             className="font-medium hover:underline"
             onClick={(e) => e.stopPropagation()}
-            prefetch={true}
-          >
+                     >
             {product.name}
           </Link>
           {product.productnumber && (
             <span className="text-xs text-muted-foreground font-mono">
-              SKU: {product.productnumber}
+              {tProd('labels.skuPrefix')} {product.productnumber}
             </span>
           )}
         </div>
@@ -77,14 +80,14 @@ export function ProductList({
     },
     {
       id: 'price',
-      header: 'Price',
+      header: tProd('columns.price'),
       accessorFn: (product) => product.price,
       sortable: true,
       filterable: true,
       filter: {
         type: 'number',
         operators: ['equals', 'greaterThan', 'lessThan', 'between'],
-        placeholder: 'Enter price...',
+        placeholder: tProd('filters.enterPrice'),
         min: 0,
       },
       className: 'text-center',
@@ -95,14 +98,14 @@ export function ProductList({
     },
     {
       id: 'cost',
-      header: 'Cost',
+      header: tProd('columns.cost'),
       accessorFn: (product) => product.standardcost,
       sortable: true,
       filterable: true,
       filter: {
         type: 'number',
         operators: ['equals', 'greaterThan', 'lessThan', 'between'],
-        placeholder: 'Enter cost...',
+        placeholder: tProd('filters.enterCost'),
         min: 0,
       },
       className: 'text-center',
@@ -113,7 +116,7 @@ export function ProductList({
     },
     {
       id: 'margin',
-      header: 'Margin',
+      header: tProd('columns.margin'),
       accessorFn: (product) => {
         if (!product.price || !product.standardcost) return 0
         return ((product.price - product.standardcost) / product.price) * 100
@@ -123,7 +126,7 @@ export function ProductList({
       filter: {
         type: 'number',
         operators: ['greaterThan', 'lessThan', 'between'],
-        placeholder: 'Enter %...',
+        placeholder: tProd('filters.enterPercent'),
         min: 0,
         max: 100,
       },
@@ -131,7 +134,7 @@ export function ProductList({
       headerClassName: 'text-center',
       cell: (product) => {
         if (!product.price || !product.standardcost) {
-          return <span className="text-sm text-muted-foreground">N/A</span>
+          return <span className="text-sm text-muted-foreground">{tCommon('notApplicable')}</span>
         }
         const margin =
           ((product.price - product.standardcost) / product.price) * 100
@@ -147,14 +150,14 @@ export function ProductList({
     },
     {
       id: 'inventory',
-      header: 'Inventory',
+      header: tProd('columns.inventory'),
       accessorFn: (product) => product.quantityonhand,
       sortable: true,
       filterable: true,
       filter: {
         type: 'number',
         operators: ['equals', 'greaterThan', 'lessThan', 'between'],
-        placeholder: 'Enter quantity...',
+        placeholder: tProd('filters.enterQuantity'),
         min: 0,
       },
       className: 'text-center',
@@ -162,7 +165,7 @@ export function ProductList({
       cell: (product) => {
         const hasInventory = product.quantityonhand !== undefined
         if (!hasInventory) {
-          return <span className="text-sm text-muted-foreground">N/A</span>
+          return <span className="text-sm text-muted-foreground">{tCommon('notApplicable')}</span>
         }
 
         const isLowStock = product.quantityonhand! < 10 && product.quantityonhand! > 0
@@ -176,12 +179,12 @@ export function ProductList({
             </span>
             {isOutOfStock && (
               <Badge variant="destructive" className="text-xs">
-                Out
+                {tProd('inventory.outOfStock')}
               </Badge>
             )}
             {isLowStock && (
               <Badge variant="outline" className="text-xs text-orange-600">
-                Low
+                {tProd('inventory.lowStock')}
               </Badge>
             )}
           </div>
@@ -190,20 +193,20 @@ export function ProductList({
     },
     {
       id: 'status',
-      header: 'Status',
+      header: tProd('columns.status'),
       accessorFn: (product) => product.statecode,
       sortable: true,
       filterable: true,
       filter: {
         type: 'multiselect',
         options: [
-          { label: 'Active', value: 0 },
-          { label: 'Inactive', value: 1 },
+          { label: tCommon('states.active'), value: 0 },
+          { label: tCommon('states.inactive'), value: 1 },
         ],
       },
       cell: (product) => (
         <Badge variant={product.statecode === 0 ? 'default' : 'secondary'}>
-          {product.statecode === 0 ? 'Active' : 'Inactive'}
+          {product.statecode === 0 ? tCommon('states.active') : tCommon('states.inactive')}
         </Badge>
       ),
     },
@@ -231,12 +234,12 @@ export function ProductList({
       cell: (product) => (
         <div className="flex justify-end gap-1" onClick={(e) => e.stopPropagation()}>
           <Button asChild variant="ghost" size="icon-sm" title="View details">
-            <Link href={`/products/${product.productid}`} prefetch={true}>
+            <Link href={`/products/${product.productid}`}>
               <Eye className="size-4" />
             </Link>
           </Button>
           <Button asChild variant="ghost" size="icon-sm" title="Edit product">
-            <Link href={`/products/${product.productid}/edit`} prefetch={true}>
+            <Link href={`/products/${product.productid}/edit`}>
               <Edit className="size-4" />
             </Link>
           </Button>

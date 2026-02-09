@@ -1,0 +1,38 @@
+{
+  "columns": {
+    "type": "Tipo",
+    "subject": "Asunto",
+    "regarding": "Referente a",
+    "scheduled": "Programado",
+    "status": "Estado",
+    "priority": "Prioridad",
+    "created": "Creado",
+    "actions": "Acciones"
+  },
+  "filters": {
+    "searchSubject": "Buscar asunto...",
+    "searchRegarding": "Buscar referente..."
+  },
+  "types": {
+    "email": "Correo Electr\u00f3nico",
+    "phoneCall": "Llamada Telef\u00f3nica",
+    "task": "Tarea",
+    "appointment": "Cita",
+    "meeting": "Reuni\u00f3n"
+  },
+  "status": {
+    "open": "Abierto",
+    "completed": "Completado",
+    "canceled": "Cancelado",
+    "scheduled": "Programado",
+    "overdue": "Vencido"
+  },
+  "buttons": {
+    "editActivity": "Editar actividad",
+    "create": "Crear Actividad"
+  },
+  "emptyState": {
+    "title": "No se encontraron actividades",
+    "description": "Ninguna actividad coincide con tus filtros actuales. Intenta ajustar tus criterios de b\u00fasqueda o crea una nueva actividad para comenzar."
+  }
+}

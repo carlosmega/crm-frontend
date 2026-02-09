@@ -1,5 +1,6 @@
 "use client"
 
+import { memo, useMemo } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import Link from 'next/link'
@@ -32,7 +33,7 @@ const STAGE_BORDER_COLORS: Record<SalesStageCode, string> = {
   [SalesStageCode.Close]: 'border-l-teal-500',
 }
 
-export function OpportunityKanbanCard({ opportunity, customerName, stage }: OpportunityKanbanCardProps) {
+export const OpportunityKanbanCard = memo(function OpportunityKanbanCard({ opportunity, customerName, stage }: OpportunityKanbanCardProps) {
   const {
     attributes,
     listeners,
@@ -42,12 +43,15 @@ export function OpportunityKanbanCard({ opportunity, customerName, stage }: Oppo
     isDragging,
   } = useSortable({ id: opportunity.opportunityid })
 
-  const style = {
+  const style = useMemo(() => ({
     transform: CSS.Transform.toString(transform),
     transition,
-  }
+  }), [transform, transition])
 
-  const isOverdue = new Date(opportunity.estimatedclosedate) < new Date()
+  const isOverdue = useMemo(
+    () => new Date(opportunity.estimatedclosedate) < new Date(),
+    [opportunity.estimatedclosedate]
+  )
   const borderColor = STAGE_BORDER_COLORS[stage]
 
   return (
@@ -144,4 +148,4 @@ export function OpportunityKanbanCard({ opportunity, customerName, stage }: Oppo
       </Link>
     </div>
   )
-}
+})

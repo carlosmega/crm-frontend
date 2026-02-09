@@ -4,6 +4,7 @@ import { useMemo } from 'react'
 import Link from 'next/link'
 import type { Invoice } from '@/core/contracts/entities/invoice'
 import { InvoiceStateCode } from '@/core/contracts/enums'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import {
   DataTableWithToolbar,
   DataTableColumn,
@@ -48,18 +49,21 @@ export function InvoiceList({
   loading = false,
   bulkActions = []
 }: InvoiceListProps) {
+  const { t: tInv } = useTranslation('invoices')
+  const { t: tCommon } = useTranslation('common')
+
   // ✅ PERFORMANCE: Memoize columns to prevent recreation on every render
   const columns: DataTableColumn<Invoice>[] = useMemo(() => [
     {
       id: 'invoicenumber',
-      header: 'Invoice Number',
+      header: tInv('columns.invoiceNumber'),
       accessorFn: (invoice) => invoice.invoicenumber || invoice.invoiceid,
       sortable: true,
       filterable: true,
       filter: {
         type: 'text',
         operators: ['contains', 'equals'],
-        placeholder: 'Search invoice #...',
+        placeholder: tInv('filters.searchInvoiceNumber'),
       },
       cell: (invoice) => (
         <div className="flex flex-col">
@@ -67,13 +71,12 @@ export function InvoiceList({
             href={`/invoices/${invoice.invoiceid}`}
             className="font-medium hover:underline"
             onClick={(e) => e.stopPropagation()}
-            prefetch={true}
-          >
+                     >
             {formatInvoiceNumber(invoice)}
           </Link>
           {invoice.salesorderid && (
             <span className="text-xs text-muted-foreground font-mono">
-              Order: {invoice.salesorderid.substring(0, 8)}...
+              {tInv('labels.orderPrefix')} {invoice.salesorderid.substring(0, 8)}...
             </span>
           )}
         </div>
@@ -81,14 +84,14 @@ export function InvoiceList({
     },
     {
       id: 'name',
-      header: 'Name',
+      header: tInv('columns.name'),
       accessorFn: (invoice) => invoice.name,
       sortable: true,
       filterable: true,
       filter: {
         type: 'text',
         operators: ['contains', 'equals', 'startsWith'],
-        placeholder: 'Search name...',
+        placeholder: tInv('filters.searchName'),
       },
       cell: (invoice) => (
         <div className="max-w-xs truncate">{invoice.name}</div>
@@ -96,16 +99,16 @@ export function InvoiceList({
     },
     {
       id: 'status',
-      header: 'Status',
+      header: tInv('columns.status'),
       accessorFn: (invoice) => invoice.statecode,
       sortable: true,
       filterable: true,
       filter: {
         type: 'multiselect',
         options: [
-          { label: 'Active', value: InvoiceStateCode.Active },
-          { label: 'Paid', value: InvoiceStateCode.Paid },
-          { label: 'Canceled', value: InvoiceStateCode.Canceled },
+          { label: tInv('status.active'), value: InvoiceStateCode.Active },
+          { label: tInv('status.paid'), value: InvoiceStateCode.Paid },
+          { label: tInv('status.canceled'), value: InvoiceStateCode.Canceled },
         ],
       },
       cell: (invoice) => {
@@ -119,7 +122,7 @@ export function InvoiceList({
     },
     {
       id: 'duedate',
-      header: 'Due Date',
+      header: tInv('columns.dueDate'),
       accessorFn: (invoice) => invoice.duedate || '',
       sortable: true,
       filterable: true,
@@ -146,14 +149,14 @@ export function InvoiceList({
     },
     {
       id: 'totalamount',
-      header: 'Amount',
+      header: tInv('columns.amount'),
       accessorFn: (invoice) => invoice.totalamount,
       sortable: true,
       filterable: true,
       filter: {
         type: 'number',
         operators: ['equals', 'greaterThan', 'lessThan', 'between'],
-        placeholder: 'Enter amount...',
+        placeholder: tInv('filters.enterAmount'),
         min: 0,
       },
       className: 'text-center',
@@ -230,12 +233,12 @@ export function InvoiceList({
       cell: (invoice) => (
         <div className="flex justify-end gap-1" onClick={(e) => e.stopPropagation()}>
           <Button asChild variant="ghost" size="icon-sm" title="View details">
-            <Link href={`/invoices/${invoice.invoiceid}`} prefetch={true}>
+            <Link href={`/invoices/${invoice.invoiceid}`}>
               <Eye className="size-4" />
             </Link>
           </Button>
           <Button asChild variant="ghost" size="icon-sm" title="Edit invoice">
-            <Link href={`/invoices/${invoice.invoiceid}/edit`} prefetch={true}>
+            <Link href={`/invoices/${invoice.invoiceid}/edit`}>
               <Edit className="size-4" />
             </Link>
           </Button>

@@ -1,0 +1,65 @@
+{
+  "columns": {
+    "name": "Nombre",
+    "company": "Empresa",
+    "contact": "Contacto",
+    "source": "Origen",
+    "quality": "Calidad",
+    "status": "Estado",
+    "estValue": "Valor Est.",
+    "estClose": "Cierre Est.",
+    "created": "Creado",
+    "actions": "Acciones"
+  },
+  "filters": {
+    "searchNames": "Buscar nombres...",
+    "searchCompanies": "Buscar empresas...",
+    "enterAmount": "Ingrese monto..."
+  },
+  "sources": {
+    "web": "Web",
+    "employeeReferral": "Referencia de Empleado",
+    "externalReferral": "Referencia Externa",
+    "partner": "Socio",
+    "advertisement": "Publicidad",
+    "publicRelations": "Relaciones P\u00fablicas",
+    "seminar": "Seminario",
+    "tradeShow": "Feria Comercial",
+    "wordOfMouth": "Boca a Boca",
+    "other": "Otro"
+  },
+  "quality": {
+    "hot": "Caliente",
+    "warm": "Tibio",
+    "cold": "Fr\u00edo"
+  },
+  "status": {
+    "open": "Abierto",
+    "qualified": "Calificado",
+    "disqualified": "Descalificado"
+  },
+  "buttons": {
+    "editLead": "Editar lead",
+    "createFirst": "Crea Tu Primer Lead",
+    "createNew": "Crear Nuevo Lead"
+  },
+  "emptyState": {
+    "title": "A\u00fan no hay leads",
+    "description": "Comienza a construir tu pipeline de ventas agregando tu primer lead. Los leads representan clientes potenciales y son el primer paso en el proceso de ventas.",
+    "badge": "Primeros Pasos",
+    "helpText": "Consejo: Los leads con informaci\u00f3n de contacto completa y atribuci\u00f3n de origen clara se convierten en oportunidades 3 veces m\u00e1s r\u00e1pido.",
+    "suggestions": [
+      "Importar leads desde archivos CSV o Excel",
+      "Capturar leads desde formularios web y p\u00e1ginas de destino",
+      "Agregar leads manualmente desde tarjetas de presentaci\u00f3n o reuniones",
+      "Conectar con herramientas de automatizaci\u00f3n de marketing"
+    ],
+    "noFiltersTitle": "Ning\u00fan lead coincide con tus filtros",
+    "noFiltersDescription": "Intenta ajustar tus criterios de b\u00fasqueda o filtros para encontrar lo que buscas.",
+    "filterSuggestions": [
+      "Ampl\u00eda tu b\u00fasqueda eliminando algunos filtros",
+      "Verifica errores de escritura en tu consulta",
+      "Intenta buscar por nombre de empresa en lugar de nombre de contacto"
+    ]
+  }
+}

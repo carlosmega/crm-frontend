@@ -43,20 +43,15 @@ export const quoteVersionService = {
    */
   async getVersionsByQuote(params: QuoteVersionQueryParams): Promise<QuoteVersion[]> {
     const allVersions = getAllVersions()
-    let filtered = allVersions.filter((v) => v.quoteid === params.quoteid)
 
-    // Apply filters
-    if (params.changetype) {
-      filtered = filtered.filter((v) => v.changetype === params.changetype)
-    }
-
-    if (params.fromDate) {
-      filtered = filtered.filter((v) => v.createdon >= params.fromDate!)
-    }
-
-    if (params.toDate) {
-      filtered = filtered.filter((v) => v.createdon <= params.toDate!)
-    }
+    // Single-pass filter combining all conditions
+    const filtered = allVersions.filter((v) => {
+      if (v.quoteid !== params.quoteid) return false
+      if (params.changetype && v.changetype !== params.changetype) return false
+      if (params.fromDate && v.createdon < params.fromDate) return false
+      if (params.toDate && v.createdon > params.toDate) return false
+      return true
+    })
 
     // Sort by version number (descending - newest first)
     filtered.sort((a, b) => b.versionnumber - a.versionnumber)
@@ -214,14 +209,15 @@ export const quoteVersionService = {
       }
     }
 
-    // Compare lines
+    // Compare lines using Map for O(1) lookups
     const oldLines = fromVersion.versiondata.lines
     const newLines = toVersion.versiondata.lines
+    const oldLinesMap = new Map(oldLines.map((l) => [l.quotedetailid, l]))
+    const newLinesMap = new Map(newLines.map((l) => [l.quotedetailid, l]))
 
     // Find added lines
     for (const newLine of newLines) {
-      const oldLine = oldLines.find((l) => l.quotedetailid === newLine.quotedetailid)
-      if (!oldLine) {
+      if (!oldLinesMap.has(newLine.quotedetailid)) {
         lineChanges.push({
           action: 'added',
           lineId: newLine.quotedetailid,
@@ -232,8 +228,7 @@ export const quoteVersionService = {
 
     // Find removed lines
     for (const oldLine of oldLines) {
-      const newLine = newLines.find((l) => l.quotedetailid === oldLine.quotedetailid)
-      if (!newLine) {
+      if (!newLinesMap.has(oldLine.quotedetailid)) {
         lineChanges.push({
           action: 'removed',
           lineId: oldLine.quotedetailid,
@@ -244,7 +239,7 @@ export const quoteVersionService = {
 
     // Find modified lines
     for (const newLine of newLines) {
-      const oldLine = oldLines.find((l) => l.quotedetailid === newLine.quotedetailid)
+      const oldLine = oldLinesMap.get(newLine.quotedetailid)
       if (oldLine) {
         const lineFieldChanges: { field: string; oldValue: any; newValue: any }[] = []
 

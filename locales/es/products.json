@@ -1,0 +1,34 @@
+{
+  "columns": {
+    "productName": "Nombre del Producto",
+    "price": "Precio",
+    "cost": "Costo",
+    "margin": "Margen",
+    "inventory": "Inventario",
+    "status": "Estado",
+    "created": "Creado",
+    "actions": "Acciones"
+  },
+  "filters": {
+    "searchProducts": "Buscar productos...",
+    "enterPrice": "Ingrese precio...",
+    "enterCost": "Ingrese costo...",
+    "enterPercent": "Ingrese %...",
+    "enterQuantity": "Ingrese cantidad..."
+  },
+  "labels": {
+    "skuPrefix": "SKU:"
+  },
+  "inventory": {
+    "outOfStock": "Agotado",
+    "lowStock": "Bajo"
+  },
+  "buttons": {
+    "editProduct": "Editar producto",
+    "create": "Crear Producto"
+  },
+  "emptyState": {
+    "title": "No se encontraron productos",
+    "description": "Ning\u00fan producto coincide con tus filtros actuales. Intenta ajustar tus criterios de b\u00fasqueda o crea un nuevo producto para comenzar."
+  }
+}

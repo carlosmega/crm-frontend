@@ -1,0 +1,20 @@
+{
+  "title": "Notificaciones",
+  "tabs": {
+    "all": "Todas",
+    "unread": "No le\u00eddas",
+    "mentions": "Menciones"
+  },
+  "buttons": {
+    "markAllAsRead": "Marcar todo como le\u00eddo",
+    "viewAll": "Ver todas las notificaciones"
+  },
+  "emptyState": {
+    "allTitle": "Sin notificaciones",
+    "allDescription": "\u00a1Est\u00e1s al d\u00eda!",
+    "unreadTitle": "Sin notificaciones no le\u00eddas",
+    "unreadDescription": "Todas las notificaciones han sido le\u00eddas",
+    "mentionsTitle": "Sin menciones",
+    "mentionsDescription": "No te han mencionado recientemente"
+  }
+}

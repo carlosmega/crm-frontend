@@ -7,8 +7,13 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import type { Lead } from '@/core/contracts'
 import { useLeadQualification } from '../hooks/use-lead-qualification'
-import { CustomerSelectorDialog } from '@/shared/components/selectors/customer-selector-dialog'
+import dynamic from 'next/dynamic'
 import type { SelectedCustomer } from '@/shared/types/selected-customer'
+
+const CustomerSelectorDialog = dynamic(
+  () => import('@/shared/components/selectors/customer-selector-dialog').then(mod => ({ default: mod.CustomerSelectorDialog })),
+  { ssr: false }
+)
 import {
   Dialog,
   DialogContent,

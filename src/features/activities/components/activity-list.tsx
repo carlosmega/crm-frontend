@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react'
 import Link from 'next/link'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import type { Activity } from '@/core/contracts/entities'
 import { ActivityStateCode, ActivityTypeCode } from '@/core/contracts/enums'
 import { getActivityTypeIcon, getActivityTypeLabel } from '@/core/contracts/enums/activity-type'
@@ -46,6 +47,9 @@ export function ActivityList({
   loading = false,
   bulkActions = []
 }: ActivityListProps) {
+  const { t: tAct } = useTranslation('activities')
+  const { t: tCommon } = useTranslation('common')
+
   // Format date helper
   const formatDate = (dateString?: string) => {
     if (!dateString) return '-'
@@ -60,18 +64,18 @@ export function ActivityList({
   const columns: DataTableColumn<Activity>[] = useMemo(() => [
     {
       id: 'type',
-      header: 'Type',
+      header: tAct('columns.type'),
       accessorFn: (activity) => activity.activitytypecode,
       sortable: true,
       filterable: true,
       filter: {
         type: 'multiselect',
         options: [
-          { label: 'Email', value: ActivityTypeCode.Email, icon: Icons.Mail },
-          { label: 'Phone Call', value: ActivityTypeCode.PhoneCall, icon: Icons.Phone },
-          { label: 'Task', value: ActivityTypeCode.Task, icon: Icons.CheckSquare },
-          { label: 'Appointment', value: ActivityTypeCode.Appointment, icon: Icons.Calendar },
-          { label: 'Meeting', value: ActivityTypeCode.Meeting, icon: Icons.Users },
+          { label: tAct('types.email'), value: ActivityTypeCode.Email, icon: Icons.Mail },
+          { label: tAct('types.phoneCall'), value: ActivityTypeCode.PhoneCall, icon: Icons.Phone },
+          { label: tAct('types.task'), value: ActivityTypeCode.Task, icon: Icons.CheckSquare },
+          { label: tAct('types.appointment'), value: ActivityTypeCode.Appointment, icon: Icons.Calendar },
+          { label: tAct('types.meeting'), value: ActivityTypeCode.Meeting, icon: Icons.Users },
         ],
       },
       cell: (activity) => {
@@ -89,14 +93,14 @@ export function ActivityList({
     },
     {
       id: 'subject',
-      header: 'Subject',
+      header: tAct('columns.subject'),
       accessorFn: (activity) => activity.subject,
       sortable: true,
       filterable: true,
       filter: {
         type: 'text',
         operators: ['contains', 'equals', 'startsWith', 'endsWith'],
-        placeholder: 'Search subject...',
+        placeholder: tAct('filters.searchSubject'),
       },
       cell: (activity) => (
         <div className="flex flex-col">
@@ -104,8 +108,7 @@ export function ActivityList({
             href={`/activities/${activity.activityid}`}
             className="font-medium hover:underline"
             onClick={(e) => e.stopPropagation()}
-            prefetch={true}
-          >
+                     >
             {activity.subject}
           </Link>
           {activity.description && (
@@ -118,14 +121,14 @@ export function ActivityList({
     },
     {
       id: 'regarding',
-      header: 'Regarding',
+      header: tAct('columns.regarding'),
       accessorFn: (activity) => activity.regardingobjectidtype || 'None',
       sortable: true,
       filterable: true,
       filter: {
         type: 'text',
         operators: ['contains', 'equals'],
-        placeholder: 'Search regarding...',
+        placeholder: tAct('filters.searchRegarding'),
       },
       cell: (activity) => {
         if (!activity.regardingobjectid) {
@@ -144,7 +147,7 @@ export function ActivityList({
     },
     {
       id: 'scheduled',
-      header: 'Scheduled',
+      header: tAct('columns.scheduled'),
       accessorFn: (activity) => {
         const date = activity.actualstart || activity.scheduledstart || activity.createdon
         return date ? new Date(date) : null
@@ -167,7 +170,7 @@ export function ActivityList({
             </span>
             {isOverdue && (
               <Badge variant="destructive" className="text-xs mt-1">
-                Overdue
+                {tAct('status.overdue')}
               </Badge>
             )}
           </div>
@@ -176,17 +179,17 @@ export function ActivityList({
     },
     {
       id: 'status',
-      header: 'Status',
+      header: tAct('columns.status'),
       accessorFn: (activity) => activity.statecode,
       sortable: true,
       filterable: true,
       filter: {
         type: 'multiselect',
         options: [
-          { label: 'Open', value: ActivityStateCode.Open },
-          { label: 'Completed', value: ActivityStateCode.Completed },
-          { label: 'Canceled', value: ActivityStateCode.Canceled },
-          { label: 'Scheduled', value: ActivityStateCode.Scheduled },
+          { label: tAct('status.open'), value: ActivityStateCode.Open },
+          { label: tAct('status.completed'), value: ActivityStateCode.Completed },
+          { label: tAct('status.canceled'), value: ActivityStateCode.Canceled },
+          { label: tAct('status.scheduled'), value: ActivityStateCode.Scheduled },
         ],
       },
       cell: (activity) => (
@@ -255,13 +258,13 @@ export function ActivityList({
       cell: (activity) => (
         <div className="flex justify-end gap-1" onClick={(e) => e.stopPropagation()}>
           <Button asChild variant="ghost" size="icon-sm" title="View details">
-            <Link href={`/activities/${activity.activityid}`} prefetch={true}>
+            <Link href={`/activities/${activity.activityid}`}>
               <Icons.Eye className="size-4" />
             </Link>
           </Button>
           {(activity.statecode === ActivityStateCode.Open || activity.statecode === ActivityStateCode.Scheduled) && (
             <Button asChild variant="ghost" size="icon-sm" title="Edit activity">
-              <Link href={`/activities/${activity.activityid}/edit`} prefetch={true}>
+              <Link href={`/activities/${activity.activityid}/edit`}>
                 <Icons.Edit className="size-4" />
               </Link>
             </Button>

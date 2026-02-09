@@ -156,8 +156,13 @@ export function applyDateFilter(value: any, filterValue: FilterValue): boolean {
  */
 export function applySelectFilter(value: any, filterValue: FilterValue): boolean {
   if (filterValue.operator === 'in') {
-    // Multi-select: check if value is in array
-    return Array.isArray(filterValue.value) && filterValue.value.includes(value)
+    // Multi-select: use Set for O(1) lookup
+    if (!Array.isArray(filterValue.value)) return false
+    const fv = filterValue as any
+    if (!fv._valueSet) {
+      fv._valueSet = new Set(filterValue.value)
+    }
+    return fv._valueSet.has(value)
   }
   // Single select: direct comparison
   return value === filterValue.value

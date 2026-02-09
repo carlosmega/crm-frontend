@@ -1,9 +1,14 @@
 "use client"
 
 import { useState } from 'react'
+import dynamic from 'next/dynamic'
 import type { SelectedCustomer } from '@/shared/types/selected-customer'
-import { CustomerSelectorDialog } from './customer-selector-dialog'
 import { Button } from '@/components/ui/button'
+
+const CustomerSelectorDialog = dynamic(
+  () => import('./customer-selector-dialog').then(mod => ({ default: mod.CustomerSelectorDialog })),
+  { ssr: false }
+)
 import { Building2, User, Mail, Phone, MapPin, X, ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 

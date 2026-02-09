@@ -1,0 +1,62 @@
+{
+  "columns": {
+    "ticketNumber": "Ticket #",
+    "title": "Title",
+    "customer": "Customer",
+    "priority": "Priority",
+    "status": "Status",
+    "origin": "Origin",
+    "type": "Type",
+    "created": "Created",
+    "actions": "Actions"
+  },
+  "filters": {
+    "searchTicket": "Search ticket...",
+    "searchTitle": "Search title...",
+    "searchCustomer": "Search customer..."
+  },
+  "priority": {
+    "high": "High",
+    "normal": "Normal",
+    "low": "Low"
+  },
+  "status": {
+    "active": "Active",
+    "resolved": "Resolved",
+    "cancelled": "Cancelled"
+  },
+  "origin": {
+    "phone": "Phone",
+    "email": "Email",
+    "web": "Web"
+  },
+  "type": {
+    "question": "Question",
+    "problem": "Problem",
+    "request": "Request"
+  },
+  "buttons": {
+    "editCase": "Edit case",
+    "createFirst": "Create Your First Case",
+    "createNew": "Create New Case"
+  },
+  "emptyState": {
+    "title": "No cases yet",
+    "description": "Start providing excellent customer support by creating your first case. Cases help you track and resolve customer issues efficiently.",
+    "badge": "Getting Started",
+    "helpText": "Pro tip: Categorizing cases by type and origin helps identify common issues and improve your products.",
+    "suggestions": [
+      "Create cases from incoming phone calls or emails",
+      "Track issue resolution progress with status updates",
+      "Link cases to customers for complete history",
+      "Set priorities to ensure urgent issues are addressed first"
+    ],
+    "noFiltersTitle": "No cases match your filters",
+    "noFiltersDescription": "Try adjusting your search criteria or filters to find what you're looking for.",
+    "filterSuggestions": [
+      "Broaden your search by removing some filters",
+      "Check for typos in your search query",
+      "Try searching by ticket number or customer name"
+    ]
+  }
+}

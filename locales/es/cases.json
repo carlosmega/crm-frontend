@@ -1,0 +1,62 @@
+{
+  "columns": {
+    "ticketNumber": "Ticket #",
+    "title": "T\u00edtulo",
+    "customer": "Cliente",
+    "priority": "Prioridad",
+    "status": "Estado",
+    "origin": "Origen",
+    "type": "Tipo",
+    "created": "Creado",
+    "actions": "Acciones"
+  },
+  "filters": {
+    "searchTicket": "Buscar ticket...",
+    "searchTitle": "Buscar t\u00edtulo...",
+    "searchCustomer": "Buscar cliente..."
+  },
+  "priority": {
+    "high": "Alta",
+    "normal": "Normal",
+    "low": "Baja"
+  },
+  "status": {
+    "active": "Activo",
+    "resolved": "Resuelto",
+    "cancelled": "Cancelado"
+  },
+  "origin": {
+    "phone": "Tel\u00e9fono",
+    "email": "Correo",
+    "web": "Web"
+  },
+  "type": {
+    "question": "Pregunta",
+    "problem": "Problema",
+    "request": "Solicitud"
+  },
+  "buttons": {
+    "editCase": "Editar caso",
+    "createFirst": "Crea Tu Primer Caso",
+    "createNew": "Crear Nuevo Caso"
+  },
+  "emptyState": {
+    "title": "A\u00fan no hay casos",
+    "description": "Comienza a brindar un excelente soporte al cliente creando tu primer caso. Los casos te ayudan a rastrear y resolver problemas de clientes de manera eficiente.",
+    "badge": "Primeros Pasos",
+    "helpText": "Consejo: Categorizar los casos por tipo y origen ayuda a identificar problemas comunes y mejorar tus productos.",
+    "suggestions": [
+      "Crear casos a partir de llamadas telef\u00f3nicas o correos entrantes",
+      "Rastrear el progreso de resoluci\u00f3n con actualizaciones de estado",
+      "Vincular casos a clientes para un historial completo",
+      "Establecer prioridades para asegurar que los problemas urgentes se atiendan primero"
+    ],
+    "noFiltersTitle": "Ning\u00fan caso coincide con tus filtros",
+    "noFiltersDescription": "Intenta ajustar tus criterios de b\u00fasqueda o filtros para encontrar lo que buscas.",
+    "filterSuggestions": [
+      "Ampl\u00eda tu b\u00fasqueda eliminando algunos filtros",
+      "Verifica errores de escritura en tu consulta",
+      "Intenta buscar por n\u00famero de ticket o nombre de cliente"
+    ]
+  }
+}

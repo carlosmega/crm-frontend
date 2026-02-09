@@ -1,0 +1,58 @@
+{
+  "title": "Quotes",
+  "subtitle": "Manage your sales quotations and proposals",
+  "columns": {
+    "product": "Product",
+    "quantity": "Qty",
+    "pricePerUnit": "Price/Unit",
+    "baseAmount": "Base Amt",
+    "discount": "Discount",
+    "tax": "Tax",
+    "extendedAmount": "Extended",
+    "actions": "Actions"
+  },
+  "states": {
+    "all": "All Quotes",
+    "draft": "Draft",
+    "active": "Active",
+    "won": "Won",
+    "closed": "Closed"
+  },
+  "filters": {
+    "searchPlaceholder": "Search quotes by name, number, or description...",
+    "filterByState": "Filter by state"
+  },
+  "buttons": {
+    "newQuote": "New Quote",
+    "createQuote": "Create Quote",
+    "templates": "Templates",
+    "analytics": "Analytics",
+    "addProduct": "Add Product"
+  },
+  "labels": {
+    "allQuotes": "All Quotes",
+    "sales": "Sales",
+    "error": "Error",
+    "failedToLoad": "Failed to Load Quotes",
+    "confirmDeleteSingle": "Are you sure you want to delete this quote?",
+    "confirmDeleteBulk": "Are you sure you want to delete the selected quotes? This action cannot be undone."
+  },
+  "lineItems": {
+    "emptyMessage": "No products added to this quote yet",
+    "addHint": "Click \"Add Product\" to add items to this quote"
+  },
+  "emptyState": {
+    "title": "No quotes yet",
+    "description": "Create your first quote to start the sales proposal process.",
+    "noFiltersTitle": "No quotes found",
+    "noFiltersDescription": "Try adjusting your search criteria or filters to find what you're looking for."
+  },
+  "export": {
+    "quoteNumber": "Quote Number",
+    "name": "Name",
+    "customer": "Customer",
+    "amount": "Amount",
+    "validUntil": "Valid Until",
+    "state": "State"
+  }
+}

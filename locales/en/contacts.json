@@ -1,0 +1,28 @@
+{
+  "columns": {
+    "contactName": "Contact Name",
+    "contactInfo": "Contact Info",
+    "account": "Account",
+    "status": "Status",
+    "createdOn": "Created On",
+    "actions": "Actions"
+  },
+  "filters": {
+    "searchContacts": "Search contacts...",
+    "searchAccount": "Search account..."
+  },
+  "type": {
+    "b2c": "B2C"
+  },
+  "buttons": {
+    "editContact": "Edit contact",
+    "create": "Create Contact",
+    "new": "New Contact"
+  },
+  "emptyState": {
+    "title": "No contacts found",
+    "description": "No contacts match your current filters. Try adjusting your search criteria or create a new contact to get started.",
+    "notFound": "No contacts found",
+    "notAvailable": "No contacts available"
+  }
+}

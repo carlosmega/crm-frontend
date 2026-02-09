@@ -1,0 +1,37 @@
+{
+  "columns": {
+    "accountName": "Account Name",
+    "contact": "Contact",
+    "location": "Location",
+    "category": "Category",
+    "status": "Status",
+    "revenue": "Revenue",
+    "employees": "Employees",
+    "created": "Created",
+    "actions": "Actions"
+  },
+  "filters": {
+    "searchAccounts": "Search accounts...",
+    "searchLocation": "Search location...",
+    "enterAmount": "Enter amount...",
+    "enterNumber": "Enter number..."
+  },
+  "category": {
+    "preferredCustomer": "Preferred Customer",
+    "standard": "Standard"
+  },
+  "buttons": {
+    "editAccount": "Edit account",
+    "createFirst": "Create Your First Account",
+    "createNew": "Create New Account"
+  },
+  "emptyState": {
+    "title": "No accounts yet",
+    "description": "Start managing your business relationships by creating your first account. Accounts represent companies or organizations you do business with.",
+    "helpText": "Tip: Accounts can have multiple contacts, opportunities, and orders associated with them. They're the foundation of your B2B relationships.",
+    "noFiltersTitle": "No accounts match your filters",
+    "noFiltersDescription": "Try adjusting your search criteria or filters to find what you're looking for.",
+    "notFound": "No accounts found",
+    "notAvailable": "No accounts available"
+  }
+}

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -55,6 +55,16 @@ export function GeneralInfoSection({ isEditMode = false }: GeneralInfoSectionPro
   const { accounts } = useAccounts()
   const { contacts } = useContacts()
 
+  // Memoized Maps for O(1) lookups
+  const accountsMap = useMemo(
+    () => new Map(accounts?.map(a => [a.accountid, a]) ?? []),
+    [accounts]
+  )
+  const contactsMap = useMemo(
+    () => new Map(contacts?.map(c => [c.contactid, c]) ?? []),
+    [contacts]
+  )
+
   // Initialize selectedCustomer from form values (for edit mode)
   useEffect(() => {
     if (isEditMode) {
@@ -62,8 +72,8 @@ export function GeneralInfoSection({ isEditMode = false }: GeneralInfoSectionPro
       const customeridtype = form.getValues('customeridtype')
 
       if (customerid && customeridtype !== undefined) {
-        if (customeridtype === CustomerType.Account && accounts) {
-          const account = accounts.find(a => a.accountid === customerid)
+        if (customeridtype === CustomerType.Account) {
+          const account = accountsMap.get(customerid)
           if (account) {
             setSelectedCustomer({
               id: account.accountid,
@@ -74,8 +84,8 @@ export function GeneralInfoSection({ isEditMode = false }: GeneralInfoSectionPro
               city: account.address1_city,
             })
           }
-        } else if (customeridtype === CustomerType.Contact && contacts) {
-          const contact = contacts.find(c => c.contactid === customerid)
+        } else if (customeridtype === CustomerType.Contact) {
+          const contact = contactsMap.get(customerid)
           if (contact) {
             setSelectedCustomer({
               id: contact.contactid,
@@ -89,7 +99,7 @@ export function GeneralInfoSection({ isEditMode = false }: GeneralInfoSectionPro
         }
       }
     }
-  }, [isEditMode, form, accounts, contacts])
+  }, [isEditMode, form, accountsMap, contactsMap])
 
   return (
     <div className="space-y-4">

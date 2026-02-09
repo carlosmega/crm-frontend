@@ -1,0 +1,34 @@
+{
+  "columns": {
+    "invoiceNumber": "N\u00famero de Factura",
+    "name": "Nombre",
+    "status": "Estado",
+    "dueDate": "Fecha de Vencimiento",
+    "amount": "Monto",
+    "balance": "Saldo",
+    "created": "Creado",
+    "actions": "Acciones"
+  },
+  "filters": {
+    "searchInvoiceNumber": "Buscar factura #...",
+    "searchName": "Buscar nombre...",
+    "enterAmount": "Ingrese monto...",
+    "enterBalance": "Ingrese saldo..."
+  },
+  "status": {
+    "active": "Activa",
+    "paid": "Pagada",
+    "canceled": "Cancelada"
+  },
+  "labels": {
+    "orderPrefix": "Pedido:",
+    "partial": "Parcial"
+  },
+  "buttons": {
+    "editInvoice": "Editar factura"
+  },
+  "emptyState": {
+    "title": "No se encontraron facturas",
+    "description": "Ninguna factura coincide con tus filtros actuales. Intenta ajustar tus criterios de b\u00fasqueda."
+  }
+}

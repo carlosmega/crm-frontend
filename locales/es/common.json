@@ -16,7 +16,11 @@
     "submit": "Enviar",
     "reset": "Restablecer",
     "apply": "Aplicar",
-    "clear": "Limpiar"
+    "clear": "Limpiar",
+    "viewDetails": "Ver detalles",
+    "clearFilters": "Limpiar Filtros",
+    "clearAllFilters": "Limpiar Todos los Filtros",
+    "retry": "Reintentar"
   },
   "states": {
     "active": "Activo",
@@ -24,26 +28,37 @@
     "pending": "Pendiente",
     "completed": "Completado",
     "cancelled": "Cancelado",
-    "draft": "Borrador"
+    "draft": "Borrador",
+    "open": "Abierto",
+    "closed": "Cerrado",
+    "won": "Ganado",
+    "lost": "Perdido",
+    "qualified": "Calificado",
+    "disqualified": "Descalificado",
+    "resolved": "Resuelto",
+    "paid": "Pagado",
+    "canceled": "Cancelado",
+    "scheduled": "Programado"
   },
   "messages": {
     "loading": "Cargando...",
     "saving": "Guardando...",
     "saved": "Guardado exitosamente",
-    "error": "Ocurrió un error",
-    "success": "Operación exitosa",
+    "error": "Ocurri\u00f3 un error",
+    "success": "Operaci\u00f3n exitosa",
     "noData": "No hay datos disponibles",
-    "confirmDelete": "¿Está seguro de que desea eliminar este elemento?",
+    "confirmDelete": "\u00bfEst\u00e1 seguro de que desea eliminar este elemento?",
     "unsavedChanges": "Tiene cambios sin guardar",
     "required": "Este campo es obligatorio",
-    "invalid": "Valor inválido"
+    "invalid": "Valor inv\u00e1lido",
+    "noContactInfo": "Sin informaci\u00f3n de contacto"
   },
   "pagination": {
     "previous": "Anterior",
     "next": "Siguiente",
-    "page": "Página",
+    "page": "P\u00e1gina",
     "of": "de",
-    "rowsPerPage": "Filas por página",
+    "rowsPerPage": "Filas por p\u00e1gina",
     "showing": "Mostrando",
     "to": "a",
     "entries": "entradas"
@@ -55,20 +70,44 @@
   },
   "validation": {
     "required": "Este campo es obligatorio",
-    "email": "Debe ser un email válido",
-    "phone": "Debe ser un teléfono válido",
-    "minLength": "Mínimo {{min}} caracteres",
-    "maxLength": "Máximo {{max}} caracteres",
-    "min": "Valor mínimo: {{min}}",
-    "max": "Valor máximo: {{max}}",
-    "url": "Debe ser una URL válida"
+    "email": "Debe ser un email v\u00e1lido",
+    "phone": "Debe ser un tel\u00e9fono v\u00e1lido",
+    "minLength": "M\u00ednimo {{min}} caracteres",
+    "maxLength": "M\u00e1ximo {{max}} caracteres",
+    "min": "Valor m\u00ednimo: {{min}}",
+    "max": "Valor m\u00e1ximo: {{max}}",
+    "url": "Debe ser una URL v\u00e1lida"
   },
   "dateTime": {
     "today": "Hoy",
     "yesterday": "Ayer",
-    "tomorrow": "Mañana",
-    "lastWeek": "Última semana",
-    "lastMonth": "Último mes",
+    "tomorrow": "Ma\u00f1ana",
+    "lastWeek": "\u00daltima semana",
+    "lastMonth": "\u00daltimo mes",
     "custom": "Personalizado"
+  },
+  "columns": {
+    "name": "Nombre",
+    "status": "Estado",
+    "created": "Creado",
+    "actions": "Acciones",
+    "customer": "Cliente",
+    "priority": "Prioridad",
+    "type": "Tipo"
+  },
+  "priority": {
+    "high": "Alta",
+    "normal": "Normal",
+    "low": "Baja"
+  },
+  "filters": {
+    "amountPlaceholder": "Ingrese monto...",
+    "numberPlaceholder": "Ingrese n\u00famero...",
+    "searchPlaceholder": "Buscar..."
+  },
+  "notApplicable": "N/D",
+  "emptyState": {
+    "adjustSearch": "Intente ajustar su b\u00fasqueda",
+    "noFiltersDescription": "Intente ajustar sus criterios de b\u00fasqueda o filtros para encontrar lo que busca."
   }
 }

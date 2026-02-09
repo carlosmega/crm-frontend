@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -36,7 +36,7 @@ export function ProductSelectorDialog({
   const { products = [], loading: isLoading } = useProducts()
 
   // Filter products by search query
-  const filteredProducts = products.filter((product) => {
+  const filteredProducts = useMemo(() => products.filter((product) => {
     if (!searchQuery) return product.statecode === 0 // Only active
     const query = searchQuery.toLowerCase()
     return (
@@ -45,13 +45,13 @@ export function ProductSelectorDialog({
         product.productnumber?.toLowerCase().includes(query) ||
         product.description?.toLowerCase().includes(query))
     )
-  })
+  }), [products, searchQuery])
 
-  const handleSelect = (product: Product) => {
+  const handleSelect = useCallback((product: Product) => {
     onSelect(product)
     setSearchQuery('')
     onOpenChange(false)
-  }
+  }, [onSelect, onOpenChange])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

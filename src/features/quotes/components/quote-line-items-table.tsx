@@ -48,7 +48,7 @@ const QuoteLineRow = memo(function QuoteLineRow({
 }) {
   const handleEdit = useCallback(() => {
     onEdit?.(line)
-  }, [line, onEdit])
+  }, [line.quotedetailid, onEdit])
 
   const handleDelete = useCallback(() => {
     onDelete?.(line.quotedetailid)

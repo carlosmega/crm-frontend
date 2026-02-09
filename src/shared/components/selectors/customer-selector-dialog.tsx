@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { useAccounts } from '@/features/accounts/hooks/use-accounts'
 import { useContacts } from '@/features/contacts/hooks/use-contacts'
 import { useOpportunities } from '@/features/opportunities/hooks/use-opportunities'
@@ -23,6 +23,16 @@ import { useDebouncedValue } from '@/shared/hooks/use-debounced-value'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { CreateContactDialog } from '@/features/contacts/components/create-contact-dialog'
+import { useTranslation } from '@/shared/hooks/use-translation'
+
+function getInitials(name: string) {
+  return name
+    .split(' ')
+    .map(n => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
+}
 
 interface CustomerSelectorDialogProps {
   /** Dialog open state */
@@ -99,11 +109,14 @@ export function CustomerSelectorDialog({
     return counts
   }, [opportunities])
 
+  // Set for O(1) exclusion lookups
+  const excludeIdSet = useMemo(() => new Set(excludeIds), [excludeIds])
+
   // Filter accounts
   const filteredAccounts = useMemo(() => {
     if (!accounts) return []
 
-    let filtered = accounts.filter(acc => !excludeIds.includes(acc.accountid))
+    let filtered = accounts.filter(acc => !excludeIdSet.has(acc.accountid))
 
     if (debouncedSearch) {
       const lowerQuery = debouncedSearch.toLowerCase()
@@ -116,13 +129,13 @@ export function CustomerSelectorDialog({
     }
 
     return filtered
-  }, [accounts, debouncedSearch, excludeIds])
+  }, [accounts, debouncedSearch, excludeIdSet])
 
   // Filter contacts
   const filteredContacts = useMemo(() => {
     if (!contacts) return []
 
-    let filtered = contacts.filter(con => !excludeIds.includes(con.contactid))
+    let filtered = contacts.filter(con => !excludeIdSet.has(con.contactid))
 
     if (debouncedSearch) {
       const lowerQuery = debouncedSearch.toLowerCase()
@@ -135,20 +148,10 @@ export function CustomerSelectorDialog({
     }
 
     return filtered
-  }, [contacts, debouncedSearch, excludeIds])
-
-  // Get initials for avatar
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map(n => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2)
-  }
+  }, [contacts, debouncedSearch, excludeIdSet])
 
   // Handle selection
-  const handleSelectAccount = (accountId: string) => {
+  const handleSelectAccount = useCallback((accountId: string) => {
     const account = accounts?.find(a => a.accountid === accountId)
     if (!account) return
 
@@ -163,9 +166,9 @@ export function CustomerSelectorDialog({
       openOpportunities: openOpportunitiesCount[oppKey] || 0
     })
     onOpenChange(false)
-  }
+  }, [accounts, onSelect, onOpenChange, openOpportunitiesCount])
 
-  const handleSelectContact = (contactId: string) => {
+  const handleSelectContact = useCallback((contactId: string) => {
     const contact = contacts?.find(c => c.contactid === contactId)
     if (!contact) return
 
@@ -180,10 +183,9 @@ export function CustomerSelectorDialog({
       openOpportunities: openOpportunitiesCount[oppKey] || 0
     })
     onOpenChange(false)
-  }
+  }, [contacts, onSelect, onOpenChange, openOpportunitiesCount])
 
-  const handleContactCreated = (newContact: any) => {
-    // Select the newly created contact
+  const handleContactCreated = useCallback((newContact: any) => {
     onSelect({
       id: newContact.contactid,
       type: 'contact',
@@ -195,7 +197,7 @@ export function CustomerSelectorDialog({
     })
     setCreateContactOpen(false)
     onOpenChange(false)
-  }
+  }, [onSelect, onOpenChange])
 
   return (
     <>

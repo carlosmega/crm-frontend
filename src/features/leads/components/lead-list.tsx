@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo } from 'react'
 import Link from 'next/link'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import type { Lead } from '@/core/contracts'
 import {
   LeadSourceCode,
@@ -79,6 +80,9 @@ export function LeadList({
   bulkActions = [],
   hasLoadedData = true
 }: LeadListProps) {
+  const { t: tLeads } = useTranslation('leads')
+  const { t: tCommon } = useTranslation('common')
+
   // ✅ OPTIMIZACIÓN: Helpers memoizados con useCallback
   // Misma referencia en cada render → previene re-renders innecesarios de children
   const formatCurrency = useCallback((value?: number) => {
@@ -96,14 +100,14 @@ export function LeadList({
   const columns: DataTableColumn<Lead>[] = useMemo(() => [
     {
       id: 'name',
-      header: 'Name',
+      header: tLeads('columns.name'),
       accessorFn: (lead) => lead.fullname || `${lead.firstname} ${lead.lastname}`,
       sortable: true,
       filterable: true,
       filter: {
         type: 'text',
         operators: ['contains', 'equals', 'startsWith', 'endsWith'],
-        placeholder: 'Search names...',
+        placeholder: tLeads('filters.searchNames'),
       },
       cell: (lead) => (
         <div className="flex flex-col">
@@ -111,8 +115,7 @@ export function LeadList({
             href={`/leads/${lead.leadid}`}
             className="font-medium hover:underline"
             onClick={(e) => e.stopPropagation()}
-            prefetch={true}
-          >
+                     >
             {lead.fullname || `${lead.firstname} ${lead.lastname}`}
           </Link>
           {lead.jobtitle && (
@@ -125,20 +128,20 @@ export function LeadList({
     },
     {
       id: 'company',
-      header: 'Company',
+      header: tLeads('columns.company'),
       accessorFn: (lead) => lead.companyname || '-',
       sortable: true,
       filterable: true,
       filter: {
         type: 'text',
         operators: ['contains', 'equals', 'startsWith'],
-        placeholder: 'Search companies...',
+        placeholder: tLeads('filters.searchCompanies'),
       },
       cell: (lead) => lead.companyname || <span className="text-muted-foreground">-</span>,
     },
     {
       id: 'contact',
-      header: 'Contact',
+      header: tLeads('columns.contact'),
       cell: (lead) => (
         <div className="flex flex-col gap-1">
           {lead.emailaddress1 && (
@@ -169,46 +172,46 @@ export function LeadList({
     },
     {
       id: 'source',
-      header: 'Source',
+      header: tLeads('columns.source'),
       accessorFn: (lead) => lead.leadsourcecode,
       sortable: true,
       filterable: true,
       filter: {
         type: 'multiselect',
         options: [
-          { label: 'Web', value: LeadSourceCode.Web, icon: Globe },
-          { label: 'Employee Referral', value: LeadSourceCode.Employee_Referral, icon: Users },
-          { label: 'External Referral', value: LeadSourceCode.External_Referral, icon: Users },
-          { label: 'Partner', value: LeadSourceCode.Partner },
-          { label: 'Advertisement', value: LeadSourceCode.Advertisement },
-          { label: 'Public Relations', value: LeadSourceCode.Public_Relations },
-          { label: 'Seminar', value: LeadSourceCode.Seminar },
-          { label: 'Trade Show', value: LeadSourceCode.Trade_Show },
-          { label: 'Word of Mouth', value: LeadSourceCode.Word_of_Mouth },
-          { label: 'Other', value: LeadSourceCode.Other },
+          { label: tLeads('sources.web'), value: LeadSourceCode.Web, icon: Globe },
+          { label: tLeads('sources.employeeReferral'), value: LeadSourceCode.Employee_Referral, icon: Users },
+          { label: tLeads('sources.externalReferral'), value: LeadSourceCode.External_Referral, icon: Users },
+          { label: tLeads('sources.partner'), value: LeadSourceCode.Partner },
+          { label: tLeads('sources.advertisement'), value: LeadSourceCode.Advertisement },
+          { label: tLeads('sources.publicRelations'), value: LeadSourceCode.Public_Relations },
+          { label: tLeads('sources.seminar'), value: LeadSourceCode.Seminar },
+          { label: tLeads('sources.tradeShow'), value: LeadSourceCode.Trade_Show },
+          { label: tLeads('sources.wordOfMouth'), value: LeadSourceCode.Word_of_Mouth },
+          { label: tLeads('sources.other'), value: LeadSourceCode.Other },
         ],
       },
       cell: (lead) => <LeadSourceBadge source={lead.leadsourcecode} />,
     },
     {
       id: 'quality',
-      header: 'Quality',
+      header: tLeads('columns.quality'),
       accessorFn: (lead) => lead.leadqualitycode,
       sortable: true,
       filterable: true,
       filter: {
         type: 'multiselect',
         options: [
-          { label: 'Hot', value: LeadQualityCode.Hot, icon: Flame },
-          { label: 'Warm', value: LeadQualityCode.Warm, icon: AlertCircle },
-          { label: 'Cold', value: LeadQualityCode.Cold, icon: Snowflake },
+          { label: tLeads('quality.hot'), value: LeadQualityCode.Hot, icon: Flame },
+          { label: tLeads('quality.warm'), value: LeadQualityCode.Warm, icon: AlertCircle },
+          { label: tLeads('quality.cold'), value: LeadQualityCode.Cold, icon: Snowflake },
         ],
       },
       cell: (lead) => <LeadQualityBadge quality={lead.leadqualitycode} />,
     },
     {
       id: 'status',
-      header: 'Status',
+      header: tLeads('columns.status'),
       accessorFn: (lead) => lead.statecode,
       sortable: true,
       filterable: true,
@@ -229,14 +232,14 @@ export function LeadList({
     },
     {
       id: 'value',
-      header: 'Est. Value',
+      header: tLeads('columns.estValue'),
       accessorFn: (lead) => lead.estimatedvalue || 0,
       sortable: true,
       filterable: true,
       filter: {
         type: 'number',
         operators: ['equals', 'greaterThan', 'lessThan', 'between'],
-        placeholder: 'Enter amount...',
+        placeholder: tLeads('filters.enterAmount'),
         min: 0,
       },
       className: 'text-center',
@@ -249,7 +252,7 @@ export function LeadList({
     },
     {
       id: 'closeDate',
-      header: 'Est. Close',
+      header: tLeads('columns.estClose'),
       accessorFn: (lead) => lead.estimatedclosedate ? new Date(lead.estimatedclosedate) : null,
       sortable: true,
       filterable: true,
@@ -265,7 +268,7 @@ export function LeadList({
     },
     {
       id: 'createdon',
-      header: 'Created',
+      header: tLeads('columns.created'),
       accessorFn: (lead) => lead.createdon ? new Date(lead.createdon) : null,
       sortable: true,
       filterable: true,
@@ -281,18 +284,18 @@ export function LeadList({
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: tLeads('columns.actions'),
       className: 'text-right',
       headerClassName: 'text-right',
       cell: (lead) => (
         <div className="flex justify-end gap-1" onClick={(e) => e.stopPropagation()}>
           <Button asChild variant="ghost" size="icon-sm" title="View details">
-            <Link href={`/leads/${lead.leadid}`} prefetch={true}>
+            <Link href={`/leads/${lead.leadid}`}>
               <Eye className="size-4" />
             </Link>
           </Button>
           <Button asChild variant="ghost" size="icon-sm" title="Edit lead">
-            <Link href={`/leads/${lead.leadid}/edit`} prefetch={true}>
+            <Link href={`/leads/${lead.leadid}/edit`}>
               <Edit className="size-4" />
             </Link>
           </Button>

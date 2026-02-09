@@ -4,6 +4,7 @@ import { memo, useMemo, useCallback } from 'react'
 import Link from 'next/link'
 import type { Contact } from '@/core/contracts'
 import { ContactStateCode } from '@/core/contracts'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import {
   DataTableWithToolbar,
   DataTableColumn,
@@ -37,6 +38,9 @@ export const ContactList = memo(function ContactList({
   loading = false,
   bulkActions = []
 }: ContactListProps) {
+  const { t: tCon } = useTranslation('contacts')
+  const { t: tCommon } = useTranslation('common')
+
   // ✅ PERFORMANCE: Memoize helper to prevent recreation on every render
   const getInitials = useCallback((contact: Contact) => {
     const first = contact.firstname?.charAt(0) || ''
@@ -49,14 +53,14 @@ export const ContactList = memo(function ContactList({
   const columns: DataTableColumn<Contact>[] = useMemo(() => [
     {
       id: 'name',
-      header: 'Contact Name',
+      header: tCon('columns.contactName'),
       accessorFn: (contact) => contact.fullname,
       sortable: true,
       filterable: true,
       filter: {
         type: 'text',
         operators: ['contains', 'equals', 'startsWith', 'endsWith'],
-        placeholder: 'Search contacts...',
+        placeholder: tCon('filters.searchContacts'),
       },
       cell: (contact) => (
         <div className="flex items-center gap-3">
@@ -70,8 +74,7 @@ export const ContactList = memo(function ContactList({
               href={`/contacts/${contact.contactid}`}
               className="font-medium hover:underline"
               onClick={(e) => e.stopPropagation()}
-              prefetch={true}
-            >
+                         >
               {contact.fullname}
             </Link>
             {contact.jobtitle && (
@@ -86,7 +89,7 @@ export const ContactList = memo(function ContactList({
     },
     {
       id: 'contact',
-      header: 'Contact Info',
+      header: tCon('columns.contactInfo'),
       cell: (contact) => {
         // ✅ Priorizar: Email + teléfono principal (telephone1 o mobilephone)
         const primaryPhone = contact.telephone1 || contact.mobilephone
@@ -114,7 +117,7 @@ export const ContactList = memo(function ContactList({
               </a>
             )}
             {!contact.emailaddress1 && !primaryPhone && (
-              <span className="text-xs text-muted-foreground">No contact info</span>
+              <span className="text-xs text-muted-foreground">{tCommon('messages.noContactInfo')}</span>
             )}
           </div>
         )
@@ -122,14 +125,14 @@ export const ContactList = memo(function ContactList({
     },
     {
       id: 'account',
-      header: 'Account',
+      header: tCon('columns.account'),
       accessorFn: (contact) => contact.parentcustomerid || 'B2C',
       sortable: true,
       filterable: true,
       filter: {
         type: 'text',
         operators: ['contains', 'equals'],
-        placeholder: 'Search account...',
+        placeholder: tCon('filters.searchAccount'),
       },
       cell: (contact) => {
         if (!contact.parentcustomerid) {
@@ -155,22 +158,22 @@ export const ContactList = memo(function ContactList({
     },
     {
       id: 'status',
-      header: 'Status',
+      header: tCon('columns.status'),
       accessorFn: (contact) => contact.statecode,
       sortable: true,
       filterable: true,
       filter: {
         type: 'multiselect',
         options: [
-          { label: 'Active', value: ContactStateCode.Active },
-          { label: 'Inactive', value: ContactStateCode.Inactive },
+          { label: tCommon('states.active'), value: ContactStateCode.Active },
+          { label: tCommon('states.inactive'), value: ContactStateCode.Inactive },
         ],
       },
       cell: (contact) => <ContactStatusBadge statecode={contact.statecode} />,
     },
     {
       id: 'created',
-      header: 'Created On',
+      header: tCon('columns.createdOn'),
       accessorFn: (contact) => contact.createdon ? new Date(contact.createdon) : null,
       sortable: true,
       filterable: true,
@@ -186,18 +189,18 @@ export const ContactList = memo(function ContactList({
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: tCon('columns.actions'),
       className: 'text-right',
       headerClassName: 'text-right',
       cell: (contact) => (
         <div className="flex justify-end gap-1" onClick={(e) => e.stopPropagation()}>
-          <Button asChild variant="ghost" size="icon-sm" title="View details">
-            <Link href={`/contacts/${contact.contactid}`} prefetch={true}>
+          <Button asChild variant="ghost" size="icon-sm" title={tCommon('buttons.viewDetails')}>
+            <Link href={`/contacts/${contact.contactid}`}>
               <Eye className="size-4" />
             </Link>
           </Button>
-          <Button asChild variant="ghost" size="icon-sm" title="Edit contact">
-            <Link href={`/contacts/${contact.contactid}/edit`} prefetch={true}>
+          <Button asChild variant="ghost" size="icon-sm" title={tCon('buttons.editContact')}>
+            <Link href={`/contacts/${contact.contactid}/edit`}>
               <Edit className="size-4" />
             </Link>
           </Button>

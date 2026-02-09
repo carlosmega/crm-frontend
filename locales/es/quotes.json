@@ -1,0 +1,58 @@
+{
+  "title": "Cotizaciones",
+  "subtitle": "Gestiona tus cotizaciones y propuestas de venta",
+  "columns": {
+    "product": "Producto",
+    "quantity": "Cant.",
+    "pricePerUnit": "Precio/Unidad",
+    "baseAmount": "Monto Base",
+    "discount": "Descuento",
+    "tax": "Impuesto",
+    "extendedAmount": "Total",
+    "actions": "Acciones"
+  },
+  "states": {
+    "all": "Todas las Cotizaciones",
+    "draft": "Borrador",
+    "active": "Activa",
+    "won": "Ganada",
+    "closed": "Cerrada"
+  },
+  "filters": {
+    "searchPlaceholder": "Buscar cotizaciones por nombre, n\u00famero o descripci\u00f3n...",
+    "filterByState": "Filtrar por estado"
+  },
+  "buttons": {
+    "newQuote": "Nueva Cotizaci\u00f3n",
+    "createQuote": "Crear Cotizaci\u00f3n",
+    "templates": "Plantillas",
+    "analytics": "An\u00e1litica",
+    "addProduct": "Agregar Producto"
+  },
+  "labels": {
+    "allQuotes": "Todas las Cotizaciones",
+    "sales": "Ventas",
+    "error": "Error",
+    "failedToLoad": "Error al Cargar Cotizaciones",
+    "confirmDeleteSingle": "\u00bfEst\u00e1 seguro de que desea eliminar esta cotizaci\u00f3n?",
+    "confirmDeleteBulk": "\u00bfEst\u00e1 seguro de que desea eliminar las cotizaciones seleccionadas? Esta acci\u00f3n no se puede deshacer."
+  },
+  "lineItems": {
+    "emptyMessage": "A\u00fan no se han agregado productos a esta cotizaci\u00f3n",
+    "addHint": "Haz clic en \"Agregar Producto\" para a\u00f1adir art\u00edculos a esta cotizaci\u00f3n"
+  },
+  "emptyState": {
+    "title": "A\u00fan no hay cotizaciones",
+    "description": "Crea tu primera cotizaci\u00f3n para iniciar el proceso de propuesta de ventas.",
+    "noFiltersTitle": "No se encontraron cotizaciones",
+    "noFiltersDescription": "Intenta ajustar tus criterios de b\u00fasqueda o filtros para encontrar lo que buscas."
+  },
+  "export": {
+    "quoteNumber": "N\u00famero de Cotizaci\u00f3n",
+    "name": "Nombre",
+    "customer": "Cliente",
+    "amount": "Monto",
+    "validUntil": "V\u00e1lido Hasta",
+    "state": "Estado"
+  }
+}
