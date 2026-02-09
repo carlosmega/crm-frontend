@@ -12,7 +12,7 @@ export function useNotifications() {
   const fetchNotifications = async () => {
     try {
       setLoading(true)
-      // TODO: Replace with real API call
+      // PENDING: Replace with real API call when backend is ready
       // const response = await fetch('/api/notifications')
       // const data = await response.json()
 

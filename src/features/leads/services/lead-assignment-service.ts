@@ -196,8 +196,8 @@ function assignByTerritory(
 /**
  * Asigna lead usando Industry-based rules
  *
- * TODO: Industry code is not available on Lead entity, only on Account
- * This function should be implemented for Account-based assignment
+ * NOTE: Industry code is not available on Lead entity, only on Account.
+ * This function should be implemented for Account-based assignment.
  */
 /* function assignByIndustry(
   lead: Partial<Lead>,
@@ -237,8 +237,8 @@ function assignByTerritory(
 /**
  * Asigna lead usando Company Size rules (basado en revenue)
  *
- * TODO: Revenue is not available on Lead entity, only on Account
- * This function should be implemented for Account-based assignment
+ * NOTE: Revenue is not available on Lead entity, only on Account.
+ * This function should be implemented for Account-based assignment.
  */
 /* function assignByCompanySize(
   lead: Partial<Lead>,
@@ -400,8 +400,8 @@ export function autoAssignLead(
   })
 
   // 3. Industry-based
-  // TODO: Industry code is not available on Lead entity, only on Account
-  // This would need to be implemented after Lead is qualified and linked to Account
+  // NOTE: Industry code is not available on Lead entity, only on Account.
+  // This would need to be implemented after Lead is qualified and linked to Account.
   /* const industryResult = assignByIndustry(lead, salesReps)
   if (industryResult) {
     evaluations.push({
@@ -418,7 +418,7 @@ export function autoAssignLead(
   })
 
   // 4. Company Size-based
-  // TODO: Revenue is not available on Lead entity, only on Account
+  // NOTE: Revenue is not available on Lead entity, only on Account.
   /* const companySizeResult = assignByCompanySize(lead, salesReps)
   if (companySizeResult) {
     evaluations.push({

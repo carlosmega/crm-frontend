@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, memo } from 'react'
 import { useAccounts } from '@/features/accounts/hooks/use-accounts'
 import { useContacts } from '@/features/contacts/hooks/use-contacts'
 import { useOpportunities } from '@/features/opportunities/hooks/use-opportunities'
@@ -33,6 +33,124 @@ function getInitials(name: string) {
     .toUpperCase()
     .slice(0, 2)
 }
+
+// ============================================================================
+// Memoized List Item Components
+// ============================================================================
+
+interface AccountListItemProps {
+  account: { accountid: string; name: string; emailaddress1?: string; telephone1?: string; address1_city?: string }
+  oppCount: number
+  onSelect: (id: string) => void
+}
+
+const AccountListItem = memo(function AccountListItem({ account, oppCount, onSelect }: AccountListItemProps) {
+  return (
+    <button
+      onClick={() => onSelect(account.accountid)}
+      className="w-full flex items-start gap-3 p-3 border rounded-lg hover:bg-accent hover:border-primary transition-colors text-left"
+    >
+      <Avatar className="size-10">
+        <AvatarFallback className="bg-primary/10 text-primary">
+          {getInitials(account.name)}
+        </AvatarFallback>
+      </Avatar>
+
+      <div className="flex-1 min-w-0 space-y-1">
+        <div className="flex items-center justify-between gap-2">
+          <p className="font-medium truncate">{account.name}</p>
+          {oppCount > 0 && (
+            <Badge variant="secondary" className="shrink-0">
+              <Briefcase className="size-3 mr-1" />
+              {oppCount} {oppCount === 1 ? 'opp' : 'opps'}
+            </Badge>
+          )}
+        </div>
+
+        <div className="space-y-0.5 text-xs text-muted-foreground">
+          {account.emailaddress1 && (
+            <div className="flex items-center gap-1.5">
+              <Mail className="size-3" />
+              <span className="truncate">{account.emailaddress1}</span>
+            </div>
+          )}
+          {account.telephone1 && (
+            <div className="flex items-center gap-1.5">
+              <Phone className="size-3" />
+              <span>{account.telephone1}</span>
+            </div>
+          )}
+          {account.address1_city && (
+            <div className="flex items-center gap-1.5">
+              <MapPin className="size-3" />
+              <span>{account.address1_city}</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </button>
+  )
+})
+
+interface ContactListItemProps {
+  contact: { contactid: string; firstname: string; lastname: string; emailaddress1?: string; telephone1?: string; address1_city?: string }
+  oppCount: number
+  onSelect: (id: string) => void
+}
+
+const ContactListItem = memo(function ContactListItem({ contact, oppCount, onSelect }: ContactListItemProps) {
+  return (
+    <button
+      onClick={() => onSelect(contact.contactid)}
+      className="w-full flex items-start gap-3 p-3 border rounded-lg hover:bg-accent hover:border-primary transition-colors text-left"
+    >
+      <Avatar className="size-10">
+        <AvatarFallback className="bg-primary/10 text-primary">
+          {getInitials(`${contact.firstname} ${contact.lastname}`)}
+        </AvatarFallback>
+      </Avatar>
+
+      <div className="flex-1 min-w-0 space-y-1">
+        <div className="flex items-center justify-between gap-2">
+          <p className="font-medium truncate">
+            {contact.firstname} {contact.lastname}
+          </p>
+          {oppCount > 0 && (
+            <Badge variant="secondary" className="shrink-0">
+              <Briefcase className="size-3 mr-1" />
+              {oppCount} {oppCount === 1 ? 'opp' : 'opps'}
+            </Badge>
+          )}
+        </div>
+
+        <div className="space-y-0.5 text-xs text-muted-foreground">
+          {contact.emailaddress1 && (
+            <div className="flex items-center gap-1.5">
+              <Mail className="size-3" />
+              <span className="truncate">{contact.emailaddress1}</span>
+            </div>
+          )}
+          {contact.telephone1 && (
+            <div className="flex items-center gap-1.5">
+              <Phone className="size-3" />
+              <span>{contact.telephone1}</span>
+            </div>
+          )}
+          {contact.address1_city && (
+            <div className="flex items-center gap-1.5">
+              <MapPin className="size-3" />
+              <span>{contact.address1_city}</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </button>
+  )
+})
+
+// ============================================================================
+// Main Component
+// ============================================================================
 
 interface CustomerSelectorDialogProps {
   /** Dialog open state */
@@ -281,57 +399,14 @@ export function CustomerSelectorDialog({
               ) : (
                 // Results
                 <div className="space-y-2">
-                  {filteredAccounts.map((account) => {
-                    const oppKey = `account-${account.accountid}`
-                    const oppCount = openOpportunitiesCount[oppKey] || 0
-
-                    return (
-                      <button
-                        key={account.accountid}
-                        onClick={() => handleSelectAccount(account.accountid)}
-                        className="w-full flex items-start gap-3 p-3 border rounded-lg hover:bg-accent hover:border-primary transition-colors text-left"
-                      >
-                        <Avatar className="size-10">
-                          <AvatarFallback className="bg-primary/10 text-primary">
-                            {getInitials(account.name)}
-                          </AvatarFallback>
-                        </Avatar>
-
-                        <div className="flex-1 min-w-0 space-y-1">
-                          <div className="flex items-center justify-between gap-2">
-                            <p className="font-medium truncate">{account.name}</p>
-                            {oppCount > 0 && (
-                              <Badge variant="secondary" className="shrink-0">
-                                <Briefcase className="size-3 mr-1" />
-                                {oppCount} {oppCount === 1 ? 'opp' : 'opps'}
-                              </Badge>
-                            )}
-                          </div>
-
-                          <div className="space-y-0.5 text-xs text-muted-foreground">
-                            {account.emailaddress1 && (
-                              <div className="flex items-center gap-1.5">
-                                <Mail className="size-3" />
-                                <span className="truncate">{account.emailaddress1}</span>
-                              </div>
-                            )}
-                            {account.telephone1 && (
-                              <div className="flex items-center gap-1.5">
-                                <Phone className="size-3" />
-                                <span>{account.telephone1}</span>
-                              </div>
-                            )}
-                            {account.address1_city && (
-                              <div className="flex items-center gap-1.5">
-                                <MapPin className="size-3" />
-                                <span>{account.address1_city}</span>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </button>
-                    )
-                  })}
+                  {filteredAccounts.map((account) => (
+                    <AccountListItem
+                      key={account.accountid}
+                      account={account}
+                      oppCount={openOpportunitiesCount[`account-${account.accountid}`] || 0}
+                      onSelect={handleSelectAccount}
+                    />
+                  ))}
                 </div>
               )}
             </ScrollArea>
@@ -366,59 +441,14 @@ export function CustomerSelectorDialog({
               ) : (
                 // Results
                 <div className="space-y-2">
-                  {filteredContacts.map((contact) => {
-                    const oppKey = `contact-${contact.contactid}`
-                    const oppCount = openOpportunitiesCount[oppKey] || 0
-
-                    return (
-                      <button
-                        key={contact.contactid}
-                        onClick={() => handleSelectContact(contact.contactid)}
-                        className="w-full flex items-start gap-3 p-3 border rounded-lg hover:bg-accent hover:border-primary transition-colors text-left"
-                      >
-                        <Avatar className="size-10">
-                          <AvatarFallback className="bg-primary/10 text-primary">
-                            {getInitials(`${contact.firstname} ${contact.lastname}`)}
-                          </AvatarFallback>
-                        </Avatar>
-
-                        <div className="flex-1 min-w-0 space-y-1">
-                          <div className="flex items-center justify-between gap-2">
-                            <p className="font-medium truncate">
-                              {contact.firstname} {contact.lastname}
-                            </p>
-                            {oppCount > 0 && (
-                              <Badge variant="secondary" className="shrink-0">
-                                <Briefcase className="size-3 mr-1" />
-                                {oppCount} {oppCount === 1 ? 'opp' : 'opps'}
-                              </Badge>
-                            )}
-                          </div>
-
-                          <div className="space-y-0.5 text-xs text-muted-foreground">
-                            {contact.emailaddress1 && (
-                              <div className="flex items-center gap-1.5">
-                                <Mail className="size-3" />
-                                <span className="truncate">{contact.emailaddress1}</span>
-                              </div>
-                            )}
-                            {contact.telephone1 && (
-                              <div className="flex items-center gap-1.5">
-                                <Phone className="size-3" />
-                                <span>{contact.telephone1}</span>
-                              </div>
-                            )}
-                            {contact.address1_city && (
-                              <div className="flex items-center gap-1.5">
-                                <MapPin className="size-3" />
-                                <span>{contact.address1_city}</span>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </button>
-                    )
-                  })}
+                  {filteredContacts.map((contact) => (
+                    <ContactListItem
+                      key={contact.contactid}
+                      contact={contact}
+                      oppCount={openOpportunitiesCount[`contact-${contact.contactid}`] || 0}
+                      onSelect={handleSelectContact}
+                    />
+                  ))}
                 </div>
               )}
             </ScrollArea>

@@ -201,7 +201,7 @@ function calculateFitScore(
 
   if (!idealProfile) {
     // Si no hay perfil ideal, dar puntos por tener datos completos
-    // TODO: Industry, revenue, and employee count are Account properties, not Lead properties
+    // NOTE: Industry, revenue, and employee count are Account properties, not Lead properties
     /* if (lead.industrycode !== undefined) {
       score += 8
       reasoning.push('Industry specified: +8 points')
@@ -222,7 +222,7 @@ function calculateFitScore(
   }
 
   // Industry match
-  // TODO: Industry code not available on Lead entity
+  // NOTE: Industry code not available on Lead entity
   /* if (
     idealProfile.industries &&
     lead.industrycode !== undefined &&
@@ -233,7 +233,7 @@ function calculateFitScore(
   } */
 
   // Revenue fit
-  // TODO: Revenue not available on Lead entity
+  // NOTE: Revenue not available on Lead entity
   /* if (lead.revenue !== undefined && lead.revenue > 0) {
     const inRange =
       (!idealProfile.minRevenue || lead.revenue >= idealProfile.minRevenue) &&
@@ -248,7 +248,7 @@ function calculateFitScore(
   } */
 
   // Employee count fit
-  // TODO: Employee count not available on Lead entity
+  // NOTE: Employee count not available on Lead entity
   /* if (lead.numberofemployees !== undefined && lead.numberofemployees > 0) {
     const inRange =
       (!idealProfile.minEmployees ||

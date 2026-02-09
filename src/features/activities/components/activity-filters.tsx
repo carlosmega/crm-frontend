@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -49,6 +50,7 @@ export function ActivityFiltersBar({
   onFiltersChange,
   onClearFilters,
 }: ActivityFiltersBarProps) {
+  const { data: session } = useSession()
   const [showFilters, setShowFilters] = useState(false)
 
   const hasActiveFilters =
@@ -223,7 +225,7 @@ export function ActivityFiltersBar({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Owners</SelectItem>
-                  <SelectItem value="user-1">John Doe (Me)</SelectItem>
+                  <SelectItem value={session?.user?.id || 'me'}>{session?.user?.name || 'Me'} (Me)</SelectItem>
                   <SelectItem value="user-2">Jane Smith</SelectItem>
                   <SelectItem value="user-3">Bob Johnson</SelectItem>
                   <SelectItem value="user-4">Alice Williams</SelectItem>
@@ -280,7 +282,7 @@ export function ActivityFiltersBar({
               )}
               {filters.owner && (
                 <Badge variant="secondary" className="gap-1">
-                  Owner: {filters.owner === 'user-1' ? 'Me' : filters.owner}
+                  Owner: {filters.owner === session?.user?.id ? 'Me' : filters.owner}
                   <button
                     onClick={() => {
                       const { owner, ...rest } = filters

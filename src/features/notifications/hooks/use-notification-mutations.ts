@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 export function useNotificationMutations() {
   const markAsRead = useCallback(async (id: string) => {
     try {
-      // TODO: API call
+      // PENDING: Replace with real API call when backend is ready
       // await fetch(`/api/notifications/${id}/mark-read`, { method: 'POST' })
       toast.success('Marked as read')
     } catch (error) {
@@ -17,7 +17,7 @@ export function useNotificationMutations() {
 
   const markAllAsRead = useCallback(async () => {
     try {
-      // TODO: API call
+      // PENDING: Replace with real API call when backend is ready
       // await fetch('/api/notifications/mark-all-read', { method: 'POST' })
       toast.success('All notifications marked as read')
     } catch (error) {
@@ -28,7 +28,7 @@ export function useNotificationMutations() {
 
   const deleteNotifications = useCallback(async (ids: string[]) => {
     try {
-      // TODO: API call
+      // PENDING: Replace with real API call when backend is ready
       // await fetch('/api/notifications/bulk-delete', { method: 'DELETE', body: JSON.stringify({ ids }) })
       toast.success(`${ids.length} notification${ids.length === 1 ? '' : 's'} deleted`)
     } catch (error) {
@@ -39,7 +39,7 @@ export function useNotificationMutations() {
 
   const archiveNotifications = useCallback(async (ids: string[]) => {
     try {
-      // TODO: API call
+      // PENDING: Replace with real API call when backend is ready
       // await fetch('/api/notifications/bulk-archive', { method: 'POST', body: JSON.stringify({ ids }) })
       toast.success(`${ids.length} notification${ids.length === 1 ? '' : 's'} archived`)
     } catch (error) {
