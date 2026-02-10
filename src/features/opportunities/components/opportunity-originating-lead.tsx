@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import type { Lead } from '@/core/contracts'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import { leadService } from '@/features/leads/api/lead-service'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -15,6 +16,8 @@ interface OpportunityOriginatingLeadProps {
 }
 
 export function OpportunityOriginatingLead({ leadId }: OpportunityOriginatingLeadProps) {
+  const { t } = useTranslation('opportunities')
+  const { t: tl } = useTranslation('leads')
   const [lead, setLead] = useState<Lead | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -39,7 +42,7 @@ export function OpportunityOriginatingLead({ leadId }: OpportunityOriginatingLea
         <CardHeader>
           <CardTitle className="text-base font-semibold flex items-center gap-2">
             <UserCircle className="h-4 w-4" />
-            Originated from Lead
+            {t('originating.title')}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -71,13 +74,13 @@ export function OpportunityOriginatingLead({ leadId }: OpportunityOriginatingLea
   const getStateName = (state: LeadStateCode) => {
     switch (state) {
       case LeadStateCode.Open:
-        return 'Open'
+        return tl('status.open')
       case LeadStateCode.Qualified:
-        return 'Qualified'
+        return tl('status.qualified')
       case LeadStateCode.Disqualified:
-        return 'Disqualified'
+        return tl('status.disqualified')
       default:
-        return 'Unknown'
+        return tl('status.unknown')
     }
   }
 
@@ -86,7 +89,7 @@ export function OpportunityOriginatingLead({ leadId }: OpportunityOriginatingLea
       <CardHeader>
         <CardTitle className="text-base font-semibold flex items-center gap-2">
           <UserCircle className="h-4 w-4 text-blue-500" />
-          Originated from Lead
+          {t('originating.title')}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -135,14 +138,14 @@ export function OpportunityOriginatingLead({ leadId }: OpportunityOriginatingLea
 
         {lead.description && (
           <div className="border-t pt-3">
-            <p className="text-xs text-muted-foreground">Original Lead Notes:</p>
+            <p className="text-xs text-muted-foreground">{t('originating.originalNotes')}</p>
             <p className="text-sm mt-1">{lead.description}</p>
           </div>
         )}
 
         <Button asChild variant="outline" className="w-full">
           <Link href={`/leads/${lead.leadid}`}>
-            View Original Lead
+            {t('originating.viewOriginalLead')}
             <ExternalLink className="ml-2 h-4 w-4" />
           </Link>
         </Button>

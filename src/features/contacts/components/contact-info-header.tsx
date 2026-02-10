@@ -4,6 +4,7 @@ import type { Contact } from '@/core/contracts'
 import { ContactStateCode } from '@/core/contracts'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import { Briefcase, Mail, Phone, Smartphone, Building2, User } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -26,17 +27,19 @@ interface ContactInfoHeaderProps {
  * - Propietario
  */
 export function ContactInfoHeader({ contact, accountName, className }: ContactInfoHeaderProps) {
+  const { t } = useTranslation('contacts')
+
   // Determine state badge variant and label
   const getStateBadge = () => {
     const stateCode = Number(contact.statecode)
 
     switch (stateCode) {
       case ContactStateCode.Active:
-        return { variant: 'default' as const, label: 'Active', color: 'bg-green-500' }
+        return { variant: 'default' as const, label: t('status.active'), color: 'bg-green-500' }
       case ContactStateCode.Inactive:
-        return { variant: 'secondary' as const, label: 'Inactive', color: 'bg-gray-500' }
+        return { variant: 'secondary' as const, label: t('status.inactive'), color: 'bg-gray-500' }
       default:
-        return { variant: 'secondary' as const, label: 'Unknown', color: 'bg-gray-500' }
+        return { variant: 'secondary' as const, label: t('status.unknown'), color: 'bg-gray-500' }
     }
   }
 
@@ -67,10 +70,10 @@ export function ContactInfoHeader({ contact, accountName, className }: ContactIn
               {contact.fullname}
             </h1>
             <Badge variant="secondary" className="text-xs font-normal">
-              Contacto
+              {t('header.contact')}
             </Badge>
             <Badge variant="outline" className="text-xs font-normal">
-              Contact
+              {t('header.contactLabel')}
             </Badge>
           </div>
         </div>
@@ -96,7 +99,7 @@ export function ContactInfoHeader({ contact, accountName, className }: ContactIn
           {/* B2C Badge */}
           {!isB2B && (
             <Badge variant="outline" className="text-xs">
-              B2C
+              {t('type.b2c')}
             </Badge>
           )}
 
@@ -154,14 +157,14 @@ export function ContactInfoHeader({ contact, accountName, className }: ContactIn
         {/* Row 4: Owner */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <User className="w-3.5 h-3.5" />
-          <span className="font-medium">Propietario:</span>
+          <span className="font-medium">{t('header.owner')}</span>
           <div className="flex items-center gap-2">
             <Avatar className="h-5 w-5">
               <AvatarFallback className="text-xs bg-primary/10 text-primary">
                 {contact.ownerid?.substring(0, 2).toUpperCase() || 'U'}
               </AvatarFallback>
             </Avatar>
-            <span>{contact.ownerid || 'Unassigned'}</span>
+            <span>{contact.ownerid || t('header.unassigned')}</span>
           </div>
         </div>
       </div>

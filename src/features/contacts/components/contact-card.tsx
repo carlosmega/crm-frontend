@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { ContactStatusBadge } from './contact-status-badge'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import { Mail, Phone, Smartphone, Briefcase, Building2, Eye, Edit, Trash2 } from 'lucide-react'
 
 interface ContactCardProps {
@@ -19,6 +20,8 @@ interface ContactCardProps {
  * Performance: Only re-renders if contact, accountName or onDelete change
  */
 export const ContactCard = memo(function ContactCard({ contact, accountName, onDelete }: ContactCardProps) {
+  const { t } = useTranslation('contacts')
+  const { t: tc } = useTranslation('common')
   // Get initials for avatar
   const getInitials = () => {
     const first = contact.firstname?.charAt(0) || ''
@@ -70,7 +73,7 @@ export const ContactCard = memo(function ContactCard({ contact, accountName, onD
         <div className="flex flex-wrap gap-2">
           {!isB2B && (
             <Badge variant="outline" className="text-xs">
-              B2C
+              {t('type.b2c')}
             </Badge>
           )}
         </div>
@@ -109,13 +112,13 @@ export const ContactCard = memo(function ContactCard({ contact, accountName, onD
         <Button asChild variant="outline" size="sm" className="flex-1">
           <Link href={`/contacts/${contact.contactid}`}>
             <Eye className="mr-2 h-4 w-4" />
-            View
+            {tc('cardActions.view')}
           </Link>
         </Button>
         <Button asChild variant="outline" size="sm" className="flex-1">
           <Link href={`/contacts/${contact.contactid}/edit`}>
             <Edit className="mr-2 h-4 w-4" />
-            Edit
+            {tc('cardActions.edit')}
           </Link>
         </Button>
         {onDelete && (

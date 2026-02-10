@@ -7,6 +7,7 @@ import { ContactList } from '@/features/contacts/components/contact-list'
 import { LinkContactDialog } from './link-contact-dialog'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import { Plus, Users, Loader2, RefreshCw, Link2, Unlink } from 'lucide-react'
 import Link from 'next/link'
 import { useToast } from '@/components/ui/use-toast'
@@ -23,6 +24,7 @@ interface AccountContactsSubGridProps {
  * Uses dedicated hook for better filtering and performance.
  */
 export function AccountContactsSubGrid({ accountId }: AccountContactsSubGridProps) {
+  const { t } = useTranslation('accounts')
   const [linkDialogOpen, setLinkDialogOpen] = useState(false)
   const [selectedContacts, setSelectedContacts] = useState<string[]>([])
   const { contacts: accountContacts, loading, error, refetch } = useContactsByAccount(accountId)
@@ -33,7 +35,7 @@ export function AccountContactsSubGrid({ accountId }: AccountContactsSubGridProp
   const bulkActions = useMemo<BulkAction[]>(() => [
     {
       id: 'unlink-contacts',
-      label: 'Unlink from Account',
+      label: t('subgrid.contacts.unlinkFromAccount'),
       icon: Unlink,
       variant: 'destructive',
       onClick: async (selectedIds: string[]) => {
@@ -52,8 +54,8 @@ export function AccountContactsSubGrid({ accountId }: AccountContactsSubGridProp
           )
 
           toast({
-            title: 'Contacts unlinked',
-            description: `${selectedIds.length} contact${selectedIds.length > 1 ? 's' : ''} unlinked from this account`,
+            title: t('subgrid.contacts.contactsUnlinked'),
+            description: t('subgrid.contacts.contactsUnlinkedDesc', { count: selectedIds.length }),
           })
 
           // Clear selection and refresh
@@ -63,7 +65,7 @@ export function AccountContactsSubGrid({ accountId }: AccountContactsSubGridProp
           console.error('Error unlinking contacts:', error)
           toast({
             title: 'Error',
-            description: error instanceof Error ? error.message : 'Failed to unlink contacts',
+            description: error instanceof Error ? error.message : t('subgrid.contacts.errorUnlinking'),
             variant: 'destructive',
           })
         }
@@ -97,7 +99,7 @@ export function AccountContactsSubGrid({ accountId }: AccountContactsSubGridProp
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <Users className="h-5 w-5" />
-            Related Contacts ({accountContacts.length})
+            {t('subgrid.contacts.title', { count: accountContacts.length })}
           </CardTitle>
           <div className="flex gap-2">
             <Button
@@ -114,12 +116,12 @@ export function AccountContactsSubGrid({ accountId }: AccountContactsSubGridProp
               onClick={() => setLinkDialogOpen(true)}
             >
               <Link2 className="mr-2 h-4 w-4" />
-              Link Existing
+              {t('subgrid.contacts.linkExisting')}
             </Button>
             <Button asChild size="sm">
               <Link href={`/contacts/new?accountId=${accountId}`}>
                 <Plus className="mr-2 h-4 w-4" />
-                New Contact
+                {t('subgrid.contacts.newContact')}
               </Link>
             </Button>
           </div>
@@ -139,12 +141,12 @@ export function AccountContactsSubGrid({ accountId }: AccountContactsSubGridProp
           <div className="py-12 text-center px-6">
             <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4 opacity-50" />
             <p className="text-muted-foreground mb-4">
-              No contacts associated with this account
+              {t('subgrid.contacts.noContacts')}
             </p>
             <Button asChild variant="outline" size="sm">
               <Link href={`/contacts/new?accountId=${accountId}`}>
                 <Plus className="mr-2 h-4 w-4" />
-                Add First Contact
+                {t('subgrid.contacts.addFirst')}
               </Link>
             </Button>
           </div>

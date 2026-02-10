@@ -1,0 +1,24 @@
+{
+  "pipeline": {
+    "title": "Vista General del Pipeline",
+    "totalValue": "Valor Total del Pipeline",
+    "avgDealSize": "Tama\u00f1o Prom. de Negocio",
+    "winRate": "Tasa de \u00c9xito",
+    "conversionRate": "Tasa de Conversi\u00f3n"
+  },
+  "charts": {
+    "revenueByMonth": "Ingresos por Mes",
+    "opportunitiesByStage": "Oportunidades por Etapa",
+    "leadsBySource": "Leads por Origen",
+    "topDeals": "Mejores Negocios",
+    "salesFunnel": "Embudo de Ventas",
+    "activitySummary": "Resumen de Actividades"
+  },
+  "metrics": {
+    "openOpportunities": "Oportunidades Abiertas",
+    "closedWon": "Cerradas Ganadas",
+    "closedLost": "Cerradas Perdidas",
+    "avgCloseTime": "Tiempo Prom. de Cierre",
+    "days": "d\u00edas"
+  }
+}

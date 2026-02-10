@@ -12,17 +12,95 @@
     "searchAccount": "Search account..."
   },
   "type": {
-    "b2c": "B2C"
+    "b2c": "B2C",
+    "b2b": "B2B"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive",
+    "unknown": "Unknown"
   },
   "buttons": {
     "editContact": "Edit contact",
     "create": "Create Contact",
-    "new": "New Contact"
+    "new": "New Contact",
+    "updateContact": "Update Contact"
   },
   "emptyState": {
     "title": "No contacts found",
     "description": "No contacts match your current filters. Try adjusting your search criteria or create a new contact to get started.",
     "notFound": "No contacts found",
     "notAvailable": "No contacts available"
+  },
+  "header": {
+    "contact": "Contact",
+    "contactLabel": "CONTACT",
+    "owner": "Owner:",
+    "unassigned": "Unassigned"
+  },
+  "tabs": {
+    "general": "General",
+    "professional": "Professional",
+    "address": "Address",
+    "activities": "Activities"
+  },
+  "detail": {
+    "contactInfo": "Contact Information",
+    "professionalInfo": "Professional Information",
+    "primaryAddress": "Primary Address",
+    "jobTitle": "Job Title",
+    "department": "Department",
+    "accountB2B": "Account (B2B)",
+    "createdOn": "Created On",
+    "noContactInfo": "No contact information available",
+    "noProfessionalInfo": "No professional information available",
+    "noAddressInfo": "No address information available"
+  },
+  "form": {
+    "sections": {
+      "basicInfo": "Basic Information",
+      "contactInfo": "Contact Information",
+      "professionalInfo": "Professional Information",
+      "address": "Address"
+    },
+    "fields": {
+      "salutation": "Salutation",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "businessPhone": "Business Phone",
+      "homePhone": "Home Phone",
+      "mobilePhone": "Mobile Phone",
+      "fax": "Fax",
+      "secondaryEmail": "Secondary Email",
+      "jobTitle": "Job Title",
+      "department": "Department",
+      "parentAccount": "Parent Account (Company)"
+    },
+    "placeholders": {
+      "salutation": "Mr., Ms., Dr.",
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "john.doe@example.com",
+      "businessPhone": "+34 912 345 678",
+      "homePhone": "+34 912 345 679",
+      "mobilePhone": "+34 654 321 987",
+      "fax": "+34 912 345 680",
+      "secondaryEmail": "john.doe.personal@example.com",
+      "jobTitle": "Sales Manager",
+      "department": "Sales",
+      "parentAccount": "Select parent account (optional - leave empty for B2C)"
+    },
+    "hints": {
+      "parentAccountHint": "Leave empty for individual consumers (B2C). Select a company account for business contacts (B2B).",
+      "addressHint": "Enter postal code to auto-complete address (Mexico)"
+    }
+  },
+  "createDialog": {
+    "title": "Create New Contact",
+    "description": "Add a new contact to the system. This contact can be selected after creation.",
+    "contactCreated": "Contact created",
+    "contactCreatedDesc": "{{firstName}} {{lastName}} has been created successfully.",
+    "createError": "Failed to create contact. Please try again."
   }
 }

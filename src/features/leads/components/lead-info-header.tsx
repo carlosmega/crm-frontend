@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Building2, Flame, Snowflake, ThermometerSun, User } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface LeadInfoHeaderProps {
   lead: Lead
@@ -28,37 +29,39 @@ interface LeadInfoHeaderProps {
  * Responsive design with mobile card layout
  */
 export function LeadInfoHeader({ lead, className }: LeadInfoHeaderProps) {
+  const { t } = useTranslation('leads')
+
   // Determine state badge variant and label
   const getStateBadge = () => {
     const stateCode = Number(lead.statecode)
 
     switch (stateCode) {
       case LeadStateCode.Open:
-        return { variant: 'default' as const, label: 'OPEN', color: 'bg-green-100 text-green-700' }
+        return { variant: 'default' as const, label: t('status.open').toUpperCase(), color: 'bg-green-100 text-green-700' }
       case LeadStateCode.Qualified:
-        return { variant: 'default' as const, label: 'QUALIFIED', color: 'bg-emerald-100 text-emerald-700' }
+        return { variant: 'default' as const, label: t('status.qualified').toUpperCase(), color: 'bg-emerald-100 text-emerald-700' }
       case LeadStateCode.Disqualified:
-        return { variant: 'destructive' as const, label: 'DISQUALIFIED', color: 'bg-red-100 text-red-700' }
+        return { variant: 'destructive' as const, label: t('status.disqualified').toUpperCase(), color: 'bg-red-100 text-red-700' }
       default:
-        return { variant: 'secondary' as const, label: 'UNKNOWN', color: 'bg-gray-100 text-gray-700' }
+        return { variant: 'secondary' as const, label: t('status.unknown').toUpperCase(), color: 'bg-gray-100 text-gray-700' }
     }
   }
 
   // Determine quality badge
   const getQualityBadge = () => {
-    if (!lead.leadqualitycode) return { icon: Flame, text: 'Warm', color: 'text-orange-500' }
+    if (!lead.leadqualitycode) return { icon: Flame, text: t('quality.warm'), color: 'text-orange-500' }
 
     const qualityCode = Number(lead.leadqualitycode)
 
     switch (qualityCode) {
       case LeadQualityCode.Hot:
-        return { icon: Flame, text: 'Hot', color: 'text-red-500' }
+        return { icon: Flame, text: t('quality.hot'), color: 'text-red-500' }
       case LeadQualityCode.Warm:
-        return { icon: ThermometerSun, text: 'Warm', color: 'text-orange-500' }
+        return { icon: ThermometerSun, text: t('quality.warm'), color: 'text-orange-500' }
       case LeadQualityCode.Cold:
-        return { icon: Snowflake, text: 'Cold', color: 'text-blue-500' }
+        return { icon: Snowflake, text: t('quality.cold'), color: 'text-blue-500' }
       default:
-        return { icon: Flame, text: 'Warm', color: 'text-orange-500' }
+        return { icon: Flame, text: t('quality.warm'), color: 'text-orange-500' }
     }
   }
 
@@ -80,13 +83,13 @@ export function LeadInfoHeader({ lead, className }: LeadInfoHeaderProps) {
             variant="secondary"
             className="text-xs font-semibold uppercase bg-purple-100 text-purple-700 border-0 px-3 py-1"
           >
-            Sales Lead
+            {t('header.salesLead')}
           </Badge>
           <Badge
             variant="secondary"
             className="text-xs font-semibold uppercase bg-gray-100 text-gray-700 border-0 px-3 py-1"
           >
-            LEAD
+            {t('header.lead')}
           </Badge>
         </div>
 
@@ -100,7 +103,7 @@ export function LeadInfoHeader({ lead, className }: LeadInfoHeaderProps) {
 
           {/* Origin/Source */}
           <div className="flex items-center gap-1.5 text-gray-600">
-            <span className="font-medium">Origin:</span>
+            <span className="font-medium">{t('header.origin')}</span>
             <span className="text-gray-900 font-medium">{sourceLabel}</span>
           </div>
 
@@ -128,7 +131,7 @@ export function LeadInfoHeader({ lead, className }: LeadInfoHeaderProps) {
         {lead.ownerid && (
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <User className="w-4 h-4 text-purple-600" />
-            <span className="font-medium">Propietario:</span>
+            <span className="font-medium">{t('header.owner')}</span>
             <span className="text-gray-900 font-medium">
               {lead.ownerid.slice(0, 2)} {lead.ownerid.slice(0, 15)}...
             </span>
@@ -145,13 +148,13 @@ export function LeadInfoHeader({ lead, className }: LeadInfoHeaderProps) {
               variant="secondary"
               className="text-xs font-semibold uppercase bg-purple-100 text-purple-700 border-0 px-2.5 py-0.5"
             >
-              Sales Lead
+              {t('header.salesLead')}
             </Badge>
             <Badge
               variant="secondary"
               className="text-xs font-semibold uppercase bg-gray-100 text-gray-700 border-0 px-2.5 py-0.5"
             >
-              LEAD
+              {t('header.lead')}
             </Badge>
           </div>
 
@@ -170,7 +173,7 @@ export function LeadInfoHeader({ lead, className }: LeadInfoHeaderProps) {
 
             {/* Origin/Source */}
             <div className="flex items-center gap-1.5 text-gray-600">
-              <span className="font-medium">Origin:</span>
+              <span className="font-medium">{t('header.origin')}</span>
               <span className="text-gray-900 font-medium">{sourceLabel}</span>
             </div>
 
@@ -190,7 +193,7 @@ export function LeadInfoHeader({ lead, className }: LeadInfoHeaderProps) {
           {lead.ownerid && (
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <User className="w-4 h-4 text-purple-600" />
-              <span className="font-medium">Owner:</span>
+              <span className="font-medium">{t('header.owner')}</span>
               <span className="text-gray-900 font-medium">
                 {lead.ownerid.slice(0, 2)} {lead.ownerid.slice(0, 15)}...
               </span>

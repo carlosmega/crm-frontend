@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import type { Contact } from '@/core/contracts'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ContactForm, contactFormSchema, getContactFormDefaultValues, type ContactFormValues } from './contact-form'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import { cn } from '@/lib/utils'
 import { User, Briefcase, MapPin } from 'lucide-react'
 
@@ -37,6 +38,7 @@ interface ContactFormTabsProps {
  * - Consistent naming with detail view tabs
  */
 export function ContactFormTabs({ contact, onSubmit, isLoading, hideActions }: ContactFormTabsProps) {
+  const { t } = useTranslation('contacts')
   const [activeTab, setActiveTab] = useState<ContactFormTabId>('general')
   const [tabsContainer, setTabsContainer] = useState<HTMLElement | null>(null)
 
@@ -66,7 +68,7 @@ export function ContactFormTabs({ contact, onSubmit, isLoading, hideActions }: C
           )}
         >
           <User className="w-4 h-4 mr-2" />
-          General
+          {t('tabs.general')}
         </TabsTrigger>
 
         <TabsTrigger
@@ -79,7 +81,7 @@ export function ContactFormTabs({ contact, onSubmit, isLoading, hideActions }: C
           )}
         >
           <Briefcase className="w-4 h-4 mr-2" />
-          Professional
+          {t('tabs.professional')}
         </TabsTrigger>
 
         <TabsTrigger
@@ -92,7 +94,7 @@ export function ContactFormTabs({ contact, onSubmit, isLoading, hideActions }: C
           )}
         >
           <MapPin className="w-4 h-4 mr-2" />
-          Address
+          {t('tabs.address')}
         </TabsTrigger>
       </TabsList>
     </div>

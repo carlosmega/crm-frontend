@@ -20,6 +20,7 @@ import { Input } from '@/components/ui/input'
 import { FormFieldGroup, IconInput, AutoGrowTextarea, AddressFormFields } from '@/shared/components/form'
 import { CustomerSelectorButton } from '@/shared/components/selectors/customer-selector-button'
 import { useAccounts } from '@/features/accounts/hooks/use-accounts'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import { Mail, Phone, Smartphone, User, Briefcase, Loader2 } from 'lucide-react'
 
 // Export schema for use in ContactFormTabs
@@ -104,6 +105,8 @@ export function getContactFormDefaultValues(contact?: Contact): ContactFormValue
 }
 
 export function ContactForm({ contact, onSubmit, onCancel, isLoading, hideActions, section = 'all', sharedForm }: ContactFormProps) {
+  const { t } = useTranslation('contacts')
+  const { t: tc } = useTranslation('common')
   const { accounts } = useAccounts()
   const [selectedAccount, setSelectedAccount] = useState<SelectedCustomer | undefined>(undefined)
 
@@ -165,7 +168,7 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading, hideAction
             {/* Basic Information Card */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-base font-semibold">Basic Information</CardTitle>
+                <CardTitle className="text-base font-semibold">{t('form.sections.basicInfo')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
               <FormFieldGroup columns={3}>
@@ -175,11 +178,11 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading, hideAction
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium">
-                        Salutation
+                        {t('form.fields.salutation')}
                       </FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="Mr., Ms., Dr."
+                          placeholder={t('form.placeholders.salutation')}
                           className="h-10"
                           {...field}
                         />
@@ -195,11 +198,11 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading, hideAction
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium">
-                        First Name <span className="text-destructive">*</span>
+                        {t('form.fields.firstName')} <span className="text-destructive">*</span>
                       </FormLabel>
                       <FormControl>
                         <IconInput
-                          placeholder="John"
+                          placeholder={t('form.placeholders.firstName')}
                           icon={User}
                           className=""
                           {...field}
@@ -216,11 +219,11 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading, hideAction
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium">
-                        Last Name <span className="text-destructive">*</span>
+                        {t('form.fields.lastName')} <span className="text-destructive">*</span>
                       </FormLabel>
                       <FormControl>
                         <IconInput
-                          placeholder="Doe"
+                          placeholder={t('form.placeholders.lastName')}
                           icon={User}
                           className=""
                           {...field}
@@ -238,12 +241,12 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading, hideAction
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium">
-                      Email <span className="text-destructive">*</span>
+                      {t('form.fields.email')} <span className="text-destructive">*</span>
                     </FormLabel>
                     <FormControl>
                       <IconInput
                         type="email"
-                        placeholder="john.doe@example.com"
+                        placeholder={t('form.placeholders.email')}
                         icon={Mail}
                         className=""
                         {...field}
@@ -259,7 +262,7 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading, hideAction
             {/* Contact Information Card */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-base font-semibold">Contact Information</CardTitle>
+                <CardTitle className="text-base font-semibold">{t('form.sections.contactInfo')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
               <FormFieldGroup columns={2}>
@@ -269,12 +272,12 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading, hideAction
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium">
-                    Business Phone
+                    {t('form.fields.businessPhone')}
                   </FormLabel>
                   <FormControl>
                     <IconInput
                       type="tel"
-                      placeholder="+34 912 345 678"
+                      placeholder={t('form.placeholders.businessPhone')}
                       icon={Phone}
                       className=""
                       {...field}
@@ -291,12 +294,12 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading, hideAction
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium">
-                    Home Phone
+                    {t('form.fields.homePhone')}
                   </FormLabel>
                   <FormControl>
                     <IconInput
                       type="tel"
-                      placeholder="+34 912 345 679"
+                      placeholder={t('form.placeholders.homePhone')}
                       icon={Phone}
                       className=""
                       {...field}
@@ -315,12 +318,12 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading, hideAction
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium">
-                    Mobile Phone
+                    {t('form.fields.mobilePhone')}
                   </FormLabel>
                   <FormControl>
                     <IconInput
                       type="tel"
-                      placeholder="+34 654 321 987"
+                      placeholder={t('form.placeholders.mobilePhone')}
                       icon={Smartphone}
                       className=""
                       {...field}
@@ -337,12 +340,12 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading, hideAction
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium">
-                    Fax
+                    {t('form.fields.fax')}
                   </FormLabel>
                   <FormControl>
                     <Input
                       type="tel"
-                      placeholder="+34 912 345 680"
+                      placeholder={t('form.placeholders.fax')}
                       className="h-10"
                       {...field}
                     />
@@ -359,12 +362,12 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading, hideAction
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-sm font-medium">
-                  Secondary Email
+                  {t('form.fields.secondaryEmail')}
                 </FormLabel>
                 <FormControl>
                   <IconInput
                     type="email"
-                    placeholder="john.doe.personal@example.com"
+                    placeholder={t('form.placeholders.secondaryEmail')}
                     icon={Mail}
                     className=""
                     {...field}
@@ -383,7 +386,7 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading, hideAction
         {showProfessional && (
           <Card>
             <CardHeader>
-              <CardTitle className="text-base font-semibold">Professional Information</CardTitle>
+              <CardTitle className="text-base font-semibold">{t('form.sections.professionalInfo')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
             <FormFieldGroup columns={2}>
@@ -393,11 +396,11 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading, hideAction
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium">
-                      Job Title
+                      {t('form.fields.jobTitle')}
                     </FormLabel>
                     <FormControl>
                       <IconInput
-                        placeholder="Sales Manager"
+                        placeholder={t('form.placeholders.jobTitle')}
                         icon={Briefcase}
                         className=""
                         {...field}
@@ -414,11 +417,11 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading, hideAction
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium">
-                      Department
+                      {t('form.fields.department')}
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Sales"
+                        placeholder={t('form.placeholders.department')}
                         className="h-10"
                         {...field}
                       />
@@ -435,7 +438,7 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading, hideAction
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium">
-                    Parent Account (Company)
+                    {t('form.fields.parentAccount')}
                   </FormLabel>
                   <FormControl>
                     <CustomerSelectorButton
@@ -445,12 +448,12 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading, hideAction
                         field.onChange(customer?.id || '')
                       }}
                       customerType="account"
-                      placeholder="Select parent account (optional - leave empty for B2C)"
+                      placeholder={t('form.placeholders.parentAccount')}
                       disabled={isLoading}
                     />
                   </FormControl>
                   <p className="text-xs text-muted-foreground">
-                    Leave empty for individual consumers (B2C). Select a company account for business contacts (B2B).
+                    {t('form.hints.parentAccountHint')}
                   </p>
                   <FormMessage className="text-xs" />
                 </FormItem>
@@ -464,9 +467,9 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading, hideAction
         {showAddress && (
           <Card>
             <CardHeader>
-              <CardTitle className="text-base font-semibold">Address</CardTitle>
+              <CardTitle className="text-base font-semibold">{t('form.sections.address')}</CardTitle>
               <p className="text-xs text-muted-foreground">
-                Ingresa el código postal para autocompletar la dirección (México)
+                {t('form.hints.addressHint')}
               </p>
             </CardHeader>
             <CardContent>
@@ -495,7 +498,7 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading, hideAction
               className="flex-1"
             >
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {contact ? 'Update Contact' : 'Create Contact'}
+              {contact ? t('buttons.updateContact') : t('buttons.create')}
             </Button>
             {onCancel && (
               <Button
@@ -505,7 +508,7 @@ export function ContactForm({ contact, onSubmit, onCancel, isLoading, hideAction
                 disabled={isLoading}
                 className="flex-1"
               >
-                Cancel
+                {tc('buttons.cancel')}
               </Button>
             )}
           </div>

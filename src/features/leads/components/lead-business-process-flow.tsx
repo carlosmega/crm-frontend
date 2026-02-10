@@ -8,6 +8,7 @@ import type { Lead } from '@/core/contracts'
 import { LeadStateCode } from '@/core/contracts'
 import { ArrowRight } from 'lucide-react'
 import { useOpportunitiesByLead } from '@/features/opportunities/hooks/use-opportunities'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface LeadBusinessProcessFlowProps {
   lead?: Lead
@@ -41,6 +42,7 @@ export function LeadBusinessProcessFlow({
   onStageClick,
   onProgressChange,
 }: LeadBusinessProcessFlowProps) {
+  const { t } = useTranslation('leads')
   // Get opportunities created from this lead
   const { opportunities } = useOpportunitiesByLead(lead?.leadid)
   const relatedOpportunity = opportunities[0] // Get first opportunity (should only be one)
@@ -86,11 +88,11 @@ export function LeadBusinessProcessFlow({
 
   // Define required fields for Qualify stage
   const qualifyRequiredFields = [
-    'Budget Amount',
-    'Budget Status (No Budget / May Buy / Can Buy / Will Buy)',
-    'Purchase Timeframe',
-    'Need Analysis',
-    'Decision Maker Contact',
+    t('bpf.fields.budgetAmount'),
+    t('bpf.fields.budgetStatus'),
+    t('bpf.fields.purchaseTimeframe'),
+    t('bpf.fields.needAnalysis'),
+    t('bpf.fields.decisionMaker'),
   ]
 
   // Define full sales cycle BPF (same as opportunities but with disabled stages for leads)
@@ -98,8 +100,8 @@ export function LeadBusinessProcessFlow({
   const stages: BPFStageWithStatus[] = [
     {
       id: 'qualify',
-      name: 'Qualify',
-      description: 'Complete qualification criteria to determine fit',
+      name: t('bpf.qualify'),
+      description: t('bpf.qualifyDesc'),
       status: isQualified ? 'completed' : isOpen ? 'active' : 'pending',
       requiredFields: qualifyRequiredFields,
       completedFields: qualifyFieldsCompleted,
@@ -108,16 +110,16 @@ export function LeadBusinessProcessFlow({
     },
     {
       id: 'develop',
-      name: 'Develop',
-      description: 'Research opportunity and identify stakeholders',
+      name: t('bpf.develop'),
+      description: t('bpf.developDesc'),
       status: 'disabled',
       requiredFields: [
-        'Proposed Solution',
-        'Implementation Timeline',
-        'Identify Competitors',
-        'Customer Needs Analysis',
-        'Current Situation Documentation',
-        'Stakeholders (Decision Makers, Influencers, Champions)',
+        t('bpf.fields.proposedSolution'),
+        t('bpf.fields.implementationTimeline'),
+        t('bpf.fields.identifyCompetitors'),
+        t('bpf.fields.customerNeeds'),
+        t('bpf.fields.currentSituation'),
+        t('bpf.fields.stakeholders'),
       ],
       completedFields: 0,
       totalFields: 6,
@@ -125,16 +127,16 @@ export function LeadBusinessProcessFlow({
     },
     {
       id: 'propose',
-      name: 'Propose',
-      description: 'Present finalized proposal, pricing, and terms',
+      name: t('bpf.propose'),
+      description: t('bpf.proposeDesc'),
       status: 'disabled',
       requiredFields: [
-        'Presentation Date',
-        'Final Decision Date',
-        'Customer Contacts Identified',
-        'Pursuit Team Assigned',
-        'Quote with Product Lines',
-        'Thank You Note Sent',
+        t('bpf.fields.presentationDate'),
+        t('bpf.fields.finalDecisionDate'),
+        t('bpf.fields.customerContacts'),
+        t('bpf.fields.pursuitTeam'),
+        t('bpf.fields.quoteWithProducts'),
+        t('bpf.fields.thankYouNote'),
       ],
       completedFields: 0,
       totalFields: 6,
@@ -142,15 +144,15 @@ export function LeadBusinessProcessFlow({
     },
     {
       id: 'close',
-      name: 'Close',
-      description: 'Finalize the deal - mark as Won or Lost',
+      name: t('bpf.close'),
+      description: t('bpf.closeDesc'),
       status: 'disabled',
       requiredFields: [
-        'Actual Value (if Won)',
-        'Actual Close Date',
-        'Active Quote (if Won)',
-        'Win/Loss Reason',
-        'Competitor Who Won (if Lost)',
+        t('bpf.fields.actualValue'),
+        t('bpf.fields.actualCloseDate'),
+        t('bpf.fields.activeQuote'),
+        t('bpf.fields.winLossReason'),
+        t('bpf.fields.competitorWon'),
       ],
       completedFields: 0,
       totalFields: 5,
@@ -166,7 +168,7 @@ export function LeadBusinessProcessFlow({
         <div className="mb-4">
           <BPFAlert
             variant="error"
-            title="Lead disqualified"
+            title={t('bpf.leadDisqualified')}
             compact
           />
         </div>
@@ -190,8 +192,8 @@ export function LeadBusinessProcessFlow({
         <div className="mb-4">
           <BPFAlert
             variant="success"
-            title="Qualified successfully"
-            actionLabel="View opportunity"
+            title={t('bpf.qualifiedSuccessfully')}
+            actionLabel={t('bpf.viewOpportunity')}
             actionHref={`/opportunities/${relatedOpportunity.opportunityid}`}
             actionIcon={ArrowRight}
             compact
@@ -217,7 +219,7 @@ export function LeadBusinessProcessFlow({
         <div className="mb-4">
           <BPFAlert
             variant="success"
-            title="Qualified successfully"
+            title={t('bpf.qualifiedSuccessfully')}
             compact
           />
         </div>

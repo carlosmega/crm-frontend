@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import type { Opportunity } from '@/core/contracts'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import { Tabs, TabsContent } from '@/components/ui/tabs'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ActivityTimeline } from '@/features/activities/components'
@@ -26,6 +27,7 @@ export function OpportunityDetailTabs({
   opportunity,
   originatingLeadId
 }: OpportunityDetailTabsProps) {
+  const { t } = useTranslation('opportunities')
   const [activeTab, setActiveTab] = useState<OpportunityTabId>('general')
   const [tabsContainer, setTabsContainer] = useState<HTMLElement | null>(null)
 
@@ -52,7 +54,7 @@ export function OpportunityDetailTabs({
   const tabsNavigation = (
     <OpportunityTabsNavigation
       tabs={[
-        { id: 'general', label: 'General', icon: User },
+        { id: 'general', label: t('tabs.general'), icon: User },
       ]}
       showActivities
     />
@@ -70,7 +72,7 @@ export function OpportunityDetailTabs({
             {/* Contact Information Card */}
             <Card className="gap-4">
               <CardHeader>
-                <CardTitle className="text-base font-semibold">Contact Information</CardTitle>
+                <CardTitle className="text-base font-semibold">{t('detail.contactInfo')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2.5">
                 {/* Phone */}
@@ -103,14 +105,14 @@ export function OpportunityDetailTabs({
             {/* Key Dates Card */}
             <Card className="gap-4">
             <CardHeader>
-              <CardTitle className="text-base font-semibold">Key Dates</CardTitle>
+              <CardTitle className="text-base font-semibold">{t('detail.keyDates')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2.5">
               {/* Last Interaction */}
               <div className="flex items-center gap-2.5">
                 <Clock className="h-4 w-4 text-muted-foreground shrink-0" />
                 <div className="flex-1">
-                  <div className="text-xs text-muted-foreground mb-0.5">Last Interaction</div>
+                  <div className="text-xs text-muted-foreground mb-0.5">{t('detail.lastInteraction')}</div>
                   <span className="text-sm">{formatRelativeTime(opportunity.modifiedon)}</span>
                 </div>
               </div>
@@ -119,7 +121,7 @@ export function OpportunityDetailTabs({
               <div className="hidden md:flex items-center gap-2.5">
                 <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
                 <div className="flex-1">
-                  <div className="text-xs text-muted-foreground mb-0.5">Estimated Close Date</div>
+                  <div className="text-xs text-muted-foreground mb-0.5">{t('detail.estimatedCloseDate')}</div>
                   <span className="text-sm">{formatDate(opportunity.estimatedclosedate)}</span>
                 </div>
               </div>
@@ -134,7 +136,7 @@ export function OpportunityDetailTabs({
                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
               </svg>
-              Edit
+              {t('detail.edit')}
             </button>
             <button className="flex items-center justify-center gap-2 px-4 py-2.5 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -142,7 +144,7 @@ export function OpportunityDetailTabs({
                 <line x1="12" y1="8" x2="12" y2="16" />
                 <line x1="8" y1="12" x2="16" y2="12" />
               </svg>
-              Log Activity
+              {t('detail.logActivity')}
             </button>
           </div>
 
@@ -151,11 +153,11 @@ export function OpportunityDetailTabs({
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div>
-                  <CardTitle className="text-base font-semibold">Opportunity Score</CardTitle>
-                  <p className="text-xs text-muted-foreground mt-1 hidden md:block">Automatic scoring based on multiple factors</p>
+                  <CardTitle className="text-base font-semibold">{t('detail.score.title')}</CardTitle>
+                  <p className="text-xs text-muted-foreground mt-1 hidden md:block">{t('detail.score.subtitle')}</p>
                 </div>
                 <button className="text-sm text-muted-foreground hover:text-primary transition-colors items-center gap-1 hidden md:flex">
-                  <span>Details</span>
+                  <span>{t('detail.score.details')}</span>
                 </button>
               </div>
             </CardHeader>
@@ -171,20 +173,20 @@ export function OpportunityDetailTabs({
                     <span className="text-3xl text-muted-foreground">/100</span>
                   </div>
                   <div className="mt-4 px-3 py-1 bg-primary/10 rounded-full">
-                    <span className="text-xs font-semibold text-primary">Cold Lead</span>
+                    <span className="text-xs font-semibold text-primary">{t('detail.score.coldLead')}</span>
                   </div>
                 </div>
 
                 {/* Score Breakdown - RIGHT SIDE */}
                 <div className="flex-1">
-                  <h4 className="text-sm font-semibold text-foreground mb-4">Score Breakdown</h4>
+                  <h4 className="text-sm font-semibold text-foreground mb-4">{t('detail.score.scoreBreakdown')}</h4>
 
                   <div className="space-y-3.5">
                     {/* Source Quality */}
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <div className="w-2 h-2 rounded-full bg-primary" />
-                        <span>Source Quality</span>
+                        <span>{t('detail.score.sourceQuality')}</span>
                         <div className="w-2 h-2 rounded-full bg-muted" />
                       </div>
                       <span className="text-sm font-semibold text-foreground">7/25</span>
@@ -200,7 +202,7 @@ export function OpportunityDetailTabs({
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <div className="w-2 h-2 rounded-full bg-primary" />
-                        <span>Engagement Level</span>
+                        <span>{t('detail.score.engagementLevel')}</span>
                         <div className="w-2 h-2 rounded-full bg-muted" />
                       </div>
                       <span className="text-sm font-semibold text-foreground">0/25</span>
@@ -216,7 +218,7 @@ export function OpportunityDetailTabs({
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <div className="w-2 h-2 rounded-full bg-primary" />
-                        <span>Customer Fit</span>
+                        <span>{t('detail.score.customerFit')}</span>
                         <div className="w-2 h-2 rounded-full bg-muted" />
                       </div>
                       <span className="text-sm font-semibold text-foreground">0/25</span>
@@ -228,7 +230,7 @@ export function OpportunityDetailTabs({
                     {/* Overall Quality */}
                     <div className="pt-2 mt-1 space-y-1">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-foreground">Overall Quality</span>
+                        <span className="text-sm font-medium text-foreground">{t('detail.score.overallQuality')}</span>
                       </div>
                       <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
                         <div
@@ -252,19 +254,19 @@ export function OpportunityDetailTabs({
                     <span className="text-2xl text-muted-foreground">/100</span>
                   </div>
                   <div className="mt-3 px-3 py-1 bg-primary/10 rounded-full">
-                    <span className="text-xs font-semibold text-primary">Cold Lead</span>
+                    <span className="text-xs font-semibold text-primary">{t('detail.score.coldLead')}</span>
                   </div>
                 </div>
 
                 {/* Score Breakdown - BOTTOM */}
                 <div>
-                  <h4 className="text-sm font-semibold text-foreground mb-3">Score Breakdown</h4>
+                  <h4 className="text-sm font-semibold text-foreground mb-3">{t('detail.score.scoreBreakdown')}</h4>
 
                   <div className="space-y-3">
                     {/* Source Quality */}
                     <div>
                       <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-sm text-muted-foreground">Source Quality</span>
+                        <span className="text-sm text-muted-foreground">{t('detail.score.sourceQuality')}</span>
                         <span className="text-sm font-semibold text-foreground">7/25</span>
                       </div>
                       <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
@@ -278,7 +280,7 @@ export function OpportunityDetailTabs({
                     {/* Engagement Level */}
                     <div>
                       <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-sm text-muted-foreground">Engagement Level</span>
+                        <span className="text-sm text-muted-foreground">{t('detail.score.engagementLevel')}</span>
                         <span className="text-sm font-semibold text-foreground">0/25</span>
                       </div>
                       <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
@@ -292,7 +294,7 @@ export function OpportunityDetailTabs({
                     {/* Customer Fit */}
                     <div>
                       <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-sm text-muted-foreground">Customer Fit</span>
+                        <span className="text-sm text-muted-foreground">{t('detail.score.customerFit')}</span>
                         <span className="text-sm font-semibold text-foreground">0/25</span>
                       </div>
                       <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
@@ -303,7 +305,7 @@ export function OpportunityDetailTabs({
                     {/* Overall Quality */}
                     <div className="pt-2 border-t border-muted">
                       <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-sm font-medium text-foreground">Overall Quality</span>
+                        <span className="text-sm font-medium text-foreground">{t('detail.score.overallQuality')}</span>
                       </div>
                       <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
                         <div

@@ -1,6 +1,7 @@
 "use client"
 
 import { useFormContext } from 'react-hook-form'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   FormField,
@@ -34,6 +35,7 @@ interface AdditionalDetailsSectionProps {
  * - Competitor Information
  */
 export function AdditionalDetailsSection({ isEditMode = false }: AdditionalDetailsSectionProps) {
+  const { t } = useTranslation('opportunities')
   const form = useFormContext()
 
   return (
@@ -42,11 +44,11 @@ export function AdditionalDetailsSection({ isEditMode = false }: AdditionalDetai
       {/* Deal Closure Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base font-semibold">Deal Closure</CardTitle>
+          <CardTitle className="text-base font-semibold">{t('form.sections.dealClosure')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="text-sm text-muted-foreground">
-            Optional fields for documenting the final outcome when the deal closes.
+            {t('form.hints.dealClosureDesc')}
           </div>
 
           <FormFieldGroup columns={2}>
@@ -56,14 +58,14 @@ export function AdditionalDetailsSection({ isEditMode = false }: AdditionalDetai
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium">
-                    Actual Value (if Won)
+                    {t('form.fields.actualValue')}
                   </FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Euro className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
                         type="number"
-                        placeholder="Final agreed amount"
+                        placeholder={t('form.placeholders.actualValue')}
                         className="h-10 pl-10"
                         {...field}
                         value={field.value ?? ''}
@@ -82,7 +84,7 @@ export function AdditionalDetailsSection({ isEditMode = false }: AdditionalDetai
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium">
-                    Actual Close Date
+                    {t('form.fields.actualCloseDate')}
                   </FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
@@ -95,7 +97,7 @@ export function AdditionalDetailsSection({ isEditMode = false }: AdditionalDetai
                           )}
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
-                          {field.value ? format(new Date(field.value), "PPP") : "Pick a date"}
+                          {field.value ? format(new Date(field.value), "PPP") : t('form.placeholders.pickDate')}
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
@@ -119,7 +121,7 @@ export function AdditionalDetailsSection({ isEditMode = false }: AdditionalDetai
       {/* Win/Loss Analysis Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base font-semibold">Win/Loss Analysis</CardTitle>
+          <CardTitle className="text-base font-semibold">{t('form.sections.winLossAnalysis')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <FormField
@@ -128,11 +130,11 @@ export function AdditionalDetailsSection({ isEditMode = false }: AdditionalDetai
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-sm font-medium">
-                  Win/Loss Reason
+                  {t('form.fields.winLossReason')}
                 </FormLabel>
                 <FormControl>
                   <AutoGrowTextarea
-                    placeholder="Document why this opportunity was won or lost..."
+                    placeholder={t('form.placeholders.winLossReason')}
                     minRows={3}
                     maxRows={8}
                     {...field}
@@ -149,18 +151,18 @@ export function AdditionalDetailsSection({ isEditMode = false }: AdditionalDetai
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-sm font-medium">
-                  Competitor Who Won (if Lost)
+                  {t('form.fields.competitorWon')}
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="competitor-guid or competitor name"
+                    placeholder={t('form.placeholders.competitorName')}
                     className="h-10"
                     {...field}
                     value={field.value || ''}
                   />
                 </FormControl>
                 <p className="text-xs text-muted-foreground">
-                  Only applicable if opportunity was lost
+                  {t('form.hints.competitorHint')}
                 </p>
                 <FormMessage className="text-xs" />
               </FormItem>

@@ -24,6 +24,7 @@ import { TrendingUp, Info, Target, Users, Zap, CheckCircle2 } from 'lucide-react
 import type { Lead } from '@/core/contracts/entities/lead'
 import { calculateLeadScore, type LeadScoreBreakdown } from '../services/lead-scoring-service'
 import { LeadQualityCode } from '@/core/contracts/enums'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface LeadScoreCardProps {
   lead: Lead
@@ -45,6 +46,7 @@ interface LeadScoreCardProps {
  * - Dialog con reasoning detallado
  */
 export function LeadScoreCard({ lead, activityCount }: LeadScoreCardProps) {
+  const { t } = useTranslation('leads')
   // Calcular score
   const scoreBreakdown = calculateLeadScore(lead, { activityCount })
 
@@ -73,11 +75,11 @@ export function LeadScoreCard({ lead, activityCount }: LeadScoreCardProps) {
   const getQualityLabel = (quality: LeadQualityCode) => {
     switch (quality) {
       case LeadQualityCode.Hot:
-        return 'Hot Lead'
+        return t('score.hotLead')
       case LeadQualityCode.Warm:
-        return 'Warm Lead'
+        return t('score.warmLead')
       case LeadQualityCode.Cold:
-        return 'Cold Lead'
+        return t('score.coldLead')
     }
   }
 
@@ -109,22 +111,22 @@ export function LeadScoreCard({ lead, activityCount }: LeadScoreCardProps) {
           <div>
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="h-5 w-5" />
-              Lead Score
+              {t('score.title')}
             </CardTitle>
-            <CardDescription>Automatic scoring based on multiple factors</CardDescription>
+            <CardDescription>{t('score.subtitle')}</CardDescription>
           </div>
           <Dialog>
             <DialogTrigger asChild>
               <Button variant="ghost" size="sm">
                 <Info className="h-4 w-4 mr-2" />
-                Details
+                {t('score.details')}
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[80vh]">
               <DialogHeader>
-                <DialogTitle>Lead Score Breakdown</DialogTitle>
+                <DialogTitle>{t('score.breakdown')}</DialogTitle>
                 <DialogDescription>
-                  Detailed scoring analysis for {lead.firstname} {lead.lastname}
+                  {t('score.breakdownFor', { name: `${lead.firstname} ${lead.lastname}` })}
                 </DialogDescription>
               </DialogHeader>
               <ScrollArea className="h-[500px] pr-4">
@@ -182,7 +184,7 @@ export function LeadScoreCard({ lead, activityCount }: LeadScoreCardProps) {
             </Badge>
           </div>
           <div className="text-right">
-            <div className="text-sm text-muted-foreground">Overall Quality</div>
+            <div className="text-sm text-muted-foreground">{t('score.overallQuality')}</div>
             <Progress
               value={scoreBreakdown.totalScore}
               className="h-2 w-32 mt-2"
@@ -194,14 +196,14 @@ export function LeadScoreCard({ lead, activityCount }: LeadScoreCardProps) {
 
         {/* Category Breakdown */}
         <div className="space-y-4">
-          <div className="text-sm font-medium">Score Breakdown</div>
+          <div className="text-sm font-medium">{t('score.scoreBreakdown')}</div>
 
           {/* Source Score */}
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
               <div className="flex items-center gap-2">
                 {getCategoryIcon('source')}
-                <span className="font-medium">Source Quality</span>
+                <span className="font-medium">{t('score.sourceQuality')}</span>
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
@@ -209,7 +211,7 @@ export function LeadScoreCard({ lead, activityCount }: LeadScoreCardProps) {
                     </TooltipTrigger>
                     <TooltipContent>
                       <p className="max-w-xs">
-                        Score based on lead source (Partner, Referral, Web, etc.)
+                        {t('score.sourceTooltip')}
                       </p>
                     </TooltipContent>
                   </Tooltip>
@@ -230,7 +232,7 @@ export function LeadScoreCard({ lead, activityCount }: LeadScoreCardProps) {
             <div className="flex items-center justify-between text-sm">
               <div className="flex items-center gap-2">
                 {getCategoryIcon('engagement')}
-                <span className="font-medium">Engagement Level</span>
+                <span className="font-medium">{t('score.engagementLevel')}</span>
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
@@ -238,7 +240,7 @@ export function LeadScoreCard({ lead, activityCount }: LeadScoreCardProps) {
                     </TooltipTrigger>
                     <TooltipContent>
                       <p className="max-w-xs">
-                        Score based on activities (emails, calls, meetings)
+                        {t('score.engagementTooltip')}
                       </p>
                     </TooltipContent>
                   </Tooltip>
@@ -259,7 +261,7 @@ export function LeadScoreCard({ lead, activityCount }: LeadScoreCardProps) {
             <div className="flex items-center justify-between text-sm">
               <div className="flex items-center gap-2">
                 {getCategoryIcon('fit')}
-                <span className="font-medium">Customer Fit</span>
+                <span className="font-medium">{t('score.customerFit')}</span>
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
@@ -267,7 +269,7 @@ export function LeadScoreCard({ lead, activityCount }: LeadScoreCardProps) {
                     </TooltipTrigger>
                     <TooltipContent>
                       <p className="max-w-xs">
-                        Score based on industry, revenue, company size, location
+                        {t('score.fitTooltip')}
                       </p>
                     </TooltipContent>
                   </Tooltip>
@@ -288,7 +290,7 @@ export function LeadScoreCard({ lead, activityCount }: LeadScoreCardProps) {
             <div className="flex items-center justify-between text-sm">
               <div className="flex items-center gap-2">
                 {getCategoryIcon('bant')}
-                <span className="font-medium">BANT Qualification</span>
+                <span className="font-medium">{t('score.bantQualification')}</span>
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
@@ -296,7 +298,7 @@ export function LeadScoreCard({ lead, activityCount }: LeadScoreCardProps) {
                     </TooltipTrigger>
                     <TooltipContent>
                       <p className="max-w-xs">
-                        Score based on Budget, Authority, Need, Timeframe
+                        {t('score.bantTooltip')}
                       </p>
                     </TooltipContent>
                   </Tooltip>
@@ -315,24 +317,21 @@ export function LeadScoreCard({ lead, activityCount }: LeadScoreCardProps) {
 
         {/* Recommendation */}
         <div className="mt-4 p-3 bg-muted rounded-lg">
-          <div className="text-sm font-medium mb-1">Recommendation</div>
+          <div className="text-sm font-medium mb-1">{t('score.recommendation')}</div>
           <div className="text-sm text-muted-foreground">
             {scoreBreakdown.totalScore >= 80 && (
               <>
-                <span className="font-semibold text-red-600">High priority lead.</span> Contact
-                immediately. This lead shows strong buying signals and good fit.
+                <span className="font-semibold text-red-600">{t('score.highPriority')}</span> {t('score.highPriorityDesc')}
               </>
             )}
             {scoreBreakdown.totalScore >= 50 && scoreBreakdown.totalScore < 80 && (
               <>
-                <span className="font-semibold text-orange-600">Promising lead.</span> Continue
-                nurturing with targeted content. Schedule a discovery call.
+                <span className="font-semibold text-orange-600">{t('score.promising')}</span> {t('score.promisingDesc')}
               </>
             )}
             {scoreBreakdown.totalScore < 50 && (
               <>
-                <span className="font-semibold text-blue-600">Low priority lead.</span> Add to
-                nurture campaign. Gather more qualification information before investing time.
+                <span className="font-semibold text-blue-600">{t('score.lowPriority')}</span> {t('score.lowPriorityDesc')}
               </>
             )}
           </div>

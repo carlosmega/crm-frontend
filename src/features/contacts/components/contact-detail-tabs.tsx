@@ -7,6 +7,7 @@ import type { Contact } from '@/core/contracts'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ActivityTimeline } from '@/features/activities/components'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import { cn } from '@/lib/utils'
 import {
   User,
@@ -43,6 +44,7 @@ interface ContactDetailTabsProps {
  * - Consistent naming with edit form tabs
  */
 export function ContactDetailTabs({ contact }: ContactDetailTabsProps) {
+  const { t } = useTranslation('contacts')
   const [activeTab, setActiveTab] = useState<ContactTabId>('general')
   const [tabsContainer, setTabsContainer] = useState<HTMLElement | null>(null)
 
@@ -76,7 +78,7 @@ export function ContactDetailTabs({ contact }: ContactDetailTabsProps) {
           )}
         >
           <User className="w-4 h-4 mr-2" />
-          General
+          {t('tabs.general')}
         </TabsTrigger>
 
         <TabsTrigger
@@ -89,7 +91,7 @@ export function ContactDetailTabs({ contact }: ContactDetailTabsProps) {
           )}
         >
           <Briefcase className="w-4 h-4 mr-2" />
-          Professional
+          {t('tabs.professional')}
         </TabsTrigger>
 
         <TabsTrigger
@@ -102,7 +104,7 @@ export function ContactDetailTabs({ contact }: ContactDetailTabsProps) {
           )}
         >
           <MapPin className="w-4 h-4 mr-2" />
-          Address
+          {t('tabs.address')}
         </TabsTrigger>
 
         <TabsTrigger
@@ -115,7 +117,7 @@ export function ContactDetailTabs({ contact }: ContactDetailTabsProps) {
           )}
         >
           <History className="w-4 h-4 mr-2" />
-          Activities
+          {t('tabs.activities')}
         </TabsTrigger>
       </TabsList>
     </div>
@@ -131,7 +133,7 @@ export function ContactDetailTabs({ contact }: ContactDetailTabsProps) {
         {/* Contact Information Card */}
         <Card className="gap-3">
           <CardHeader>
-            <CardTitle className="text-base font-semibold">Contact Information</CardTitle>
+            <CardTitle className="text-base font-semibold">{t('detail.contactInfo')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2.5">
               {contact.emailaddress1 && (
@@ -179,7 +181,7 @@ export function ContactDetailTabs({ contact }: ContactDetailTabsProps) {
                 </div>
               )}
               {!contact.emailaddress1 && !contact.telephone1 && !contact.mobilephone && (
-                <p className="text-sm text-muted-foreground">No contact information available</p>
+                <p className="text-sm text-muted-foreground">{t('detail.noContactInfo')}</p>
               )}
             </CardContent>
           </Card>
@@ -189,14 +191,14 @@ export function ContactDetailTabs({ contact }: ContactDetailTabsProps) {
       <TabsContent value="professional" className="mt-0 space-y-4">
         <Card className="gap-3">
           <CardHeader>
-            <CardTitle className="text-base font-semibold">Professional Information</CardTitle>
+            <CardTitle className="text-base font-semibold">{t('detail.professionalInfo')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2.5">
             {contact.jobtitle && (
               <div className="flex items-center gap-2.5">
                 <Briefcase className="h-4 w-4 text-muted-foreground shrink-0" />
                 <div className="flex-1">
-                  <div className="text-xs text-muted-foreground mb-0.5">Job Title</div>
+                  <div className="text-xs text-muted-foreground mb-0.5">{t('detail.jobTitle')}</div>
                   <span className="text-sm font-medium">{contact.jobtitle}</span>
                 </div>
               </div>
@@ -205,7 +207,7 @@ export function ContactDetailTabs({ contact }: ContactDetailTabsProps) {
               <div className="flex items-center gap-2.5">
                 <Building2 className="h-4 w-4 text-muted-foreground shrink-0" />
                 <div className="flex-1">
-                  <div className="text-xs text-muted-foreground mb-0.5">Department</div>
+                  <div className="text-xs text-muted-foreground mb-0.5">{t('detail.department')}</div>
                   <span className="text-sm">{contact.department}</span>
                 </div>
               </div>
@@ -214,7 +216,7 @@ export function ContactDetailTabs({ contact }: ContactDetailTabsProps) {
               <div className="flex items-center gap-2.5">
                 <Building2 className="h-4 w-4 text-muted-foreground shrink-0" />
                 <div className="flex-1">
-                  <div className="text-xs text-muted-foreground mb-0.5">Account (B2B)</div>
+                  <div className="text-xs text-muted-foreground mb-0.5">{t('detail.accountB2B')}</div>
                   <Link
                     href={`/accounts/${contact.parentcustomerid}`}
                     className="text-sm hover:underline text-primary"
@@ -228,13 +230,13 @@ export function ContactDetailTabs({ contact }: ContactDetailTabsProps) {
               <div className="flex items-center gap-2.5">
                 <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
                 <div className="flex-1">
-                  <div className="text-xs text-muted-foreground mb-0.5">Created On</div>
+                  <div className="text-xs text-muted-foreground mb-0.5">{t('detail.createdOn')}</div>
                   <span className="text-sm">{formatDate(contact.createdon)}</span>
                 </div>
               </div>
             )}
             {!contact.jobtitle && !contact.department && !contact.parentcustomerid && !contact.createdon && (
-              <p className="text-sm text-muted-foreground">No professional information available</p>
+              <p className="text-sm text-muted-foreground">{t('detail.noProfessionalInfo')}</p>
             )}
           </CardContent>
         </Card>
@@ -245,7 +247,7 @@ export function ContactDetailTabs({ contact }: ContactDetailTabsProps) {
         {(contact.address1_line1 || contact.address1_city) ? (
           <Card className="gap-3">
             <CardHeader>
-              <CardTitle className="text-base font-semibold">Primary Address</CardTitle>
+              <CardTitle className="text-base font-semibold">{t('detail.primaryAddress')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-start gap-2.5">
@@ -267,7 +269,7 @@ export function ContactDetailTabs({ contact }: ContactDetailTabsProps) {
         ) : (
           <Card>
             <CardContent className="py-12 text-center">
-              <p className="text-muted-foreground">No address information available</p>
+              <p className="text-muted-foreground">{t('detail.noAddressInfo')}</p>
             </CardContent>
           </Card>
         )}

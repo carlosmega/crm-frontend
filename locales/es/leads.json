@@ -35,13 +35,18 @@
   },
   "status": {
     "open": "Abierto",
+    "new": "Nuevo",
+    "contacted": "Contactado",
     "qualified": "Calificado",
-    "disqualified": "Descalificado"
+    "disqualified": "Descalificado",
+    "unknown": "Desconocido"
   },
   "buttons": {
     "editLead": "Editar lead",
     "createFirst": "Crea Tu Primer Lead",
-    "createNew": "Crear Nuevo Lead"
+    "createNew": "Crear Nuevo Lead",
+    "createLead": "Crear Lead",
+    "updateLead": "Actualizar Lead"
   },
   "emptyState": {
     "title": "A\u00fan no hay leads",
@@ -61,5 +66,212 @@
       "Verifica errores de escritura en tu consulta",
       "Intenta buscar por nombre de empresa en lugar de nombre de contacto"
     ]
+  },
+  "form": {
+    "sections": {
+      "basicInfo": "Informaci\u00f3n B\u00e1sica",
+      "contactDetails": "Datos de Contacto",
+      "keyDates": "Fechas Clave",
+      "address": "Direcci\u00f3n",
+      "addressHint": "Ingresa el c\u00f3digo postal para autocompletar la direcci\u00f3n (M\u00e9xico)",
+      "leadDetails": "Detalles del Lead",
+      "description": "Descripci\u00f3n"
+    },
+    "fields": {
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "company": "Empresa",
+      "jobTitle": "Cargo",
+      "email": "Email",
+      "phone": "Tel\u00e9fono",
+      "mobile": "M\u00f3vil",
+      "website": "Sitio Web",
+      "estimatedValue": "Valor Estimado",
+      "estimatedCloseDate": "Fecha Estimada de Cierre",
+      "leadSource": "Origen del Lead",
+      "leadQuality": "Calidad del Lead"
+    },
+    "placeholders": {
+      "firstName": "Juan",
+      "lastName": "P\u00e9rez",
+      "company": "Acme Inc",
+      "jobTitle": "Director General",
+      "email": "juan.perez@ejemplo.com",
+      "selectSource": "Seleccionar origen",
+      "selectQuality": "Seleccionar calidad",
+      "description": "Agrega notas sobre este lead, sus intereses, necesidades o cualquier contexto relevante..."
+    }
+  },
+  "detail": {
+    "tabs": {
+      "general": "General",
+      "activities": "Actividades"
+    },
+    "sections": {
+      "contactInfo": "Informaci\u00f3n de Contacto",
+      "keyDates": "Fechas Clave",
+      "address": "Direcci\u00f3n",
+      "description": "Descripci\u00f3n"
+    },
+    "labels": {
+      "estimatedValue": "Valor Estimado",
+      "estimatedCloseDate": "Fecha Estimada de Cierre",
+      "mobile": "(M\u00f3vil)"
+    },
+    "empty": {
+      "noContactInfo": "Sin informaci\u00f3n de contacto disponible",
+      "noLeadDetails": "Sin detalles del lead disponibles"
+    },
+    "stage": {
+      "stageLabel": "Etapa {{name}}",
+      "qualifyFirst": "Calificar Lead Primero"
+    }
+  },
+  "card": {
+    "estClose": "Cierre Est.:"
+  },
+  "header": {
+    "salesLead": "Lead de Ventas",
+    "lead": "LEAD",
+    "origin": "Origen:",
+    "owner": "Propietario:"
+  },
+  "score": {
+    "title": "Puntuaci\u00f3n del Lead",
+    "subtitle": "Puntuaci\u00f3n autom\u00e1tica basada en m\u00faltiples factores",
+    "details": "Detalles",
+    "breakdown": "Desglose de Puntuaci\u00f3n",
+    "breakdownFor": "An\u00e1lisis detallado de puntuaci\u00f3n para {{name}}",
+    "overallQuality": "Calidad General",
+    "scoreBreakdown": "Desglose de Puntuaci\u00f3n",
+    "sourceQuality": "Calidad de Origen",
+    "sourceTooltip": "Puntuaci\u00f3n basada en origen del lead (Socio, Referencia, Web, etc.)",
+    "engagementLevel": "Nivel de Compromiso",
+    "engagementTooltip": "Puntuaci\u00f3n basada en actividades (emails, llamadas, reuniones)",
+    "customerFit": "Ajuste del Cliente",
+    "fitTooltip": "Puntuaci\u00f3n basada en industria, ingresos, tama\u00f1o de empresa, ubicaci\u00f3n",
+    "bantQualification": "Calificaci\u00f3n BANT",
+    "bantTooltip": "Puntuaci\u00f3n basada en Presupuesto, Autoridad, Necesidad, Plazo",
+    "recommendation": "Recomendaci\u00f3n",
+    "hotLead": "Lead Caliente",
+    "warmLead": "Lead Tibio",
+    "coldLead": "Lead Fr\u00edo",
+    "highPriority": "Lead de alta prioridad.",
+    "highPriorityDesc": "Contactar inmediatamente. Este lead muestra fuertes se\u00f1ales de compra y buen ajuste.",
+    "promising": "Lead prometedor.",
+    "promisingDesc": "Continuar nutriendo con contenido dirigido. Programar una llamada de descubrimiento.",
+    "lowPriority": "Lead de baja prioridad.",
+    "lowPriorityDesc": "Agregar a campa\u00f1a de nurturing. Recopilar m\u00e1s informaci\u00f3n de calificaci\u00f3n antes de invertir tiempo."
+  },
+  "bpf": {
+    "qualify": "Calificar",
+    "qualifyDesc": "Completar criterios de calificaci\u00f3n para determinar ajuste",
+    "develop": "Desarrollar",
+    "developDesc": "Investigar oportunidad e identificar interesados",
+    "propose": "Proponer",
+    "proposeDesc": "Presentar propuesta final, precios y t\u00e9rminos",
+    "close": "Cerrar",
+    "closeDesc": "Finalizar el acuerdo - marcar como Ganado o Perdido",
+    "leadDisqualified": "Lead descalificado",
+    "qualifiedSuccessfully": "Calificado exitosamente",
+    "viewOpportunity": "Ver oportunidad",
+    "fields": {
+      "budgetAmount": "Monto del Presupuesto",
+      "budgetStatus": "Estado del Presupuesto (Sin Presupuesto / Puede Comprar / Va a Comprar)",
+      "purchaseTimeframe": "Plazo de Compra",
+      "needAnalysis": "An\u00e1lisis de Necesidad",
+      "decisionMaker": "Contacto del Tomador de Decisiones",
+      "proposedSolution": "Soluci\u00f3n Propuesta",
+      "implementationTimeline": "Cronograma de Implementaci\u00f3n",
+      "identifyCompetitors": "Identificar Competidores",
+      "customerNeeds": "An\u00e1lisis de Necesidades del Cliente",
+      "currentSituation": "Documentaci\u00f3n de Situaci\u00f3n Actual",
+      "stakeholders": "Interesados (Tomadores de Decisiones, Influenciadores, Campeones)",
+      "presentationDate": "Fecha de Presentaci\u00f3n",
+      "finalDecisionDate": "Fecha de Decisi\u00f3n Final",
+      "customerContacts": "Contactos del Cliente Identificados",
+      "pursuitTeam": "Equipo de Seguimiento Asignado",
+      "quoteWithProducts": "Cotizaci\u00f3n con L\u00edneas de Producto",
+      "thankYouNote": "Nota de Agradecimiento Enviada",
+      "actualValue": "Valor Real (si Ganado)",
+      "actualCloseDate": "Fecha Real de Cierre",
+      "activeQuote": "Cotizaci\u00f3n Activa (si Ganado)",
+      "winLossReason": "Raz\u00f3n de Ganancia/P\u00e9rdida",
+      "competitorWon": "Competidor que Gan\u00f3 (si Perdido)"
+    }
+  },
+  "qualify": {
+    "title": "Calificar Lead",
+    "subtitle": "Configurar c\u00f3mo calificar este lead y crear registros relacionados",
+    "b2bQualification": "Calificaci\u00f3n B2B",
+    "b2cQualification": "Calificaci\u00f3n B2C",
+    "company": "Empresa: {{name}}",
+    "individualCustomer": "Cliente individual (sin empresa)",
+    "missingFields": "Campos Requeridos Faltantes",
+    "missingFieldsHint": "Complete estos campos en la Etapa de Calificaci\u00f3n primero:",
+    "incompleteStage": "Etapa de Calificaci\u00f3n Incompleta",
+    "incompleteStageDesc": "Por favor complete los siguientes campos:",
+    "account": "Cuenta",
+    "accountDesc": "Elija c\u00f3mo manejar la cuenta de la empresa",
+    "createNewAccount": "Crear nueva cuenta",
+    "createAccountHint": "Crear \"{{name}}\" como nueva cuenta",
+    "useExistingAccount": "Usar cuenta existente",
+    "useExistingAccountHint": "Vincular a una cuenta que ya existe",
+    "selectAccount": "Seleccionar Cuenta",
+    "contact": "Contacto",
+    "contactDesc": "Elija c\u00f3mo manejar la persona de contacto",
+    "createNewContact": "Crear nuevo contacto",
+    "createContactHint": "Crear \"{{name}}\" como nuevo contacto",
+    "useExistingContact": "Usar contacto existente",
+    "useExistingContactHint": "Vincular a un contacto que ya existe",
+    "selectContact": "Seleccionar Contacto",
+    "opportunity": "Oportunidad",
+    "opportunityDesc": "Configurar los detalles de la oportunidad de venta",
+    "opportunityName": "Nombre de la Oportunidad",
+    "estimatedValue": "Valor Estimado",
+    "estCloseDate": "Fecha Est. de Cierre",
+    "selectCloseDate": "Seleccionar fecha de cierre",
+    "opportunityDescription": "Descripci\u00f3n",
+    "descriptionPlaceholder": "Describir la oportunidad y las necesidades del cliente...",
+    "qualifying": "Calificando...",
+    "qualifyLead": "Calificar Lead",
+    "success": "\u00a1Lead Calificado Exitosamente!",
+    "successDesc": "Los siguientes registros han sido creados a partir de este lead:",
+    "accountCreated": "Cuenta Creada",
+    "contactCreated": "Contacto Creado",
+    "opportunityCreated": "Oportunidad Creada",
+    "viewOpportunity": "Ver Oportunidad",
+    "done": "Listo",
+    "failed": "Calificaci\u00f3n Fallida",
+    "failedDesc": "Error al calificar el lead",
+    "successToast": "Lead Calificado Exitosamente",
+    "successToastDesc": "Oportunidad \"{{name}}\" ha sido creada",
+    "validationError": "Por favor seleccione un registro existente al elegir \"Usar existente\""
+  },
+  "duplicate": {
+    "title": "Posible Duplicado de {{entity}} Detectado",
+    "foundRecords": "Encontramos {{count}} registro existente que coincide con la informaci\u00f3n ingresada.",
+    "foundRecordsPlural": "Encontramos {{count}} registros existentes que coinciden con la informaci\u00f3n ingresada.",
+    "detectionConfidence": "Confianza de detecci\u00f3n:",
+    "highAlert": "Coincidencia fuerte detectada. Crear un duplicado puede causar inconsistencias de datos.",
+    "mediumAlert": "Coincidencia moderada detectada. Por favor revise los registros existentes antes de continuar.",
+    "lowAlert": "Coincidencia d\u00e9bil detectada. Las similitudes pueden ser coincidencia.",
+    "match": "{{score}}% Coincidencia",
+    "useThisInstead": "Usar Este {{entity}} en su Lugar",
+    "createDuplicateAnyway": "Crear Duplicado de Todas Formas",
+    "continuCreating": "Continuar Creando"
+  },
+  "related": {
+    "title": "Oportunidad Relacionada",
+    "viewOpportunity": "Ver Oportunidad",
+    "closeProbability": "Probabilidad de Cierre",
+    "estCloseDate": "Fecha Est. de Cierre",
+    "stages": {
+      "qualify": "Calificar (25%)",
+      "develop": "Desarrollar (50%)",
+      "propose": "Proponer (75%)",
+      "close": "Cerrar (100%)",
+      "unknown": "Desconocido"
+    }
   }
 }

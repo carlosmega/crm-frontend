@@ -3,6 +3,7 @@ import Link from 'next/link'
 import type { Account } from '@/core/contracts'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import { AccountStatusBadge } from './account-status-badge'
 import { AccountCategoryBadge } from './account-category-badge'
 import { Mail, Phone, Globe, MapPin, Users, DollarSign, Eye, Edit, Trash2 } from 'lucide-react'
@@ -20,6 +21,9 @@ interface AccountCardProps {
  * - Uses shared formatters (module-level) to avoid recreating on every render
  */
 export const AccountCard = memo(function AccountCard({ account, onDelete }: AccountCardProps) {
+  const { t } = useTranslation('accounts')
+  const { t: tc } = useTranslation('common')
+
   return (
     <Card className="hover:shadow-md transition-shadow">
       <CardHeader>
@@ -84,14 +88,14 @@ export const AccountCard = memo(function AccountCard({ account, onDelete }: Acco
           {account.revenue && (
             <div className="flex items-center gap-2 text-muted-foreground">
               <DollarSign className="h-4 w-4" />
-              <span>Revenue: {formatCurrency(account.revenue)}</span>
+              <span>{t('card.revenue')} {formatCurrency(account.revenue)}</span>
             </div>
           )}
 
           {account.numberofemployees && (
             <div className="flex items-center gap-2 text-muted-foreground">
               <Users className="h-4 w-4" />
-              <span>{formatNumber(account.numberofemployees)} employees</span>
+              <span>{t('card.employees', { count: formatNumber(account.numberofemployees) })}</span>
             </div>
           )}
         </div>
@@ -107,13 +111,13 @@ export const AccountCard = memo(function AccountCard({ account, onDelete }: Acco
         <Button asChild variant="outline" size="sm" className="flex-1">
           <Link href={`/accounts/${account.accountid}`}>
             <Eye className="mr-2 h-4 w-4" />
-            View
+            {tc('cardActions.view')}
           </Link>
         </Button>
         <Button asChild variant="outline" size="sm" className="flex-1">
           <Link href={`/accounts/${account.accountid}/edit`}>
             <Edit className="mr-2 h-4 w-4" />
-            Edit
+            {tc('cardActions.edit')}
           </Link>
         </Button>
         {onDelete && (

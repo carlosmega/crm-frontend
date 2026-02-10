@@ -23,6 +23,7 @@ import {
   User,
   ArrowRight,
 } from 'lucide-react'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import type { DuplicateDetectionResult } from '../services/duplicate-detection-service'
 import type { Lead } from '@/core/contracts/entities/lead'
 import type { Account } from '@/core/contracts/entities/account'
@@ -60,6 +61,8 @@ export function DuplicateWarningDialog({
   onMerge,
   onCancel,
 }: DuplicateWarningDialogProps) {
+  const { t } = useTranslation('leads')
+  const { t: tc } = useTranslation('common')
   const { hasDuplicates, matches, confidence } = duplicates
 
   if (!hasDuplicates || matches.length === 0) {
@@ -72,21 +75,21 @@ export function DuplicateWarningDialog({
         return (
           <Badge variant="destructive" className="gap-1">
             <XCircle className="h-3 w-3" />
-            High Confidence
+            {tc('confidence.high')}
           </Badge>
         )
       case 'medium':
         return (
           <Badge variant="secondary" className="gap-1 bg-orange-100 text-orange-800">
             <AlertTriangle className="h-3 w-3" />
-            Medium Confidence
+            {tc('confidence.medium')}
           </Badge>
         )
       case 'low':
         return (
           <Badge variant="outline" className="gap-1">
             <CheckCircle2 className="h-3 w-3" />
-            Low Confidence
+            {tc('confidence.low')}
           </Badge>
         )
     }
@@ -104,14 +107,7 @@ export function DuplicateWarningDialog({
   }
 
   const getEntityLabel = () => {
-    switch (entityType) {
-      case 'lead':
-        return 'Lead'
-      case 'account':
-        return 'Account'
-      case 'contact':
-        return 'Contact'
-    }
+    return tc(`entities.${entityType}`)
   }
 
   const renderLeadMatch = (record: Lead) => (
@@ -205,17 +201,18 @@ export function DuplicateWarningDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <AlertTriangle className="h-5 w-5 text-orange-600" />
-            Possible Duplicate {getEntityLabel()} Detected
+            {t('duplicate.title', { entity: getEntityLabel() })}
           </DialogTitle>
           <DialogDescription>
-            We found {matches.length} existing {matches.length === 1 ? 'record' : 'records'} that{' '}
-            {matches.length === 1 ? 'matches' : 'match'} the information you entered.
+            {matches.length === 1
+              ? t('duplicate.foundRecords', { count: matches.length })
+              : t('duplicate.foundRecordsPlural', { count: matches.length })}
           </DialogDescription>
         </DialogHeader>
 
         {/* Confidence Badge */}
         <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">Detection confidence:</span>
+          <span className="text-sm text-muted-foreground">{t('duplicate.detectionConfidence')}</span>
           {getConfidenceBadge()}
         </div>
 
@@ -223,12 +220,9 @@ export function DuplicateWarningDialog({
         <Alert variant={confidence === 'high' ? 'destructive' : 'default'}>
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>
-            {confidence === 'high' &&
-              'Strong match detected. Creating a duplicate may cause data inconsistencies.'}
-            {confidence === 'medium' &&
-              'Moderate match detected. Please review the existing records before proceeding.'}
-            {confidence === 'low' &&
-              'Weak match detected. The similarities may be coincidental.'}
+            {confidence === 'high' && t('duplicate.highAlert')}
+            {confidence === 'medium' && t('duplicate.mediumAlert')}
+            {confidence === 'low' && t('duplicate.lowAlert')}
           </AlertDescription>
         </Alert>
 
@@ -250,7 +244,7 @@ export function DuplicateWarningDialog({
                               : 'outline'
                         }
                       >
-                        {match.score}% Match
+                        {t('duplicate.match', { score: match.score })}
                       </Badge>
                       <div className="flex flex-wrap gap-1">
                         {match.matchedFields.map((field) => (
@@ -276,7 +270,7 @@ export function DuplicateWarningDialog({
                         }}
                       >
                         <ArrowRight className="mr-2 h-4 w-4" />
-                        Use This {getEntityLabel()} Instead
+                        {t('duplicate.useThisInstead', { entity: getEntityLabel() })}
                       </Button>
                     )}
                   </div>
@@ -290,7 +284,7 @@ export function DuplicateWarningDialog({
 
         <DialogFooter className="flex-row gap-2 sm:gap-2">
           <Button variant="outline" onClick={onCancel}>
-            Cancel
+            {tc('buttons.cancel')}
           </Button>
           <Button
             variant={confidence === 'high' ? 'destructive' : 'default'}
@@ -300,8 +294,8 @@ export function DuplicateWarningDialog({
             }}
           >
             {confidence === 'high'
-              ? 'Create Duplicate Anyway'
-              : 'Continue Creating'}
+              ? t('duplicate.createDuplicateAnyway')
+              : t('duplicate.continuCreating')}
           </Button>
         </DialogFooter>
       </DialogContent>

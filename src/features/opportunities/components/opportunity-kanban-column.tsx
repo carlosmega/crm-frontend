@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge'
 import { formatCurrency } from '@/shared/utils/formatters'
 import { TrendingUp, DollarSign, Hash, Inbox } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface OpportunityKanbanColumnProps {
   stage: SalesStageCode
@@ -56,6 +57,7 @@ export function OpportunityKanbanColumn({
   opportunities,
   customerNames,
 }: OpportunityKanbanColumnProps) {
+  const { t } = useTranslation('opportunities')
   const { setNodeRef, isOver } = useDroppable({
     id: `stage-${stage}`,
     data: { stage },
@@ -87,15 +89,15 @@ export function OpportunityKanbanColumn({
 
           <div className="space-y-1.5">
             <div className="flex justify-between items-center">
-              <span className="text-xs text-muted-foreground">Count:</span>
+              <span className="text-xs text-muted-foreground">{t('kanban.count')}</span>
               <span className="text-xs font-semibold text-foreground">{opportunities.length}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-xs text-muted-foreground">Total:</span>
+              <span className="text-xs text-muted-foreground">{t('kanban.total')}</span>
               <span className="text-xs font-semibold text-foreground">{formatCurrency(totalValue)}</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-xs text-muted-foreground">Weighted:</span>
+              <span className="text-xs text-muted-foreground">{t('kanban.weighted')}</span>
               <span className={cn('text-xs font-bold', colors.text)}>{formatCurrency(weightedValue)}</span>
             </div>
           </div>
@@ -110,7 +112,7 @@ export function OpportunityKanbanColumn({
             {opportunities.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-32 text-sm text-muted-foreground">
                 <Inbox className="h-8 w-8 mb-2 opacity-50" />
-                <span>No opportunities</span>
+                <span>{t('kanban.noOpportunities')}</span>
               </div>
             ) : (
               opportunities.map((opportunity) => (

@@ -20,6 +20,7 @@ import { OpportunityKanbanCard } from './opportunity-kanban-card'
 import { useOpportunityMutations } from '../hooks/use-opportunity-mutations'
 import { useToast } from '@/components/ui/use-toast'
 import { Loader2 } from 'lucide-react'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface OpportunityKanbanProps {
   opportunities: Opportunity[]
@@ -27,21 +28,22 @@ interface OpportunityKanbanProps {
   onRefetch?: () => void
 }
 
-const STAGES = [
-  { code: SalesStageCode.Qualify, title: 'Qualify', probability: 25 },
-  { code: SalesStageCode.Develop, title: 'Develop', probability: 50 },
-  { code: SalesStageCode.Propose, title: 'Propose', probability: 75 },
-  { code: SalesStageCode.Close, title: 'Close', probability: 100 },
-]
-
 export function OpportunityKanban({
   opportunities,
   customerNames,
   onRefetch,
 }: OpportunityKanbanProps) {
+  const { t } = useTranslation('opportunities')
   const [activeId, setActiveId] = useState<string | null>(null)
   const { updateOpportunity, loading: updating } = useOpportunityMutations()
   const { toast } = useToast()
+
+  const STAGES = [
+    { code: SalesStageCode.Qualify, title: t('stages.qualify'), probability: 25 },
+    { code: SalesStageCode.Develop, title: t('stages.develop'), probability: 50 },
+    { code: SalesStageCode.Propose, title: t('stages.propose'), probability: 75 },
+    { code: SalesStageCode.Close, title: t('stages.close'), probability: 100 },
+  ]
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -110,8 +112,8 @@ export function OpportunityKanban({
       })
 
       toast({
-        title: 'Stage updated',
-        description: `Opportunity moved to ${STAGES.find((s) => s.code === overStage)?.title}`,
+        title: t('kanban.stageUpdated'),
+        description: t('kanban.movedTo', { stage: STAGES.find((s) => s.code === overStage)?.title }),
       })
 
       // Refetch to get updated data
@@ -121,8 +123,8 @@ export function OpportunityKanban({
     } catch (error) {
       console.error('Error updating opportunity stage:', error)
       toast({
-        title: 'Error',
-        description: 'Failed to update opportunity stage. Please try again.',
+        title: t('kanban.updateError'),
+        description: t('kanban.updateErrorDesc'),
         variant: 'destructive',
       })
     }

@@ -105,9 +105,73 @@
     "numberPlaceholder": "Enter number...",
     "searchPlaceholder": "Search..."
   },
+  "form": {
+    "pickDate": "Pick a date",
+    "required": "required",
+    "creating": "Creating...",
+    "updating": "Updating..."
+  },
   "notApplicable": "N/A",
   "emptyState": {
     "adjustSearch": "Try adjusting your search",
     "noFiltersDescription": "Try adjusting your search criteria or filters to find what you're looking for."
+  },
+  "tabs": {
+    "general": "General",
+    "activities": "Activities",
+    "related": "Related",
+    "notes": "Notes",
+    "details": "Details",
+    "address": "Address",
+    "professional": "Professional",
+    "qualification": "Qualification"
+  },
+  "sections": {
+    "contactInfo": "Contact Information",
+    "businessInfo": "Business Information",
+    "keyDates": "Key Dates",
+    "description": "Description",
+    "address": "Address",
+    "primaryAddress": "Primary Address"
+  },
+  "labels": {
+    "revenue": "Revenue",
+    "employees": "Employees",
+    "createdOn": "Created On",
+    "estimatedValue": "Estimated Value",
+    "estimatedClose": "Estimated Close",
+    "totalAmount": "Total Amount",
+    "owner": "Owner",
+    "status": "Status",
+    "phone": "Phone",
+    "email": "Email",
+    "mobile": "Mobile",
+    "website": "Website",
+    "unknown": "Unknown",
+    "view": "View",
+    "closeProbability": "Close Probability",
+    "estCloseDate": "Est. Close Date"
+  },
+  "cardActions": {
+    "view": "View",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "empty": {
+    "noContactInfo": "No contact information available",
+    "noBusinessInfo": "No business information available",
+    "noAddressInfo": "No address information available",
+    "noProfessionalInfo": "No professional information available"
+  },
+  "confidence": {
+    "high": "High Confidence",
+    "medium": "Medium Confidence",
+    "low": "Low Confidence"
+  },
+  "entities": {
+    "lead": "Lead",
+    "account": "Account",
+    "contact": "Contact",
+    "opportunity": "Opportunity"
   }
 }

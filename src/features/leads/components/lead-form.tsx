@@ -30,6 +30,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar'
 import { format } from 'date-fns'
 import { cn } from '@/lib/utils'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 const leadFormSchema = z.object({
   firstname: z.string().min(1, 'First name is required'),
@@ -75,6 +76,8 @@ interface LeadFormProps {
 
 export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, section = 'all' }: LeadFormProps) {
   const { data: session } = useSession()
+  const { t } = useTranslation('leads')
+  const { t: tc } = useTranslation('common')
 
   const form = useForm<LeadFormValues>({
     resolver: zodResolver(leadFormSchema),
@@ -152,7 +155,7 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, sec
         {/* Basic Information */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base font-semibold">Basic Information</CardTitle>
+            <CardTitle className="text-base font-semibold">{t('form.sections.basicInfo')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <FormFieldGroup columns={2}>
@@ -162,11 +165,11 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, sec
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium">
-                      First Name <span className="text-destructive">*</span>
+                      {t('form.fields.firstName')} <span className="text-destructive">*</span>
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="John"
+                        placeholder={t('form.placeholders.firstName')}
                         className="h-10"
                         {...field}
                       />
@@ -182,11 +185,11 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, sec
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium">
-                      Last Name <span className="text-destructive">*</span>
+                      {t('form.fields.lastName')} <span className="text-destructive">*</span>
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Doe"
+                        placeholder={t('form.placeholders.lastName')}
                         className="h-10"
                         {...field}
                       />
@@ -204,11 +207,11 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, sec
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium">
-                      Company
+                      {t('form.fields.company')}
                     </FormLabel>
                     <FormControl>
                       <IconInput
-                        placeholder="Acme Inc"
+                        placeholder={t('form.placeholders.company')}
                         icon={Building2}
                         className=""
                         {...field}
@@ -225,11 +228,11 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, sec
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium">
-                      Job Title
+                      {t('form.fields.jobTitle')}
                     </FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="CEO"
+                        placeholder={t('form.placeholders.jobTitle')}
                         className="h-10"
                         {...field}
                       />
@@ -247,7 +250,7 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, sec
           {/* Contact Details Card */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-base font-semibold">Contact Details</CardTitle>
+              <CardTitle className="text-base font-semibold">{t('form.sections.contactDetails')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <FormField
@@ -256,12 +259,12 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, sec
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium">
-                      Email
+                      {t('form.fields.email')}
                     </FormLabel>
                     <FormControl>
                       <IconInput
                         type="email"
-                        placeholder="john.doe@example.com"
+                        placeholder={t('form.placeholders.email')}
                         icon={Mail}
                         className=""
                         {...field}
@@ -278,7 +281,7 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, sec
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium">
-                      Phone
+                      {t('form.fields.phone')}
                     </FormLabel>
                     <FormControl>
                       <IconInput
@@ -300,7 +303,7 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, sec
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium">
-                      Mobile
+                      {t('form.fields.mobile')}
                     </FormLabel>
                     <FormControl>
                       <IconInput
@@ -322,7 +325,7 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, sec
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium">
-                      Website
+                      {t('form.fields.website')}
                     </FormLabel>
                     <FormControl>
                       <IconInput
@@ -349,7 +352,7 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, sec
           {/* Key Dates Card */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-base font-semibold">Key Dates</CardTitle>
+              <CardTitle className="text-base font-semibold">{t('form.sections.keyDates')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <FormField
@@ -358,7 +361,7 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, sec
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium">
-                      Estimated Value
+                      {t('form.fields.estimatedValue')}
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
@@ -386,7 +389,7 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, sec
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium">
-                      Estimated Close Date
+                      {t('form.fields.estimatedCloseDate')}
                     </FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -399,7 +402,7 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, sec
                             )}
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
-                            {field.value ? format(new Date(field.value), "PPP") : "Pick a date"}
+                            {field.value ? format(new Date(field.value), "PPP") : tc('form.pickDate')}
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
@@ -425,9 +428,9 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, sec
         {showAddress && (
           <Card>
             <CardHeader>
-              <CardTitle className="text-base font-semibold">Address</CardTitle>
+              <CardTitle className="text-base font-semibold">{t('form.sections.address')}</CardTitle>
               <p className="text-xs text-muted-foreground">
-                Ingresa el código postal para autocompletar la dirección (México)
+                {t('form.sections.addressHint')}
               </p>
             </CardHeader>
             <CardContent>
@@ -451,7 +454,7 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, sec
         {showQualification && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base font-semibold">Lead Details</CardTitle>
+            <CardTitle className="text-base font-semibold">{t('form.sections.leadDetails')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <FormFieldGroup columns={2}>
@@ -461,7 +464,7 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, sec
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium">
-                      Lead Source <span className="text-destructive">*</span>
+                      {t('form.fields.leadSource')} <span className="text-destructive">*</span>
                     </FormLabel>
                     <Select
                       onValueChange={(value) => field.onChange(Number(value))}
@@ -469,20 +472,20 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, sec
                     >
                       <FormControl>
                         <SelectTrigger className="h-10">
-                          <SelectValue placeholder="Select a source" />
+                          <SelectValue placeholder={t('form.placeholders.selectSource')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value={LeadSourceCode.Advertisement.toString()}>Advertisement</SelectItem>
-                        <SelectItem value={LeadSourceCode.Employee_Referral.toString()}>Employee Referral</SelectItem>
-                        <SelectItem value={LeadSourceCode.External_Referral.toString()}>External Referral</SelectItem>
-                        <SelectItem value={LeadSourceCode.Partner.toString()}>Partner</SelectItem>
-                        <SelectItem value={LeadSourceCode.Public_Relations.toString()}>Public Relations</SelectItem>
-                        <SelectItem value={LeadSourceCode.Seminar.toString()}>Seminar</SelectItem>
-                        <SelectItem value={LeadSourceCode.Trade_Show.toString()}>Trade Show</SelectItem>
-                        <SelectItem value={LeadSourceCode.Web.toString()}>Web</SelectItem>
-                        <SelectItem value={LeadSourceCode.Word_of_Mouth.toString()}>Word of Mouth</SelectItem>
-                        <SelectItem value={LeadSourceCode.Other.toString()}>Other</SelectItem>
+                        <SelectItem value={LeadSourceCode.Advertisement.toString()}>{t('sources.advertisement')}</SelectItem>
+                        <SelectItem value={LeadSourceCode.Employee_Referral.toString()}>{t('sources.employeeReferral')}</SelectItem>
+                        <SelectItem value={LeadSourceCode.External_Referral.toString()}>{t('sources.externalReferral')}</SelectItem>
+                        <SelectItem value={LeadSourceCode.Partner.toString()}>{t('sources.partner')}</SelectItem>
+                        <SelectItem value={LeadSourceCode.Public_Relations.toString()}>{t('sources.publicRelations')}</SelectItem>
+                        <SelectItem value={LeadSourceCode.Seminar.toString()}>{t('sources.seminar')}</SelectItem>
+                        <SelectItem value={LeadSourceCode.Trade_Show.toString()}>{t('sources.tradeShow')}</SelectItem>
+                        <SelectItem value={LeadSourceCode.Web.toString()}>{t('sources.web')}</SelectItem>
+                        <SelectItem value={LeadSourceCode.Word_of_Mouth.toString()}>{t('sources.wordOfMouth')}</SelectItem>
+                        <SelectItem value={LeadSourceCode.Other.toString()}>{t('sources.other')}</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage className="text-xs" />
@@ -496,7 +499,7 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, sec
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-sm font-medium">
-                      Lead Quality
+                      {t('form.fields.leadQuality')}
                     </FormLabel>
                     <Select
                       onValueChange={(value) => field.onChange(value ? Number(value) : undefined)}
@@ -504,26 +507,26 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, sec
                     >
                       <FormControl>
                         <SelectTrigger className="h-10">
-                          <SelectValue placeholder="Select quality" />
+                          <SelectValue placeholder={t('form.placeholders.selectQuality')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         <SelectItem value={LeadQualityCode.Hot.toString()}>
                           <span className="flex items-center gap-2">
                             <span className="h-2 w-2 rounded-full bg-red-500" />
-                            Hot
+                            {t('quality.hot')}
                           </span>
                         </SelectItem>
                         <SelectItem value={LeadQualityCode.Warm.toString()}>
                           <span className="flex items-center gap-2">
                             <span className="h-2 w-2 rounded-full bg-orange-500" />
-                            Warm
+                            {t('quality.warm')}
                           </span>
                         </SelectItem>
                         <SelectItem value={LeadQualityCode.Cold.toString()}>
                           <span className="flex items-center gap-2">
                             <span className="h-2 w-2 rounded-full bg-blue-500" />
-                            Cold
+                            {t('quality.cold')}
                           </span>
                         </SelectItem>
                       </SelectContent>
@@ -541,7 +544,7 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, sec
         {showNotes && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base font-semibold">Description</CardTitle>
+            <CardTitle className="text-base font-semibold">{t('form.sections.description')}</CardTitle>
           </CardHeader>
           <CardContent>
             <FormField
@@ -551,7 +554,7 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, sec
                 <FormItem>
                   <FormControl>
                     <AutoGrowTextarea
-                      placeholder="Add notes about this lead, their interests, pain points, or any relevant context..."
+                      placeholder={t('form.placeholders.description')}
                       className=""
                       minRows={3}
                       maxRows={10}
@@ -576,7 +579,7 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, sec
                 onClick={onCancel}
                 className="h-10 border-gray-300 text-gray-700 hover:bg-gray-50"
               >
-                Cancel
+                {tc('buttons.cancel')}
               </Button>
             )}
             <Button
@@ -585,7 +588,7 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, sec
               className="h-10 min-w-[120px] bg-purple-600 hover:bg-purple-700 text-white font-medium"
             >
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {lead ? 'Update Lead' : 'Create Lead'}
+              {lead ? t('buttons.updateLead') : t('buttons.createLead')}
             </Button>
           </div>
         )}

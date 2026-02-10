@@ -3,6 +3,7 @@
 import { Badge } from '@/components/ui/badge'
 import { SalesStageCode } from '@/core/contracts'
 import { Target, Lightbulb, FileText, Trophy } from 'lucide-react'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface OpportunityStageBadgeProps {
   stage: SalesStageCode
@@ -17,39 +18,41 @@ export function OpportunityStageBadge({
   className,
   showProbability = true,
 }: OpportunityStageBadgeProps) {
+  const { t } = useTranslation('opportunities')
+
   const getStageConfig = () => {
     switch (stage) {
       case SalesStageCode.Qualify:
         return {
-          label: 'Qualify',
+          label: t('stages.qualify'),
           icon: Target,
           className: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
           probability: probability ?? 25,
         }
       case SalesStageCode.Develop:
         return {
-          label: 'Develop',
+          label: t('stages.develop'),
           icon: Lightbulb,
           className: 'bg-blue-100 text-blue-800 hover:bg-blue-200',
           probability: probability ?? 50,
         }
       case SalesStageCode.Propose:
         return {
-          label: 'Propose',
+          label: t('stages.propose'),
           icon: FileText,
           className: 'bg-purple-100 text-purple-800 hover:bg-purple-200',
           probability: probability ?? 75,
         }
       case SalesStageCode.Close:
         return {
-          label: 'Close',
+          label: t('stages.close'),
           icon: Trophy,
           className: 'bg-green-100 text-green-800 hover:bg-green-200',
           probability: probability ?? 100,
         }
       default:
         return {
-          label: 'Unknown',
+          label: t('stages.unknown'),
           icon: Target,
           className: 'bg-gray-100 text-gray-800 hover:bg-gray-200',
           probability: 0,

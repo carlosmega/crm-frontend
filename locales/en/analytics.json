@@ -1,0 +1,24 @@
+{
+  "pipeline": {
+    "title": "Pipeline Overview",
+    "totalValue": "Total Pipeline Value",
+    "avgDealSize": "Avg. Deal Size",
+    "winRate": "Win Rate",
+    "conversionRate": "Conversion Rate"
+  },
+  "charts": {
+    "revenueByMonth": "Revenue by Month",
+    "opportunitiesByStage": "Opportunities by Stage",
+    "leadsBySource": "Leads by Source",
+    "topDeals": "Top Deals",
+    "salesFunnel": "Sales Funnel",
+    "activitySummary": "Activity Summary"
+  },
+  "metrics": {
+    "openOpportunities": "Open Opportunities",
+    "closedWon": "Closed Won",
+    "closedLost": "Closed Lost",
+    "avgCloseTime": "Avg. Close Time",
+    "days": "days"
+  }
+}

@@ -4,6 +4,7 @@ import { useOpportunities } from '@/features/opportunities/hooks/use-opportuniti
 import { OpportunityList } from '@/features/opportunities/components/opportunity-list'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import { Plus, Briefcase, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -18,6 +19,7 @@ interface AccountOpportunitiesSubGridProps {
  * Wraps OpportunityList component with filtered data fetching.
  */
 export function AccountOpportunitiesSubGrid({ accountId }: AccountOpportunitiesSubGridProps) {
+  const { t } = useTranslation('accounts')
   const { opportunities, loading, error } = useOpportunities()
 
   // Filter opportunities by account (customerid + customeridtype)
@@ -39,7 +41,7 @@ export function AccountOpportunitiesSubGrid({ accountId }: AccountOpportunitiesS
     return (
       <Card>
         <CardContent className="py-12 text-center">
-          <p className="text-destructive">Error loading opportunities: {error}</p>
+          <p className="text-destructive">{t('subgrid.opportunities.errorLoading')} {error}</p>
         </CardContent>
       </Card>
     )
@@ -51,12 +53,12 @@ export function AccountOpportunitiesSubGrid({ accountId }: AccountOpportunitiesS
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <Briefcase className="h-5 w-5" />
-            Related Opportunities ({accountOpportunities.length})
+            {t('subgrid.opportunities.title', { count: accountOpportunities.length })}
           </CardTitle>
           <Button asChild size="sm">
             <Link href={`/opportunities/new?accountId=${accountId}`}>
               <Plus className="mr-2 h-4 w-4" />
-              New Opportunity
+              {t('subgrid.opportunities.newOpportunity')}
             </Link>
           </Button>
         </div>
@@ -73,12 +75,12 @@ export function AccountOpportunitiesSubGrid({ accountId }: AccountOpportunitiesS
           <div className="py-12 text-center px-6">
             <Briefcase className="h-12 w-12 mx-auto text-muted-foreground mb-4 opacity-50" />
             <p className="text-muted-foreground mb-4">
-              No opportunities associated with this account
+              {t('subgrid.opportunities.noOpportunities')}
             </p>
             <Button asChild variant="outline" size="sm">
               <Link href={`/opportunities/new?accountId=${accountId}`}>
                 <Plus className="mr-2 h-4 w-4" />
-                Add First Opportunity
+                {t('subgrid.opportunities.addFirst')}
               </Link>
             </Button>
           </div>

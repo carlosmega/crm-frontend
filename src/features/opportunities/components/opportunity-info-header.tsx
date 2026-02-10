@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { Flame, Building2, User as UserIcon } from 'lucide-react'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface OpportunityInfoHeaderProps {
   opportunity: Opportunity
@@ -16,13 +17,15 @@ export function OpportunityInfoHeader({
   opportunity,
   className
 }: OpportunityInfoHeaderProps) {
+  const { t } = useTranslation('opportunities')
+
   // Determine priority badge
   const getPriorityBadge = () => {
     const value = opportunity.estimatedvalue || 0
     if (value > 100000) {
-      return { icon: Flame, text: 'Hot', color: 'text-red-500' }
+      return { icon: Flame, text: t('header.hot'), color: 'text-red-500' }
     }
-    return { icon: Flame, text: 'Warm', color: 'text-orange-500' }
+    return { icon: Flame, text: t('header.warm'), color: 'text-orange-500' }
   }
 
   const priority = getPriorityBadge()
@@ -41,13 +44,13 @@ export function OpportunityInfoHeader({
             variant="secondary"
             className="text-xs font-semibold uppercase bg-purple-100 text-purple-700 border-0 px-3 py-1"
           >
-            Sales Opportunity
+            {t('header.salesOpportunity')}
           </Badge>
           <Badge
             variant="secondary"
             className="text-xs font-semibold uppercase bg-gray-100 text-gray-700 border-0 px-3 py-1"
           >
-            OPPORTUNITY
+            {t('header.opportunity')}
           </Badge>
         </div>
 
@@ -61,7 +64,7 @@ export function OpportunityInfoHeader({
 
           {/* Origin/Source */}
           <div className="flex items-center gap-1.5 text-gray-600">
-            <span className="font-medium">Origin:</span>
+            <span className="font-medium">{t('header.origin')}</span>
             <span className="text-gray-900 font-medium">
               {opportunity.customeridtype === 'account' ? 'B2B' : 'B2C'}
             </span>
@@ -77,9 +80,9 @@ export function OpportunityInfoHeader({
               opportunity.statecode === OpportunityStateCode.Lost && "bg-red-100 text-red-700"
             )}
           >
-            {opportunity.statecode === OpportunityStateCode.Open && 'OPEN'}
-            {opportunity.statecode === OpportunityStateCode.Won && 'WON'}
-            {opportunity.statecode === OpportunityStateCode.Lost && 'LOST'}
+            {opportunity.statecode === OpportunityStateCode.Open && t('status.open').toUpperCase()}
+            {opportunity.statecode === OpportunityStateCode.Won && t('status.won').toUpperCase()}
+            {opportunity.statecode === OpportunityStateCode.Lost && t('status.lost').toUpperCase()}
           </Badge>
 
           {/* Customer/Company */}
@@ -91,7 +94,7 @@ export function OpportunityInfoHeader({
                 <UserIcon className="w-4 h-4 text-gray-600" />
               )}
               <span className="text-gray-900 font-medium">
-                Customer Account
+                {t('header.customerAccount')}
               </span>
             </div>
           )}
@@ -101,7 +104,7 @@ export function OpportunityInfoHeader({
         {opportunity.ownerid && (
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <UserIcon className="w-4 h-4 text-purple-600" />
-            <span className="font-medium">Propietario:</span>
+            <span className="font-medium">{t('header.owner')}</span>
             <span className="text-gray-900 font-medium">
               {opportunity.ownerid.slice(0, 2)} {opportunity.ownerid.slice(0, 15)}...
             </span>
@@ -118,13 +121,13 @@ export function OpportunityInfoHeader({
               variant="secondary"
               className="text-xs font-semibold uppercase bg-purple-100 text-purple-700 border-0 px-3 py-1"
             >
-              Sales Opportunity
+              {t('header.salesOpportunity')}
             </Badge>
             <Badge
               variant="secondary"
               className="text-xs font-semibold uppercase bg-gray-100 text-gray-700 border-0 px-3 py-1"
             >
-              OPPORTUNITY
+              {t('header.opportunity')}
             </Badge>
           </div>
 
@@ -143,7 +146,7 @@ export function OpportunityInfoHeader({
 
             {/* Origin/Source */}
             <div className="flex items-center gap-1.5 text-gray-600">
-              <span className="font-medium">Origin:</span>
+              <span className="font-medium">{t('header.origin')}</span>
               <span className="text-gray-900 font-medium">
                 {opportunity.customeridtype === 'account' ? 'B2B' : 'B2C'}
               </span>
@@ -159,9 +162,9 @@ export function OpportunityInfoHeader({
                 opportunity.statecode === OpportunityStateCode.Lost && "bg-red-100 text-red-700"
               )}
             >
-              {opportunity.statecode === OpportunityStateCode.Open && 'OPEN'}
-              {opportunity.statecode === OpportunityStateCode.Won && 'WON'}
-              {opportunity.statecode === OpportunityStateCode.Lost && 'LOST'}
+              {opportunity.statecode === OpportunityStateCode.Open && t('status.open').toUpperCase()}
+              {opportunity.statecode === OpportunityStateCode.Won && t('status.won').toUpperCase()}
+              {opportunity.statecode === OpportunityStateCode.Lost && t('status.lost').toUpperCase()}
             </Badge>
           </div>
 
@@ -169,7 +172,7 @@ export function OpportunityInfoHeader({
           {opportunity.ownerid && (
             <div className="flex items-center gap-2 text-sm text-gray-600 pt-1">
               <UserIcon className="w-4 h-4 text-purple-600" />
-              <span className="font-medium">Propietario:</span>
+              <span className="font-medium">{t('header.owner')}</span>
               <span className="text-gray-900 font-medium truncate">
                 {opportunity.ownerid.slice(0, 2)} {opportunity.ownerid.slice(0, 15)}...
               </span>

@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ActivityTimeline } from '@/features/activities/components'
 import { AccountContactsSubGrid } from './account-contacts-subgrid'
 import { AccountOpportunitiesSubGrid } from './account-opportunities-subgrid'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import { cn } from '@/lib/utils'
 import {
   Building2,
@@ -45,6 +46,7 @@ interface AccountDetailTabsProps {
  * - Sub-grids for related contacts and opportunities
  */
 export function AccountDetailTabs({ account }: AccountDetailTabsProps) {
+  const { t } = useTranslation('accounts')
   const [activeTab, setActiveTab] = useState<AccountTabId>('general')
   const [tabsContainer, setTabsContainer] = useState<HTMLElement | null>(null)
 
@@ -86,7 +88,7 @@ export function AccountDetailTabs({ account }: AccountDetailTabsProps) {
           )}
         >
           <Building2 className="w-4 h-4 mr-2" />
-          General
+          {t('detail.tabs.general')}
         </TabsTrigger>
 
         <TabsTrigger
@@ -99,7 +101,7 @@ export function AccountDetailTabs({ account }: AccountDetailTabsProps) {
           )}
         >
           <Users className="w-4 h-4 mr-2" />
-          Related Contacts
+          {t('detail.tabs.relatedContacts')}
         </TabsTrigger>
 
         <TabsTrigger
@@ -112,7 +114,7 @@ export function AccountDetailTabs({ account }: AccountDetailTabsProps) {
           )}
         >
           <Briefcase className="w-4 h-4 mr-2" />
-          Related Opportunities
+          {t('detail.tabs.relatedOpportunities')}
         </TabsTrigger>
 
         <TabsTrigger
@@ -125,7 +127,7 @@ export function AccountDetailTabs({ account }: AccountDetailTabsProps) {
           )}
         >
           <History className="w-4 h-4 mr-2" />
-          Activities
+          {t('detail.tabs.activities')}
         </TabsTrigger>
       </TabsList>
     </div>
@@ -143,7 +145,7 @@ export function AccountDetailTabs({ account }: AccountDetailTabsProps) {
           {/* Contact Information Card */}
           <Card className="gap-3">
             <CardHeader>
-              <CardTitle className="text-base font-semibold">Contact Information</CardTitle>
+              <CardTitle className="text-base font-semibold">{t('detail.contactInfo')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2.5">
               {account.emailaddress1 && (
@@ -182,7 +184,7 @@ export function AccountDetailTabs({ account }: AccountDetailTabsProps) {
                 </div>
               )}
               {!account.emailaddress1 && !account.telephone1 && !account.websiteurl && (
-                <p className="text-sm text-muted-foreground">No contact information available</p>
+                <p className="text-sm text-muted-foreground">{t('detail.noContactInfo')}</p>
               )}
             </CardContent>
           </Card>
@@ -190,14 +192,14 @@ export function AccountDetailTabs({ account }: AccountDetailTabsProps) {
           {/* Business Information Card */}
           <Card className="gap-3">
             <CardHeader>
-              <CardTitle className="text-base font-semibold">Business Information</CardTitle>
+              <CardTitle className="text-base font-semibold">{t('detail.businessInfo')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2.5">
               {account.revenue && (
                 <div className="flex items-center gap-2.5">
                   <DollarSign className="h-4 w-4 text-muted-foreground shrink-0" />
                   <div className="flex-1">
-                    <div className="text-xs text-muted-foreground mb-0.5">Annual Revenue</div>
+                    <div className="text-xs text-muted-foreground mb-0.5">{t('detail.annualRevenue')}</div>
                     <span className="text-sm font-medium">{formatCurrency(account.revenue)}</span>
                   </div>
                 </div>
@@ -206,7 +208,7 @@ export function AccountDetailTabs({ account }: AccountDetailTabsProps) {
                 <div className="flex items-center gap-2.5">
                   <Users className="h-4 w-4 text-muted-foreground shrink-0" />
                   <div className="flex-1">
-                    <div className="text-xs text-muted-foreground mb-0.5">Employees</div>
+                    <div className="text-xs text-muted-foreground mb-0.5">{t('detail.employees')}</div>
                     <span className="text-sm">{account.numberofemployees}</span>
                   </div>
                 </div>
@@ -215,13 +217,13 @@ export function AccountDetailTabs({ account }: AccountDetailTabsProps) {
                 <div className="flex items-center gap-2.5">
                   <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
                   <div className="flex-1">
-                    <div className="text-xs text-muted-foreground mb-0.5">Created On</div>
+                    <div className="text-xs text-muted-foreground mb-0.5">{t('detail.createdOn')}</div>
                     <span className="text-sm">{formatDate(account.createdon)}</span>
                   </div>
                 </div>
               )}
               {!account.revenue && !account.numberofemployees && !account.createdon && (
-                <p className="text-sm text-muted-foreground">No business information available</p>
+                <p className="text-sm text-muted-foreground">{t('detail.noBusinessInfo')}</p>
               )}
             </CardContent>
           </Card>
@@ -231,7 +233,7 @@ export function AccountDetailTabs({ account }: AccountDetailTabsProps) {
         {(account.address1_line1 || account.address1_city) && (
           <Card className="gap-3">
             <CardHeader>
-              <CardTitle className="text-base font-semibold">Primary Address</CardTitle>
+              <CardTitle className="text-base font-semibold">{t('detail.primaryAddress')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-start gap-2.5">
@@ -256,7 +258,7 @@ export function AccountDetailTabs({ account }: AccountDetailTabsProps) {
         {account.description && (
           <Card className="gap-3">
             <CardHeader>
-              <CardTitle className="text-base font-semibold">Description</CardTitle>
+              <CardTitle className="text-base font-semibold">{t('detail.description')}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm leading-relaxed text-foreground/90">{account.description}</p>

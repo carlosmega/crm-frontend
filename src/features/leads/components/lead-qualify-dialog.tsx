@@ -32,6 +32,7 @@ import { DatePicker } from '@/components/ui/date-picker'
 import { CheckCircle2, Building2, User, TrendingUp, Loader2, Euro, Calendar, X } from 'lucide-react'
 import { useToast } from '@/components/ui/use-toast'
 import { cn } from '@/lib/utils'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -87,6 +88,8 @@ type QualifyFormData = z.infer<typeof qualifySchema>
 export function LeadQualifyDialog({ lead, open, onOpenChange }: LeadQualifyDialogProps) {
   const router = useRouter()
   const { toast } = useToast()
+  const { t } = useTranslation('leads')
+  const { t: tc } = useTranslation('common')
   const { qualifyLeadWithOptions, loading } = useLeadQualification()
   const [showSuccess, setShowSuccess] = useState(false)
   const [createdEntities, setCreatedEntities] = useState<{
@@ -161,8 +164,8 @@ export function LeadQualifyDialog({ lead, open, onOpenChange }: LeadQualifyDialo
       const missingFields = validateBPFFields()
       if (missingFields.length > 0) {
         toast({
-          title: 'Incomplete Qualify Stage',
-          description: `Please complete the following fields: ${missingFields.join(', ')}`,
+          title: t('qualify.incompleteStage'),
+          description: `${t('qualify.incompleteStageDesc')} ${missingFields.join(', ')}`,
           variant: 'destructive',
         })
         return
@@ -192,13 +195,13 @@ export function LeadQualifyDialog({ lead, open, onOpenChange }: LeadQualifyDialo
       setShowSuccess(true)
 
       toast({
-        title: 'Lead Qualified Successfully',
-        description: `Opportunity "${response.opportunity.name}" has been created`,
+        title: t('qualify.successToast'),
+        description: t('qualify.successToastDesc', { name: response.opportunity.name }),
       })
     } catch (error) {
       toast({
-        title: 'Qualification Failed',
-        description: error instanceof Error ? error.message : 'Failed to qualify lead',
+        title: t('qualify.failed'),
+        description: error instanceof Error ? error.message : t('qualify.failedDesc'),
         variant: 'destructive',
       })
     }
@@ -226,10 +229,10 @@ export function LeadQualifyDialog({ lead, open, onOpenChange }: LeadQualifyDialo
           <AlertDialogHeader>
             <div className="flex items-center gap-2">
               <CheckCircle2 className="h-6 w-6 text-green-500" />
-              <AlertDialogTitle>Lead Qualified Successfully!</AlertDialogTitle>
+              <AlertDialogTitle>{t('qualify.success')}</AlertDialogTitle>
             </div>
             <AlertDialogDescription>
-              The following records have been created from this lead:
+              {t('qualify.successDesc')}
             </AlertDialogDescription>
           </AlertDialogHeader>
 
@@ -239,7 +242,7 @@ export function LeadQualifyDialog({ lead, open, onOpenChange }: LeadQualifyDialo
               <div className="flex items-start gap-3 rounded-lg border p-4">
                 <Building2 className="h-5 w-5 text-blue-500 mt-0.5" />
                 <div className="flex-1">
-                  <p className="text-sm font-medium">Account Created</p>
+                  <p className="text-sm font-medium">{t('qualify.accountCreated')}</p>
                   <p className="text-sm text-muted-foreground">{createdEntities.account.name}</p>
                 </div>
                 <Button
@@ -247,7 +250,7 @@ export function LeadQualifyDialog({ lead, open, onOpenChange }: LeadQualifyDialo
                   size="sm"
                   onClick={() => router.push(`/accounts/${createdEntities.account!.accountid}`)}
                 >
-                  View
+                  {tc('cardActions.view')}
                 </Button>
               </div>
             )}
@@ -257,7 +260,7 @@ export function LeadQualifyDialog({ lead, open, onOpenChange }: LeadQualifyDialo
               <div className="flex items-start gap-3 rounded-lg border p-4">
                 <User className="h-5 w-5 text-purple-500 mt-0.5" />
                 <div className="flex-1">
-                  <p className="text-sm font-medium">Contact Created</p>
+                  <p className="text-sm font-medium">{t('qualify.contactCreated')}</p>
                   <p className="text-sm text-muted-foreground">{createdEntities.contact.fullname}</p>
                 </div>
                 <Button
@@ -265,7 +268,7 @@ export function LeadQualifyDialog({ lead, open, onOpenChange }: LeadQualifyDialo
                   size="sm"
                   onClick={() => router.push(`/contacts/${createdEntities.contact!.contactid}`)}
                 >
-                  View
+                  {tc('cardActions.view')}
                 </Button>
               </div>
             )}
@@ -274,17 +277,17 @@ export function LeadQualifyDialog({ lead, open, onOpenChange }: LeadQualifyDialo
             <div className="flex items-start gap-3 rounded-lg border border-primary/50 bg-primary/5 p-4">
               <TrendingUp className="h-5 w-5 text-primary mt-0.5" />
               <div className="flex-1">
-                <p className="text-sm font-medium">Opportunity Created</p>
+                <p className="text-sm font-medium">{t('qualify.opportunityCreated')}</p>
                 <p className="text-sm text-muted-foreground">{createdEntities.opportunity.name}</p>
               </div>
               <Button size="sm" onClick={handleViewOpportunity}>
-                View Opportunity
+                {t('qualify.viewOpportunity')}
               </Button>
             </div>
           </div>
 
           <AlertDialogFooter>
-            <AlertDialogAction onClick={handleClose}>Done</AlertDialogAction>
+            <AlertDialogAction onClick={handleClose}>{t('qualify.done')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -297,9 +300,9 @@ export function LeadQualifyDialog({ lead, open, onOpenChange }: LeadQualifyDialo
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Qualify Lead</DialogTitle>
+            <DialogTitle>{t('qualify.title')}</DialogTitle>
             <DialogDescription>
-              Configure how to qualify this lead and create related records
+              {t('qualify.subtitle')}
             </DialogDescription>
           </DialogHeader>
 
@@ -307,10 +310,10 @@ export function LeadQualifyDialog({ lead, open, onOpenChange }: LeadQualifyDialo
             {/* B2B/B2C Indicator */}
             <div className="rounded-lg bg-muted p-3">
               <p className="text-sm font-medium">
-                {isB2B ? '🏢 B2B Qualification' : '👤 B2C Qualification'}
+                {isB2B ? `🏢 ${t('qualify.b2bQualification')}` : `👤 ${t('qualify.b2cQualification')}`}
               </p>
               <p className="text-xs text-muted-foreground mt-1">
-                {isB2B ? `Company: ${lead.companyname}` : 'Individual customer (no company)'}
+                {isB2B ? t('qualify.company', { name: lead.companyname || '' }) : t('qualify.individualCustomer')}
               </p>
             </div>
 
@@ -318,10 +321,10 @@ export function LeadQualifyDialog({ lead, open, onOpenChange }: LeadQualifyDialo
             {validateBPFFields().length > 0 && (
               <div className="rounded-lg bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 p-3">
                 <p className="text-sm font-medium text-yellow-900 dark:text-yellow-100">
-                  Missing Required Fields
+                  {t('qualify.missingFields')}
                 </p>
                 <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-1">
-                  Complete these fields in the Qualify Stage first: {validateBPFFields().join(', ')}
+                  {t('qualify.missingFieldsHint')} {validateBPFFields().join(', ')}
                 </p>
               </div>
             )}
@@ -332,9 +335,9 @@ export function LeadQualifyDialog({ lead, open, onOpenChange }: LeadQualifyDialo
                 <CardHeader>
                   <div className="flex items-center gap-2">
                     <Building2 className="h-5 w-5 text-blue-500" />
-                    <CardTitle className="text-base">Account</CardTitle>
+                    <CardTitle className="text-base">{t('qualify.account')}</CardTitle>
                   </div>
-                  <CardDescription>Choose how to handle the company account</CardDescription>
+                  <CardDescription>{t('qualify.accountDesc')}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <RadioGroup
@@ -352,10 +355,10 @@ export function LeadQualifyDialog({ lead, open, onOpenChange }: LeadQualifyDialo
                       <RadioGroupItem value="create" id="account-create" className="mt-1" />
                       <div className="flex-1">
                         <Label htmlFor="account-create" className="font-medium">
-                          Create new account
+                          {t('qualify.createNewAccount')}
                         </Label>
                         <p className="text-xs text-muted-foreground">
-                          Create "{lead.companyname}" as a new account
+                          {t('qualify.createAccountHint', { name: lead.companyname || '' })}
                         </p>
                       </div>
                     </div>
@@ -364,10 +367,10 @@ export function LeadQualifyDialog({ lead, open, onOpenChange }: LeadQualifyDialo
                       <RadioGroupItem value="existing" id="account-existing" className="mt-1" />
                       <div className="flex-1">
                         <Label htmlFor="account-existing" className="font-medium">
-                          Use existing account
+                          {t('qualify.useExistingAccount')}
                         </Label>
                         <p className="text-xs text-muted-foreground mb-2">
-                          Link to an account that already exists
+                          {t('qualify.useExistingAccountHint')}
                         </p>
                         {accountMode === 'existing' && (
                           <div className="space-y-2">
@@ -397,7 +400,7 @@ export function LeadQualifyDialog({ lead, open, onOpenChange }: LeadQualifyDialo
                                 onClick={() => setAccountSelectorOpen(true)}
                               >
                                 <Building2 className="h-4 w-4 mr-2" />
-                                Select Account
+                                {t('qualify.selectAccount')}
                               </Button>
                             )}
                             {form.formState.errors.existingAccountId && (
@@ -419,9 +422,9 @@ export function LeadQualifyDialog({ lead, open, onOpenChange }: LeadQualifyDialo
               <CardHeader>
                 <div className="flex items-center gap-2">
                   <User className="h-5 w-5 text-purple-500" />
-                  <CardTitle className="text-base">Contact</CardTitle>
+                  <CardTitle className="text-base">{t('qualify.contact')}</CardTitle>
                 </div>
-                <CardDescription>Choose how to handle the contact person</CardDescription>
+                <CardDescription>{t('qualify.contactDesc')}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <RadioGroup
@@ -439,10 +442,10 @@ export function LeadQualifyDialog({ lead, open, onOpenChange }: LeadQualifyDialo
                     <RadioGroupItem value="create" id="contact-create" className="mt-1" />
                     <div className="flex-1">
                       <Label htmlFor="contact-create" className="font-medium">
-                        Create new contact
+                        {t('qualify.createNewContact')}
                       </Label>
                       <p className="text-xs text-muted-foreground">
-                        Create "{lead.fullname || `${lead.firstname} ${lead.lastname}`}" as a new contact
+                        {t('qualify.createContactHint', { name: lead.fullname || `${lead.firstname} ${lead.lastname}` })}
                       </p>
                     </div>
                   </div>
@@ -451,10 +454,10 @@ export function LeadQualifyDialog({ lead, open, onOpenChange }: LeadQualifyDialo
                     <RadioGroupItem value="existing" id="contact-existing" className="mt-1" />
                     <div className="flex-1">
                       <Label htmlFor="contact-existing" className="font-medium">
-                        Use existing contact
+                        {t('qualify.useExistingContact')}
                       </Label>
                       <p className="text-xs text-muted-foreground mb-2">
-                        Link to a contact that already exists
+                        {t('qualify.useExistingContactHint')}
                       </p>
                       {contactMode === 'existing' && (
                         <div className="space-y-2">
@@ -484,7 +487,7 @@ export function LeadQualifyDialog({ lead, open, onOpenChange }: LeadQualifyDialo
                               onClick={() => setContactSelectorOpen(true)}
                             >
                               <User className="h-4 w-4 mr-2" />
-                              Select Contact
+                              {t('qualify.selectContact')}
                             </Button>
                           )}
                           {form.formState.errors.existingContactId && (
@@ -505,14 +508,14 @@ export function LeadQualifyDialog({ lead, open, onOpenChange }: LeadQualifyDialo
               <CardHeader>
                 <div className="flex items-center gap-2">
                   <TrendingUp className="h-5 w-5 text-primary" />
-                  <CardTitle className="text-base">Opportunity</CardTitle>
+                  <CardTitle className="text-base">{t('qualify.opportunity')}</CardTitle>
                 </div>
-                <CardDescription>Configure the sales opportunity details</CardDescription>
+                <CardDescription>{t('qualify.opportunityDesc')}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="opportunityName">
-                    Opportunity Name <span className="text-red-500">*</span>
+                    {t('qualify.opportunityName')} <span className="text-red-500">*</span>
                   </Label>
                   <Input
                     id="opportunityName"
@@ -529,7 +532,7 @@ export function LeadQualifyDialog({ lead, open, onOpenChange }: LeadQualifyDialo
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="estimatedValue">
-                      Estimated Value <span className="text-red-500">*</span>
+                      {t('qualify.estimatedValue')} <span className="text-red-500">*</span>
                     </Label>
                     <div className="relative">
                       <Euro className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -553,7 +556,7 @@ export function LeadQualifyDialog({ lead, open, onOpenChange }: LeadQualifyDialo
 
                   <div className="space-y-2">
                     <Label htmlFor="estimatedCloseDate">
-                      Est. Close Date <span className="text-red-500">*</span>
+                      {t('qualify.estCloseDate')} <span className="text-red-500">*</span>
                     </Label>
                     <DatePicker
                       value={form.watch('estimatedCloseDate')}
@@ -569,11 +572,11 @@ export function LeadQualifyDialog({ lead, open, onOpenChange }: LeadQualifyDialo
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="description">Description</Label>
+                  <Label htmlFor="description">{t('qualify.opportunityDescription')}</Label>
                   <Textarea
                     id="description"
                     {...form.register('description')}
-                    placeholder="Describe the opportunity and customer needs..."
+                    placeholder={t('qualify.descriptionPlaceholder')}
                     rows={3}
                   />
                 </div>
@@ -582,7 +585,7 @@ export function LeadQualifyDialog({ lead, open, onOpenChange }: LeadQualifyDialo
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
-                Cancel
+                {tc('buttons.cancel')}
               </Button>
               <Button
                 type="submit"
@@ -590,7 +593,7 @@ export function LeadQualifyDialog({ lead, open, onOpenChange }: LeadQualifyDialo
                 className="bg-purple-600 hover:bg-purple-700"
               >
                 {loading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-                {loading ? 'Qualifying...' : 'Qualify Lead'}
+                {loading ? t('qualify.qualifying') : t('qualify.qualifyLead')}
               </Button>
             </DialogFooter>
           </form>

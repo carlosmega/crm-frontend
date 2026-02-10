@@ -105,9 +105,73 @@
     "numberPlaceholder": "Ingrese n\u00famero...",
     "searchPlaceholder": "Buscar..."
   },
+  "form": {
+    "pickDate": "Seleccionar fecha",
+    "required": "obligatorio",
+    "creating": "Creando...",
+    "updating": "Actualizando..."
+  },
   "notApplicable": "N/D",
   "emptyState": {
     "adjustSearch": "Intente ajustar su b\u00fasqueda",
     "noFiltersDescription": "Intente ajustar sus criterios de b\u00fasqueda o filtros para encontrar lo que busca."
+  },
+  "tabs": {
+    "general": "General",
+    "activities": "Actividades",
+    "related": "Relacionados",
+    "notes": "Notas",
+    "details": "Detalles",
+    "address": "Direcci\u00f3n",
+    "professional": "Profesional",
+    "qualification": "Calificaci\u00f3n"
+  },
+  "sections": {
+    "contactInfo": "Informaci\u00f3n de Contacto",
+    "businessInfo": "Informaci\u00f3n del Negocio",
+    "keyDates": "Fechas Clave",
+    "description": "Descripci\u00f3n",
+    "address": "Direcci\u00f3n",
+    "primaryAddress": "Direcci\u00f3n Principal"
+  },
+  "labels": {
+    "revenue": "Ingresos",
+    "employees": "Empleados",
+    "createdOn": "Fecha de Creaci\u00f3n",
+    "estimatedValue": "Valor Estimado",
+    "estimatedClose": "Cierre Estimado",
+    "totalAmount": "Monto Total",
+    "owner": "Propietario",
+    "status": "Estado",
+    "phone": "Tel\u00e9fono",
+    "email": "Email",
+    "mobile": "M\u00f3vil",
+    "website": "Sitio Web",
+    "unknown": "Desconocido",
+    "view": "Ver",
+    "closeProbability": "Probabilidad de Cierre",
+    "estCloseDate": "Fecha Est. de Cierre"
+  },
+  "cardActions": {
+    "view": "Ver",
+    "edit": "Editar",
+    "delete": "Eliminar"
+  },
+  "empty": {
+    "noContactInfo": "Sin informaci\u00f3n de contacto disponible",
+    "noBusinessInfo": "Sin informaci\u00f3n del negocio disponible",
+    "noAddressInfo": "Sin informaci\u00f3n de direcci\u00f3n disponible",
+    "noProfessionalInfo": "Sin informaci\u00f3n profesional disponible"
+  },
+  "confidence": {
+    "high": "Alta Confianza",
+    "medium": "Confianza Media",
+    "low": "Baja Confianza"
+  },
+  "entities": {
+    "lead": "Lead",
+    "account": "Cuenta",
+    "contact": "Contacto",
+    "opportunity": "Oportunidad"
   }
 }

@@ -22,21 +22,140 @@
     "propose": "Propose (75%)",
     "close": "Close (100%)"
   },
+  "stages": {
+    "qualify": "Qualify",
+    "develop": "Develop",
+    "propose": "Propose",
+    "close": "Close",
+    "unknown": "Unknown"
+  },
   "status": {
     "open": "Open",
     "won": "Won",
-    "lost": "Lost"
+    "lost": "Lost",
+    "unknown": "Unknown"
   },
   "buttons": {
     "editOpportunity": "Edit opportunity",
     "createFirst": "Create Your First Opportunity",
-    "createNew": "Create New Opportunity"
+    "createNew": "Create New Opportunity",
+    "createOpportunity": "Create Opportunity",
+    "updateOpportunity": "Update Opportunity"
   },
   "emptyState": {
     "title": "No opportunities yet",
     "description": "Start tracking your sales pipeline by creating your first opportunity. Opportunities represent potential deals you're working to close.",
-    "helpText": "Tip: Opportunities move through stages (Qualify \u2192 Develop \u2192 Propose \u2192 Close) as you progress toward winning the deal.",
+    "helpText": "Tip: Opportunities move through stages (Qualify → Develop → Propose → Close) as you progress toward winning the deal.",
     "noFiltersTitle": "No opportunities match your filters",
     "noFiltersDescription": "Try adjusting your search criteria or filters to find what you're looking for."
+  },
+  "card": {
+    "salesStage": "Sales Stage",
+    "customer": "Customer",
+    "estValue": "Est. Value",
+    "probability": "Probability",
+    "estCloseDate": "Est. Close Date",
+    "deleteOpportunity": "Delete opportunity"
+  },
+  "header": {
+    "salesOpportunity": "Sales Opportunity",
+    "opportunity": "OPPORTUNITY",
+    "hot": "Hot",
+    "warm": "Warm",
+    "origin": "Origin:",
+    "customerAccount": "Customer Account",
+    "owner": "Owner:"
+  },
+  "detail": {
+    "contactInfo": "Contact Information",
+    "keyDates": "Key Dates",
+    "lastInteraction": "Last Interaction",
+    "estimatedCloseDate": "Estimated Close Date",
+    "edit": "Edit",
+    "logActivity": "Log Activity",
+    "score": {
+      "title": "Opportunity Score",
+      "subtitle": "Automatic scoring based on multiple factors",
+      "details": "Details",
+      "coldLead": "Cold Lead",
+      "scoreBreakdown": "Score Breakdown",
+      "sourceQuality": "Source Quality",
+      "engagementLevel": "Engagement Level",
+      "customerFit": "Customer Fit",
+      "overallQuality": "Overall Quality"
+    }
+  },
+  "form": {
+    "sections": {
+      "basicInfo": "Basic Information",
+      "salesDetails": "Sales Details",
+      "description": "Description",
+      "dealClosure": "Deal Closure",
+      "winLossAnalysis": "Win/Loss Analysis"
+    },
+    "fields": {
+      "opportunityName": "Opportunity Name",
+      "customerType": "Customer Type",
+      "customer": "Customer",
+      "salesStage": "Sales Stage",
+      "estimatedValue": "Estimated Value",
+      "estimatedCloseDate": "Estimated Close Date",
+      "description": "Description",
+      "actualValue": "Actual Value (if Won)",
+      "actualCloseDate": "Actual Close Date",
+      "winLossReason": "Win/Loss Reason",
+      "competitorWon": "Competitor Who Won (if Lost)"
+    },
+    "placeholders": {
+      "opportunityName": "e.g., Acme Corp - CRM Implementation",
+      "selectCustomerType": "Select customer type",
+      "selectAccount": "Select account...",
+      "selectContact": "Select contact...",
+      "selectSalesStage": "Select sales stage",
+      "estimatedValue": "50000",
+      "pickDate": "Pick a date",
+      "description": "Add details about this opportunity, customer needs, or any relevant context...",
+      "actualValue": "Final agreed amount",
+      "winLossReason": "Document why this opportunity was won or lost...",
+      "competitorName": "competitor-guid or competitor name"
+    },
+    "hints": {
+      "customerCannotChange": "Customer cannot be changed after creation",
+      "dealClosureDesc": "Optional fields for documenting the final outcome when the deal closes.",
+      "competitorHint": "Only applicable if opportunity was lost",
+      "salesStageTooltipTitle": "Sales Stages",
+      "salesStageTooltipContent": "Track your progress through the sales cycle: Qualify (25% - validate fit), Develop (50% - build solution), Propose (75% - formal proposal), Close (100% - win/lose).",
+      "dealValueTooltipTitle": "Deal Value",
+      "dealValueTooltipContent": "The total estimated value of this opportunity. Update this as you learn more about the customer's budget and requirements."
+    },
+    "customerTypes": {
+      "accountB2B": "Account (B2B)",
+      "contactB2C": "Contact (B2C)"
+    },
+    "validation": {
+      "nameRequired": "Opportunity name is required",
+      "valueMin": "Estimated value must be 0 or greater",
+      "closeDateRequired": "Estimated close date is required",
+      "fixErrors": "Please fix the following errors: "
+    }
+  },
+  "tabs": {
+    "general": "General",
+    "additionalDetails": "Additional Details"
+  },
+  "kanban": {
+    "stageUpdated": "Stage updated",
+    "movedTo": "Opportunity moved to {{stage}}",
+    "updateError": "Error",
+    "updateErrorDesc": "Failed to update opportunity stage. Please try again.",
+    "count": "Count:",
+    "total": "Total:",
+    "weighted": "Weighted:",
+    "noOpportunities": "No opportunities"
+  },
+  "originating": {
+    "title": "Originated from Lead",
+    "originalNotes": "Original Lead Notes:",
+    "viewOriginalLead": "View Original Lead"
   }
 }

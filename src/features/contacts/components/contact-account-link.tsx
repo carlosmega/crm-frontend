@@ -1,6 +1,9 @@
+"use client"
+
 import Link from 'next/link'
 import { Building2, ExternalLink } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface ContactAccountLinkProps {
   accountId: string
@@ -14,6 +17,8 @@ interface ContactAccountLinkProps {
  * Si el contacto es B2C (parentcustomerid = null), este componente no debería renderizarse
  */
 export function ContactAccountLink({ accountId, accountName }: ContactAccountLinkProps) {
+  const { t } = useTranslation('contacts')
+
   return (
     <Link
       href={`/accounts/${accountId}`}
@@ -23,7 +28,7 @@ export function ContactAccountLink({ accountId, accountName }: ContactAccountLin
       <span className="font-medium">{accountName || accountId}</span>
       <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
       <Badge variant="outline" className="text-xs">
-        B2B
+        {t('type.b2b')}
       </Badge>
     </Link>
   )

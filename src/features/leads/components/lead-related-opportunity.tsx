@@ -7,12 +7,14 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { TrendingUp, ExternalLink, Loader2 } from 'lucide-react'
 import { SalesStageCode } from '@/core/contracts'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface LeadRelatedOpportunityProps {
   leadId: string
 }
 
 export function LeadRelatedOpportunity({ leadId }: LeadRelatedOpportunityProps) {
+  const { t } = useTranslation('leads')
   const { opportunities, loading } = useOpportunitiesByLead(leadId)
   const opportunity = opportunities[0] || null
 
@@ -22,7 +24,7 @@ export function LeadRelatedOpportunity({ leadId }: LeadRelatedOpportunityProps) 
         <CardHeader>
           <CardTitle className="text-base font-semibold flex items-center gap-2">
             <TrendingUp className="h-4 w-4" />
-            Related Opportunity
+            {t('related.title')}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -56,15 +58,15 @@ export function LeadRelatedOpportunity({ leadId }: LeadRelatedOpportunityProps) 
   const getStageName = (stage: SalesStageCode) => {
     switch (stage) {
       case SalesStageCode.Qualify:
-        return 'Qualify (25%)'
+        return t('related.stages.qualify')
       case SalesStageCode.Develop:
-        return 'Develop (50%)'
+        return t('related.stages.develop')
       case SalesStageCode.Propose:
-        return 'Propose (75%)'
+        return t('related.stages.propose')
       case SalesStageCode.Close:
-        return 'Close (100%)'
+        return t('related.stages.close')
       default:
-        return 'Unknown'
+        return t('related.stages.unknown')
     }
   }
 
@@ -90,7 +92,7 @@ export function LeadRelatedOpportunity({ leadId }: LeadRelatedOpportunityProps) 
       <CardHeader>
         <CardTitle className="text-base font-semibold flex items-center gap-2">
           <TrendingUp className="h-4 w-4 text-primary" />
-          Related Opportunity
+          {t('related.title')}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -110,18 +112,18 @@ export function LeadRelatedOpportunity({ leadId }: LeadRelatedOpportunityProps) 
 
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div>
-            <p className="text-muted-foreground">Close Probability</p>
+            <p className="text-muted-foreground">{t('related.closeProbability')}</p>
             <p className="font-medium">{opportunity.closeprobability}%</p>
           </div>
           <div>
-            <p className="text-muted-foreground">Est. Close Date</p>
+            <p className="text-muted-foreground">{t('related.estCloseDate')}</p>
             <p className="font-medium">{formatDate(opportunity.estimatedclosedate)}</p>
           </div>
         </div>
 
         <Button asChild className="w-full">
           <Link href={`/opportunities/${opportunity.opportunityid}`}>
-            View Opportunity
+            {t('related.viewOpportunity')}
             <ExternalLink className="ml-2 h-4 w-4" />
           </Link>
         </Button>

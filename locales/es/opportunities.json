@@ -22,21 +22,140 @@
     "propose": "Proponer (75%)",
     "close": "Cerrar (100%)"
   },
+  "stages": {
+    "qualify": "Calificar",
+    "develop": "Desarrollar",
+    "propose": "Proponer",
+    "close": "Cerrar",
+    "unknown": "Desconocido"
+  },
   "status": {
     "open": "Abierto",
     "won": "Ganado",
-    "lost": "Perdido"
+    "lost": "Perdido",
+    "unknown": "Desconocido"
   },
   "buttons": {
     "editOpportunity": "Editar oportunidad",
     "createFirst": "Crea Tu Primera Oportunidad",
-    "createNew": "Crear Nueva Oportunidad"
+    "createNew": "Crear Nueva Oportunidad",
+    "createOpportunity": "Crear Oportunidad",
+    "updateOpportunity": "Actualizar Oportunidad"
   },
   "emptyState": {
-    "title": "A\u00fan no hay oportunidades",
-    "description": "Comienza a rastrear tu pipeline de ventas creando tu primera oportunidad. Las oportunidades representan acuerdos potenciales que est\u00e1s trabajando para cerrar.",
-    "helpText": "Consejo: Las oportunidades avanzan por etapas (Calificar \u2192 Desarrollar \u2192 Proponer \u2192 Cerrar) a medida que progresas hacia ganar el acuerdo.",
+    "title": "Aún no hay oportunidades",
+    "description": "Comienza a rastrear tu pipeline de ventas creando tu primera oportunidad. Las oportunidades representan acuerdos potenciales que estás trabajando para cerrar.",
+    "helpText": "Consejo: Las oportunidades avanzan por etapas (Calificar → Desarrollar → Proponer → Cerrar) a medida que progresas hacia ganar el acuerdo.",
     "noFiltersTitle": "Ninguna oportunidad coincide con tus filtros",
-    "noFiltersDescription": "Intenta ajustar tus criterios de b\u00fasqueda o filtros para encontrar lo que buscas."
+    "noFiltersDescription": "Intenta ajustar tus criterios de búsqueda o filtros para encontrar lo que buscas."
+  },
+  "card": {
+    "salesStage": "Etapa de Venta",
+    "customer": "Cliente",
+    "estValue": "Valor Est.",
+    "probability": "Probabilidad",
+    "estCloseDate": "Fecha Est. de Cierre",
+    "deleteOpportunity": "Eliminar oportunidad"
+  },
+  "header": {
+    "salesOpportunity": "Oportunidad de Venta",
+    "opportunity": "OPORTUNIDAD",
+    "hot": "Caliente",
+    "warm": "Tibio",
+    "origin": "Origen:",
+    "customerAccount": "Cuenta del Cliente",
+    "owner": "Propietario:"
+  },
+  "detail": {
+    "contactInfo": "Información de Contacto",
+    "keyDates": "Fechas Clave",
+    "lastInteraction": "Última Interacción",
+    "estimatedCloseDate": "Fecha Estimada de Cierre",
+    "edit": "Editar",
+    "logActivity": "Registrar Actividad",
+    "score": {
+      "title": "Puntuación de Oportunidad",
+      "subtitle": "Puntuación automática basada en múltiples factores",
+      "details": "Detalles",
+      "coldLead": "Lead Frío",
+      "scoreBreakdown": "Desglose de Puntuación",
+      "sourceQuality": "Calidad de Origen",
+      "engagementLevel": "Nivel de Compromiso",
+      "customerFit": "Ajuste del Cliente",
+      "overallQuality": "Calidad General"
+    }
+  },
+  "form": {
+    "sections": {
+      "basicInfo": "Información Básica",
+      "salesDetails": "Detalles de Venta",
+      "description": "Descripción",
+      "dealClosure": "Cierre del Acuerdo",
+      "winLossAnalysis": "Análisis Ganancia/Pérdida"
+    },
+    "fields": {
+      "opportunityName": "Nombre de la Oportunidad",
+      "customerType": "Tipo de Cliente",
+      "customer": "Cliente",
+      "salesStage": "Etapa de Venta",
+      "estimatedValue": "Valor Estimado",
+      "estimatedCloseDate": "Fecha Estimada de Cierre",
+      "description": "Descripción",
+      "actualValue": "Valor Real (si Ganado)",
+      "actualCloseDate": "Fecha Real de Cierre",
+      "winLossReason": "Razón de Ganancia/Pérdida",
+      "competitorWon": "Competidor que Ganó (si Perdido)"
+    },
+    "placeholders": {
+      "opportunityName": "ej., Acme Corp - Implementación CRM",
+      "selectCustomerType": "Seleccionar tipo de cliente",
+      "selectAccount": "Seleccionar cuenta...",
+      "selectContact": "Seleccionar contacto...",
+      "selectSalesStage": "Seleccionar etapa de venta",
+      "estimatedValue": "50000",
+      "pickDate": "Seleccionar fecha",
+      "description": "Agrega detalles sobre esta oportunidad, necesidades del cliente o cualquier contexto relevante...",
+      "actualValue": "Monto final acordado",
+      "winLossReason": "Documentar por qué se ganó o perdió esta oportunidad...",
+      "competitorName": "GUID o nombre del competidor"
+    },
+    "hints": {
+      "customerCannotChange": "El cliente no puede cambiarse después de la creación",
+      "dealClosureDesc": "Campos opcionales para documentar el resultado final cuando el acuerdo se cierra.",
+      "competitorHint": "Solo aplica si la oportunidad se perdió",
+      "salesStageTooltipTitle": "Etapas de Venta",
+      "salesStageTooltipContent": "Rastrea tu progreso a través del ciclo de ventas: Calificar (25% - validar ajuste), Desarrollar (50% - construir solución), Proponer (75% - propuesta formal), Cerrar (100% - ganar/perder).",
+      "dealValueTooltipTitle": "Valor del Acuerdo",
+      "dealValueTooltipContent": "El valor total estimado de esta oportunidad. Actualiza esto a medida que aprendas más sobre el presupuesto y requisitos del cliente."
+    },
+    "customerTypes": {
+      "accountB2B": "Cuenta (B2B)",
+      "contactB2C": "Contacto (B2C)"
+    },
+    "validation": {
+      "nameRequired": "El nombre de la oportunidad es requerido",
+      "valueMin": "El valor estimado debe ser 0 o mayor",
+      "closeDateRequired": "La fecha estimada de cierre es requerida",
+      "fixErrors": "Por favor corrija los siguientes errores: "
+    }
+  },
+  "tabs": {
+    "general": "General",
+    "additionalDetails": "Detalles Adicionales"
+  },
+  "kanban": {
+    "stageUpdated": "Etapa actualizada",
+    "movedTo": "Oportunidad movida a {{stage}}",
+    "updateError": "Error",
+    "updateErrorDesc": "Error al actualizar la etapa de la oportunidad. Por favor intente de nuevo.",
+    "count": "Cantidad:",
+    "total": "Total:",
+    "weighted": "Ponderado:",
+    "noOpportunities": "Sin oportunidades"
+  },
+  "originating": {
+    "title": "Originado desde Lead",
+    "originalNotes": "Notas del Lead Original:",
+    "viewOriginalLead": "Ver Lead Original"
   }
 }

@@ -4,6 +4,7 @@ import type { Account } from '@/core/contracts'
 import { AccountStateCode, AccountCategoryCode, IndustryCode } from '@/core/contracts'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import { Building2, MapPin, Star, User } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -24,17 +25,19 @@ interface AccountInfoHeaderProps {
  * - Propietario
  */
 export function AccountInfoHeader({ account, className }: AccountInfoHeaderProps) {
+  const { t } = useTranslation('accounts')
+
   // Determine state badge variant and label
   const getStateBadge = () => {
     const stateCode = Number(account.statecode)
 
     switch (stateCode) {
       case AccountStateCode.Active:
-        return { variant: 'default' as const, label: 'Active', color: 'bg-green-500' }
+        return { variant: 'default' as const, label: t('status.active'), color: 'bg-green-500' }
       case AccountStateCode.Inactive:
-        return { variant: 'secondary' as const, label: 'Inactive', color: 'bg-gray-500' }
+        return { variant: 'secondary' as const, label: t('status.inactive'), color: 'bg-gray-500' }
       default:
-        return { variant: 'secondary' as const, label: 'Unknown', color: 'bg-gray-500' }
+        return { variant: 'secondary' as const, label: t('status.unknown'), color: 'bg-gray-500' }
     }
   }
 
@@ -46,9 +49,9 @@ export function AccountInfoHeader({ account, className }: AccountInfoHeaderProps
 
     switch (categoryCode) {
       case AccountCategoryCode.Preferred_Customer:
-        return { icon: Star, label: 'Preferred Customer', color: 'text-purple-600 bg-purple-50 border-purple-200' }
+        return { icon: Star, label: t('category.preferredCustomer'), color: 'text-purple-600 bg-purple-50 border-purple-200' }
       case AccountCategoryCode.Standard:
-        return { icon: User, label: 'Standard', color: 'text-gray-600 bg-gray-50 border-gray-200' }
+        return { icon: User, label: t('category.standard'), color: 'text-gray-600 bg-gray-50 border-gray-200' }
       default:
         return null
     }
@@ -66,10 +69,10 @@ export function AccountInfoHeader({ account, className }: AccountInfoHeaderProps
             {account.name}
           </h1>
           <Badge variant="secondary" className="text-xs font-semibold uppercase bg-purple-100 text-purple-700 border-0 px-3 py-1">
-            Cuenta
+            {t('header.account')}
           </Badge>
           <Badge variant="secondary" className="text-xs font-semibold uppercase bg-gray-100 text-gray-700 border-0 px-3 py-1">
-            ACCOUNT
+            {t('header.accountLabel')}
           </Badge>
         </div>
 
@@ -89,7 +92,7 @@ export function AccountInfoHeader({ account, className }: AccountInfoHeaderProps
           {/* Account Number */}
           {account.accountnumber && (
             <div className="flex items-center gap-1.5 text-muted-foreground">
-              <span className="font-medium">N°:</span>
+              <span className="font-medium">{t('header.accountNumber')}</span>
               <span className="font-mono">{account.accountnumber}</span>
             </div>
           )}
@@ -117,14 +120,14 @@ export function AccountInfoHeader({ account, className }: AccountInfoHeaderProps
         {/* Row 3: Owner */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <User className="w-3.5 h-3.5" />
-          <span className="font-medium">Propietario:</span>
+          <span className="font-medium">{t('header.owner')}</span>
           <div className="flex items-center gap-2">
             <Avatar className="h-5 w-5">
               <AvatarFallback className="text-xs bg-primary/10 text-primary">
                 {account.ownerid?.substring(0, 2).toUpperCase() || 'U'}
               </AvatarFallback>
             </Avatar>
-            <span>{account.ownerid || 'Unassigned'}</span>
+            <span>{account.ownerid || t('header.unassigned')}</span>
           </div>
         </div>
       </div>

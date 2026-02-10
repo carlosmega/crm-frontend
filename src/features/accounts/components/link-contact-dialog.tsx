@@ -17,6 +17,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Search, User, Mail, Phone, MapPin, Loader2 } from 'lucide-react'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import { useToast } from '@/components/ui/use-toast'
 import { useDebouncedValue } from '@/shared/hooks/use-debounced-value'
 
@@ -43,6 +44,7 @@ export function LinkContactDialog({
   accountId,
   onSuccess,
 }: LinkContactDialogProps) {
+  const { t } = useTranslation('accounts')
   const [searchQuery, setSearchQuery] = useState('')
   const [linking, setLinking] = useState(false)
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
@@ -115,8 +117,8 @@ export function LinkContactDialog({
 
       const fullName = `${contact.firstname} ${contact.lastname}`
       toast({
-        title: 'Contact linked',
-        description: `${fullName} has been linked to this account as the primary account`,
+        title: t('linkContact.contactLinked'),
+        description: t('linkContact.contactLinkedDesc', { name: fullName }),
       })
 
       if (onSuccess) {
@@ -131,7 +133,7 @@ export function LinkContactDialog({
         description:
           error instanceof Error
             ? error.message
-            : 'Failed to link contact. Please try again.',
+            : t('linkContact.linkError'),
         variant: 'destructive',
       })
     } finally {
@@ -159,9 +161,9 @@ export function LinkContactDialog({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle>Link Existing Contact</DialogTitle>
+          <DialogTitle>{t('linkContact.title')}</DialogTitle>
           <DialogDescription>
-            Select a contact to link to this account
+            {t('linkContact.subtitle')}
           </DialogDescription>
         </DialogHeader>
 
@@ -169,7 +171,7 @@ export function LinkContactDialog({
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           <Input
-            placeholder="Search by name, email, phone, or city..."
+            placeholder={t('linkContact.searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9"
@@ -197,11 +199,11 @@ export function LinkContactDialog({
             // Empty state
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <User className="size-12 text-muted-foreground mb-3" />
-              <p className="text-sm font-medium">No contacts found</p>
+              <p className="text-sm font-medium">{t('linkContact.noContactsFound')}</p>
               <p className="text-sm text-muted-foreground mt-1">
                 {searchQuery
-                  ? 'Try adjusting your search'
-                  : 'All contacts are already linked to this account'}
+                  ? t('linkContact.tryAdjusting')
+                  : t('linkContact.allLinked')}
               </p>
             </div>
           ) : (
@@ -227,7 +229,7 @@ export function LinkContactDialog({
                       </p>
                       {contact.parentcustomerid && (
                         <span className="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded shrink-0">
-                          Has primary account
+                          {t('linkContact.hasPrimaryAccount')}
                         </span>
                       )}
                     </div>
@@ -269,14 +271,14 @@ export function LinkContactDialog({
       <ConfirmChangeDialog
         open={confirmDialogOpen}
         onOpenChange={setConfirmDialogOpen}
-        title="Change Primary Account?"
-        message={`${pendingContact?.firstname} ${pendingContact?.lastname} is already linked to another account as their primary account. Do you want to change their primary account to this one?`}
+        title={t('linkContact.changePrimaryTitle')}
+        message={t('linkContact.changePrimaryMessage', { name: `${pendingContact?.firstname} ${pendingContact?.lastname}` })}
         currentValue={pendingContact?.parentcustomerid}
-        currentValueLabel="Current Primary Account"
-        note="A contact can only have ONE primary account (Parent Account). Changing this will update where this contact is primarily affiliated."
+        currentValueLabel={t('linkContact.currentPrimaryLabel')}
+        note={t('linkContact.changePrimaryNote')}
         onConfirm={handleConfirmChange}
         onCancel={handleCancelChange}
-        confirmText="Yes, Change Primary Account"
+        confirmText={t('linkContact.confirmChange')}
         isLoading={linking}
       />
     </>

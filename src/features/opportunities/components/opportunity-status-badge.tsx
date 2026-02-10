@@ -3,6 +3,7 @@
 import { Badge } from '@/components/ui/badge'
 import { OpportunityStateCode, OpportunityStatusCode } from '@/core/contracts'
 import { CheckCircle2, XCircle, Clock } from 'lucide-react'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface OpportunityStatusBadgeProps {
   statecode: OpportunityStateCode
@@ -15,32 +16,34 @@ export function OpportunityStatusBadge({
   statuscode,
   className,
 }: OpportunityStatusBadgeProps) {
+  const { t } = useTranslation('opportunities')
+
   const getStatusConfig = () => {
     switch (statecode) {
       case OpportunityStateCode.Open:
         return {
-          label: 'Open',
+          label: t('status.open'),
           variant: 'default' as const,
           icon: Clock,
           className: 'bg-blue-100 text-blue-800 hover:bg-blue-200',
         }
       case OpportunityStateCode.Won:
         return {
-          label: 'Won',
+          label: t('status.won'),
           variant: 'default' as const,
           icon: CheckCircle2,
           className: 'bg-green-100 text-green-800 hover:bg-green-200',
         }
       case OpportunityStateCode.Lost:
         return {
-          label: 'Lost',
+          label: t('status.lost'),
           variant: 'destructive' as const,
           icon: XCircle,
           className: 'bg-red-100 text-red-800 hover:bg-red-200',
         }
       default:
         return {
-          label: 'Unknown',
+          label: t('status.unknown'),
           variant: 'outline' as const,
           icon: Clock,
           className: '',

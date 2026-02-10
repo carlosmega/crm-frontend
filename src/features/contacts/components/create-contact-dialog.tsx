@@ -1,7 +1,5 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { useContactMutations } from '@/features/contacts/hooks/use-contact-mutations'
 import { ContactForm } from './contact-form'
 import type { CreateContactDto } from '@/core/contracts'
@@ -12,6 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import { useToast } from '@/components/ui/use-toast'
 
 interface CreateContactDialogProps {
@@ -34,6 +33,8 @@ export function CreateContactDialog({
   onSuccess,
   accountId,
 }: CreateContactDialogProps) {
+  const { t } = useTranslation('contacts')
+  const { t: tc } = useTranslation('common')
   const { toast } = useToast()
   const { createContact, loading } = useContactMutations()
 
@@ -42,8 +43,8 @@ export function CreateContactDialog({
       const newContact = await createContact(data)
 
       toast({
-        title: "Contact created",
-        description: `${newContact.firstname} ${newContact.lastname} has been created successfully.`,
+        title: t('createDialog.contactCreated'),
+        description: t('createDialog.contactCreatedDesc', { firstName: newContact.firstname, lastName: newContact.lastname }),
       })
 
       // Call onSuccess callback if provided
@@ -55,8 +56,8 @@ export function CreateContactDialog({
     } catch (error) {
       console.error('Error creating contact:', error)
       toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to create contact. Please try again.",
+        title: tc('messages.error'),
+        description: error instanceof Error ? error.message : t('createDialog.createError'),
         variant: "destructive",
       })
     }
@@ -66,9 +67,9 @@ export function CreateContactDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto" nestLevel={2}>
         <DialogHeader>
-          <DialogTitle>Create New Contact</DialogTitle>
+          <DialogTitle>{t('createDialog.title')}</DialogTitle>
           <DialogDescription>
-            Add a new contact to the system. This contact can be selected after creation.
+            {t('createDialog.description')}
           </DialogDescription>
         </DialogHeader>
 

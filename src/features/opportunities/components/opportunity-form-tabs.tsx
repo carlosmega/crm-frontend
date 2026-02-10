@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { OpportunityForm } from './opportunity-form'
 import { cn } from '@/lib/utils'
 import { DollarSign, FileText } from 'lucide-react'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 export type OpportunityFormTabId = 'general' | 'additional'
 
@@ -38,6 +39,7 @@ export function OpportunityFormTabs({
   onCancel,
   isLoading
 }: OpportunityFormTabsProps) {
+  const { t } = useTranslation('opportunities')
   const [activeTab, setActiveTab] = useState<OpportunityFormTabId>('general')
   const [tabsContainer, setTabsContainer] = useState<HTMLElement | null>(null)
 
@@ -61,7 +63,7 @@ export function OpportunityFormTabs({
           )}
         >
           <DollarSign className="w-4 h-4 mr-2" />
-          General
+          {t('tabs.general')}
         </TabsTrigger>
 
         <TabsTrigger
@@ -74,7 +76,7 @@ export function OpportunityFormTabs({
           )}
         >
           <FileText className="w-4 h-4 mr-2" />
-          Additional Details
+          {t('tabs.additionalDetails')}
         </TabsTrigger>
       </TabsList>
     </div>

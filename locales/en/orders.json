@@ -1,0 +1,31 @@
+{
+  "columns": {
+    "orderNumber": "Order Number",
+    "name": "Name",
+    "customer": "Customer",
+    "status": "Status",
+    "totalAmount": "Total Amount",
+    "dateSubmitted": "Date Submitted",
+    "dateFulfilled": "Date Fulfilled",
+    "actions": "Actions"
+  },
+  "status": {
+    "active": "Active",
+    "submitted": "Submitted",
+    "canceled": "Canceled",
+    "fulfilled": "Fulfilled",
+    "invoiced": "Invoiced",
+    "partial": "Partial"
+  },
+  "buttons": {
+    "editOrder": "Edit order",
+    "createFirst": "Create Your First Order",
+    "createNew": "Create New Order"
+  },
+  "emptyState": {
+    "title": "No orders yet",
+    "description": "Orders are created from won quotes. Start by creating a quote and winning it to generate an order.",
+    "noFiltersTitle": "No orders match your filters",
+    "noFiltersDescription": "Try adjusting your search criteria or filters to find what you're looking for."
+  }
+}

@@ -10,6 +10,7 @@ import { CustomerType, SalesStageCode, BudgetStatusCode } from '@/core/contracts
 import { Button } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
 import { Loader2 } from 'lucide-react'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 // Import sections (BPF stages now edited via dialogs)
 import { GeneralInfoSection } from './sections/general-info-section'
@@ -89,6 +90,8 @@ export function OpportunityForm({
   section = 'all'
 }: OpportunityFormProps) {
   const { data: session } = useSession()
+  const { t } = useTranslation('opportunities')
+  const { t: tc } = useTranslation('common')
 
   const form = useForm<OpportunityFormValues>({
     resolver: zodResolver(opportunityFormSchema),
@@ -230,7 +233,7 @@ export function OpportunityForm({
           handleSubmit,
           (errors) => {
             console.error('Form validation errors:', errors)
-            toast.error('Please fix the following errors: ' +
+            toast.error(t('form.validation.fixErrors') +
               Object.entries(errors)
                 .map(([field, error]) => `${field}: ${error?.message}`)
                 .join(', ')
@@ -259,7 +262,7 @@ export function OpportunityForm({
                 onClick={onCancel}
                 className="h-10"
               >
-                Cancel
+                {tc('buttons.cancel')}
               </Button>
             )}
             <Button
@@ -268,7 +271,7 @@ export function OpportunityForm({
               className="h-10 min-w-[140px]"
             >
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {opportunity ? 'Update Opportunity' : 'Create Opportunity'}
+              {opportunity ? t('buttons.updateOpportunity') : t('buttons.createOpportunity')}
             </Button>
           </div>
         )}

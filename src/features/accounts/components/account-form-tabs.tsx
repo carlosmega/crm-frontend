@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import type { Account } from '@/core/contracts'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { AccountForm, accountFormSchema, getAccountFormDefaultValues, type AccountFormValues } from './account-form'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import { cn } from '@/lib/utils'
 import { Building2, FileText, MapPin } from 'lucide-react'
 
@@ -41,6 +42,7 @@ export function AccountFormTabs({
   onCancel,
   isLoading
 }: AccountFormTabsProps) {
+  const { t } = useTranslation('accounts')
   const [activeTab, setActiveTab] = useState<AccountFormTabId>('general')
   const [tabsContainer, setTabsContainer] = useState<HTMLElement | null>(null)
 
@@ -70,7 +72,7 @@ export function AccountFormTabs({
           )}
         >
           <Building2 className="w-4 h-4 mr-2" />
-          General
+          {t('tabs.general')}
         </TabsTrigger>
 
         <TabsTrigger
@@ -83,7 +85,7 @@ export function AccountFormTabs({
           )}
         >
           <FileText className="w-4 h-4 mr-2" />
-          Details
+          {t('tabs.details')}
         </TabsTrigger>
 
         <TabsTrigger
@@ -96,7 +98,7 @@ export function AccountFormTabs({
           )}
         >
           <MapPin className="w-4 h-4 mr-2" />
-          Address
+          {t('tabs.address')}
         </TabsTrigger>
       </TabsList>
     </div>

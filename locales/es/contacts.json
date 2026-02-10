@@ -4,7 +4,7 @@
     "contactInfo": "Info de Contacto",
     "account": "Cuenta",
     "status": "Estado",
-    "createdOn": "Fecha de Creaci\u00f3n",
+    "createdOn": "Fecha de Creación",
     "actions": "Acciones"
   },
   "filters": {
@@ -12,17 +12,95 @@
     "searchAccount": "Buscar cuenta..."
   },
   "type": {
-    "b2c": "B2C"
+    "b2c": "B2C",
+    "b2b": "B2B"
+  },
+  "status": {
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "unknown": "Desconocido"
   },
   "buttons": {
     "editContact": "Editar contacto",
     "create": "Crear Contacto",
-    "new": "Nuevo Contacto"
+    "new": "Nuevo Contacto",
+    "updateContact": "Actualizar Contacto"
   },
   "emptyState": {
     "title": "No se encontraron contactos",
-    "description": "Ning\u00fan contacto coincide con tus filtros actuales. Intenta ajustar tus criterios de b\u00fasqueda o crea un nuevo contacto para comenzar.",
+    "description": "Ningún contacto coincide con tus filtros actuales. Intenta ajustar tus criterios de búsqueda o crea un nuevo contacto para comenzar.",
     "notFound": "No se encontraron contactos",
     "notAvailable": "No hay contactos disponibles"
+  },
+  "header": {
+    "contact": "Contacto",
+    "contactLabel": "CONTACTO",
+    "owner": "Propietario:",
+    "unassigned": "Sin asignar"
+  },
+  "tabs": {
+    "general": "General",
+    "professional": "Profesional",
+    "address": "Dirección",
+    "activities": "Actividades"
+  },
+  "detail": {
+    "contactInfo": "Información de Contacto",
+    "professionalInfo": "Información Profesional",
+    "primaryAddress": "Dirección Principal",
+    "jobTitle": "Cargo",
+    "department": "Departamento",
+    "accountB2B": "Cuenta (B2B)",
+    "createdOn": "Fecha de Creación",
+    "noContactInfo": "Sin información de contacto disponible",
+    "noProfessionalInfo": "Sin información profesional disponible",
+    "noAddressInfo": "Sin información de dirección disponible"
+  },
+  "form": {
+    "sections": {
+      "basicInfo": "Información Básica",
+      "contactInfo": "Información de Contacto",
+      "professionalInfo": "Información Profesional",
+      "address": "Dirección"
+    },
+    "fields": {
+      "salutation": "Saludo",
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "email": "Email",
+      "businessPhone": "Teléfono de Trabajo",
+      "homePhone": "Teléfono de Casa",
+      "mobilePhone": "Teléfono Móvil",
+      "fax": "Fax",
+      "secondaryEmail": "Email Secundario",
+      "jobTitle": "Cargo",
+      "department": "Departamento",
+      "parentAccount": "Cuenta Padre (Empresa)"
+    },
+    "placeholders": {
+      "salutation": "Sr., Sra., Dr.",
+      "firstName": "Juan",
+      "lastName": "Pérez",
+      "email": "juan.perez@ejemplo.com",
+      "businessPhone": "+52 55 1234 5678",
+      "homePhone": "+52 55 1234 5679",
+      "mobilePhone": "+52 55 6543 2198",
+      "fax": "+52 55 1234 5680",
+      "secondaryEmail": "juan.perez.personal@ejemplo.com",
+      "jobTitle": "Gerente de Ventas",
+      "department": "Ventas",
+      "parentAccount": "Seleccionar cuenta padre (opcional - dejar vacío para B2C)"
+    },
+    "hints": {
+      "parentAccountHint": "Dejar vacío para consumidores individuales (B2C). Seleccionar una cuenta de empresa para contactos de negocio (B2B).",
+      "addressHint": "Ingresa el código postal para autocompletar la dirección (México)"
+    }
+  },
+  "createDialog": {
+    "title": "Crear Nuevo Contacto",
+    "description": "Agregar un nuevo contacto al sistema. Este contacto puede ser seleccionado después de su creación.",
+    "contactCreated": "Contacto creado",
+    "contactCreatedDesc": "{{firstName}} {{lastName}} ha sido creado exitosamente.",
+    "createError": "Error al crear el contacto. Por favor intente de nuevo."
   }
 }

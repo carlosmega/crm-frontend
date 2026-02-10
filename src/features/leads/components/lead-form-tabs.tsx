@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { LeadForm } from './lead-form'
 import { cn } from '@/lib/utils'
 import { User, CheckCircle2, MapPin, FileText } from 'lucide-react'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 export type LeadFormTabId = 'general' | 'qualification' | 'address' | 'notes'
 
@@ -39,6 +40,7 @@ export function LeadFormTabs({
   onCancel,
   isLoading
 }: LeadFormTabsProps) {
+  const { t: tc } = useTranslation('common')
   const [activeTab, setActiveTab] = useState<LeadFormTabId>('general')
   const [tabsContainer, setTabsContainer] = useState<HTMLElement | null>(null)
 
@@ -62,7 +64,7 @@ export function LeadFormTabs({
           )}
         >
           <User className="w-4 h-4 mr-2" />
-          General
+          {tc('tabs.general')}
         </TabsTrigger>
 
         <TabsTrigger
@@ -75,7 +77,7 @@ export function LeadFormTabs({
           )}
         >
           <CheckCircle2 className="w-4 h-4 mr-2" />
-          Qualification
+          {tc('tabs.qualification')}
         </TabsTrigger>
 
         <TabsTrigger
@@ -88,7 +90,7 @@ export function LeadFormTabs({
           )}
         >
           <MapPin className="w-4 h-4 mr-2" />
-          Address
+          {tc('tabs.address')}
         </TabsTrigger>
 
         <TabsTrigger
@@ -101,7 +103,7 @@ export function LeadFormTabs({
           )}
         >
           <FileText className="w-4 h-4 mr-2" />
-          Notes
+          {tc('tabs.notes')}
         </TabsTrigger>
       </TabsList>
     </div>

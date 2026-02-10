@@ -9,6 +9,7 @@ import { OpportunityStatusBadge } from './opportunity-status-badge'
 import { OpportunityStageBadge } from './opportunity-stage-badge'
 import { Eye, Edit, Trash2, User, Calendar, TrendingUp } from 'lucide-react'
 import { formatCurrency, formatDate } from '@/shared/utils/formatters'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface OpportunityCardProps {
   opportunity: Opportunity
@@ -22,6 +23,9 @@ interface OpportunityCardProps {
  * - Uses shared formatters (module-level) to avoid recreating on every render
  */
 export const OpportunityCard = memo(function OpportunityCard({ opportunity, onDelete }: OpportunityCardProps) {
+  const { t } = useTranslation('opportunities')
+  const { t: tc } = useTranslation('common')
+
   return (
     <Card className="hover:shadow-md transition-shadow">
       <CardHeader className="pb-3">
@@ -51,7 +55,7 @@ export const OpportunityCard = memo(function OpportunityCard({ opportunity, onDe
       <CardContent className="space-y-4">
         {/* Sales Stage */}
         <div className="flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">Sales Stage</span>
+          <span className="text-sm text-muted-foreground">{t('card.salesStage')}</span>
           <OpportunityStageBadge
             stage={opportunity.salesstage}
             probability={opportunity.closeprobability}
@@ -62,7 +66,7 @@ export const OpportunityCard = memo(function OpportunityCard({ opportunity, onDe
         <div className="flex items-center gap-2">
           <User className="size-4 text-muted-foreground" />
           <div className="flex-1 min-w-0">
-            <p className="text-sm text-muted-foreground">Customer</p>
+            <p className="text-sm text-muted-foreground">{t('card.customer')}</p>
             <p className="text-sm font-medium truncate">{opportunity.customerid}</p>
             <p className="text-xs text-muted-foreground capitalize">{opportunity.customeridtype}</p>
           </div>
@@ -72,11 +76,11 @@ export const OpportunityCard = memo(function OpportunityCard({ opportunity, onDe
         <div className="flex items-center gap-2">
           <TrendingUp className="size-4 text-muted-foreground" />
           <div className="flex-1">
-            <p className="text-sm text-muted-foreground">Est. Value</p>
+            <p className="text-sm text-muted-foreground">{t('card.estValue')}</p>
             <p className="text-sm font-semibold">{formatCurrency(opportunity.estimatedvalue)}</p>
           </div>
           <div className="text-right">
-            <p className="text-sm text-muted-foreground">Probability</p>
+            <p className="text-sm text-muted-foreground">{t('card.probability')}</p>
             <p className="text-sm font-semibold">{opportunity.closeprobability}%</p>
           </div>
         </div>
@@ -85,7 +89,7 @@ export const OpportunityCard = memo(function OpportunityCard({ opportunity, onDe
         <div className="flex items-center gap-2">
           <Calendar className="size-4 text-muted-foreground" />
           <div className="flex-1">
-            <p className="text-sm text-muted-foreground">Est. Close Date</p>
+            <p className="text-sm text-muted-foreground">{t('card.estCloseDate')}</p>
             <p className="text-sm">{formatDate(opportunity.estimatedclosedate)}</p>
           </div>
         </div>
@@ -95,13 +99,13 @@ export const OpportunityCard = memo(function OpportunityCard({ opportunity, onDe
           <Button asChild variant="outline" size="sm" className="flex-1">
             <Link href={`/opportunities/${opportunity.opportunityid}`}>
               <Eye className="size-4 mr-2" />
-              View
+              {tc('cardActions.view')}
             </Link>
           </Button>
           <Button asChild variant="outline" size="sm" className="flex-1">
             <Link href={`/opportunities/${opportunity.opportunityid}/edit`}>
               <Edit className="size-4 mr-2" />
-              Edit
+              {tc('cardActions.edit')}
             </Link>
           </Button>
           {onDelete && (
@@ -109,7 +113,7 @@ export const OpportunityCard = memo(function OpportunityCard({ opportunity, onDe
               variant="ghost"
               size="icon-sm"
               onClick={() => onDelete(opportunity.opportunityid)}
-              title="Delete opportunity"
+              title={t('card.deleteOpportunity')}
             >
               <Trash2 className="size-4 text-destructive" />
             </Button>

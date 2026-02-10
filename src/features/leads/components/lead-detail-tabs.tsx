@@ -21,6 +21,7 @@ import {
   Lock,
   CheckCircle2,
 } from 'lucide-react'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 export type LeadTabId = 'general' | 'activities'
 
@@ -49,6 +50,7 @@ interface LeadDetailTabsProps {
  * - Clean separation between general info and activities
  */
 export function LeadDetailTabs({ lead, activityCount = { emails: 0, phoneCalls: 0, meetings: 0, formSubmissions: 0 } }: LeadDetailTabsProps) {
+  const { t } = useTranslation('leads')
   const [activeTab, setActiveTab] = useState<LeadTabId>('general')
   const [tabsContainer, setTabsContainer] = useState<HTMLElement | null>(null)
 
@@ -90,7 +92,7 @@ export function LeadDetailTabs({ lead, activityCount = { emails: 0, phoneCalls: 
           )}
         >
           <User className="w-4 h-4 mr-2" />
-          General
+          {t('detail.tabs.general')}
         </TabsTrigger>
 
         <TabsTrigger
@@ -103,7 +105,7 @@ export function LeadDetailTabs({ lead, activityCount = { emails: 0, phoneCalls: 
           )}
         >
           <History className="w-4 h-4 mr-2" />
-          Activities
+          {t('detail.tabs.activities')}
         </TabsTrigger>
       </TabsList>
     </div>
@@ -121,7 +123,7 @@ export function LeadDetailTabs({ lead, activityCount = { emails: 0, phoneCalls: 
           {/* Contact Information Card */}
           <Card className="gap-3">
             <CardHeader>
-              <CardTitle className="text-base font-semibold">Contact Information</CardTitle>
+              <CardTitle className="text-base font-semibold">{t('detail.sections.contactInfo')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2.5">
               {lead.emailaddress1 && (
@@ -153,7 +155,7 @@ export function LeadDetailTabs({ lead, activityCount = { emails: 0, phoneCalls: 
                     href={`tel:${lead.mobilephone}`}
                     className="text-sm hover:underline"
                   >
-                    {lead.mobilephone} <span className="text-muted-foreground text-xs">(Mobile)</span>
+                    {lead.mobilephone} <span className="text-muted-foreground text-xs">{t('detail.labels.mobile')}</span>
                   </a>
                 </div>
               )}
@@ -171,7 +173,7 @@ export function LeadDetailTabs({ lead, activityCount = { emails: 0, phoneCalls: 
                 </div>
               )}
               {!lead.emailaddress1 && !lead.telephone1 && !lead.mobilephone && !lead.websiteurl && (
-                <p className="text-sm text-muted-foreground">No contact information available</p>
+                <p className="text-sm text-muted-foreground">{t('detail.empty.noContactInfo')}</p>
               )}
             </CardContent>
           </Card>
@@ -179,14 +181,14 @@ export function LeadDetailTabs({ lead, activityCount = { emails: 0, phoneCalls: 
           {/* Lead Details Card */}
           <Card className="gap-3">
             <CardHeader>
-              <CardTitle className="text-base font-semibold">Key Dates</CardTitle>
+              <CardTitle className="text-base font-semibold">{t('detail.sections.keyDates')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2.5">
               {lead.estimatedvalue && (
                 <div className="flex items-center gap-2.5">
                   <DollarSign className="h-4 w-4 text-muted-foreground shrink-0" />
                   <div className="flex-1">
-                    <div className="text-xs text-muted-foreground mb-0.5">Estimated Value</div>
+                    <div className="text-xs text-muted-foreground mb-0.5">{t('detail.labels.estimatedValue')}</div>
                     <span className="text-sm font-medium">{formatCurrency(lead.estimatedvalue)}</span>
                   </div>
                 </div>
@@ -195,13 +197,13 @@ export function LeadDetailTabs({ lead, activityCount = { emails: 0, phoneCalls: 
                 <div className="flex items-center gap-2.5">
                   <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
                   <div className="flex-1">
-                    <div className="text-xs text-muted-foreground mb-0.5">Estimated Close Date</div>
+                    <div className="text-xs text-muted-foreground mb-0.5">{t('detail.labels.estimatedCloseDate')}</div>
                     <span className="text-sm">{formatDate(lead.estimatedclosedate)}</span>
                   </div>
                 </div>
               )}
               {!lead.estimatedvalue && !lead.estimatedclosedate && (
-                <p className="text-sm text-muted-foreground">No lead details available</p>
+                <p className="text-sm text-muted-foreground">{t('detail.empty.noLeadDetails')}</p>
               )}
             </CardContent>
           </Card>
@@ -214,7 +216,7 @@ export function LeadDetailTabs({ lead, activityCount = { emails: 0, phoneCalls: 
         {(lead.address1_line1 || lead.address1_city) && (
           <Card className="gap-3">
             <CardHeader>
-              <CardTitle className="text-base font-semibold">Address</CardTitle>
+              <CardTitle className="text-base font-semibold">{t('detail.sections.address')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-start gap-2.5">
@@ -238,7 +240,7 @@ export function LeadDetailTabs({ lead, activityCount = { emails: 0, phoneCalls: 
         {lead.description && (
           <Card className="gap-3">
             <CardHeader>
-              <CardTitle className="text-base font-semibold">Description</CardTitle>
+              <CardTitle className="text-base font-semibold">{t('detail.sections.description')}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm leading-relaxed text-foreground/90">{lead.description}</p>
@@ -266,16 +268,17 @@ function DisabledStageMessage({ stageName, description, requiresConversion = fal
   description: string
   requiresConversion?: boolean
 }) {
+  const { t } = useTranslation('leads')
   return (
     <Card className="border-dashed">
       <CardContent className="flex flex-col items-center justify-center py-12 text-center">
         <Lock className="h-12 w-12 text-muted-foreground/40 mb-4" />
-        <h3 className="text-lg font-semibold mb-2">{stageName} Stage</h3>
+        <h3 className="text-lg font-semibold mb-2">{t('detail.stage.stageLabel', { name: stageName })}</h3>
         <p className="text-sm text-muted-foreground max-w-md mb-4">{description}</p>
         {requiresConversion && (
           <Badge variant="outline" className="text-xs">
             <CheckCircle2 className="w-3 h-3 mr-1" />
-            Qualify Lead First
+            {t('detail.stage.qualifyFirst')}
           </Badge>
         )}
       </CardContent>

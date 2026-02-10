@@ -1,0 +1,31 @@
+{
+  "columns": {
+    "orderNumber": "N\u00famero de Pedido",
+    "name": "Nombre",
+    "customer": "Cliente",
+    "status": "Estado",
+    "totalAmount": "Monto Total",
+    "dateSubmitted": "Fecha de Env\u00edo",
+    "dateFulfilled": "Fecha de Cumplimiento",
+    "actions": "Acciones"
+  },
+  "status": {
+    "active": "Activo",
+    "submitted": "Enviado",
+    "canceled": "Cancelado",
+    "fulfilled": "Cumplido",
+    "invoiced": "Facturado",
+    "partial": "Parcial"
+  },
+  "buttons": {
+    "editOrder": "Editar pedido",
+    "createFirst": "Crea Tu Primer Pedido",
+    "createNew": "Crear Nuevo Pedido"
+  },
+  "emptyState": {
+    "title": "A\u00fan no hay pedidos",
+    "description": "Los pedidos se crean a partir de cotizaciones ganadas. Comienza creando una cotizaci\u00f3n y gan\u00e1ndola para generar un pedido.",
+    "noFiltersTitle": "Ning\u00fan pedido coincide con tus filtros",
+    "noFiltersDescription": "Intenta ajustar tus criterios de b\u00fasqueda o filtros para encontrar lo que buscas."
+  }
+}

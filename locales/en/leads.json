@@ -35,13 +35,18 @@
   },
   "status": {
     "open": "Open",
+    "new": "New",
+    "contacted": "Contacted",
     "qualified": "Qualified",
-    "disqualified": "Disqualified"
+    "disqualified": "Disqualified",
+    "unknown": "Unknown"
   },
   "buttons": {
     "editLead": "Edit lead",
     "createFirst": "Create Your First Lead",
-    "createNew": "Create New Lead"
+    "createNew": "Create New Lead",
+    "createLead": "Create Lead",
+    "updateLead": "Update Lead"
   },
   "emptyState": {
     "title": "No leads yet",
@@ -61,5 +66,212 @@
       "Check for typos in your search query",
       "Try searching by company name instead of contact name"
     ]
+  },
+  "form": {
+    "sections": {
+      "basicInfo": "Basic Information",
+      "contactDetails": "Contact Details",
+      "keyDates": "Key Dates",
+      "address": "Address",
+      "addressHint": "Enter postal code to auto-complete address (Mexico)",
+      "leadDetails": "Lead Details",
+      "description": "Description"
+    },
+    "fields": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "company": "Company",
+      "jobTitle": "Job Title",
+      "email": "Email",
+      "phone": "Phone",
+      "mobile": "Mobile",
+      "website": "Website",
+      "estimatedValue": "Estimated Value",
+      "estimatedCloseDate": "Estimated Close Date",
+      "leadSource": "Lead Source",
+      "leadQuality": "Lead Quality"
+    },
+    "placeholders": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "company": "Acme Inc",
+      "jobTitle": "CEO",
+      "email": "john.doe@example.com",
+      "selectSource": "Select a source",
+      "selectQuality": "Select quality",
+      "description": "Add notes about this lead, their interests, pain points, or any relevant context..."
+    }
+  },
+  "detail": {
+    "tabs": {
+      "general": "General",
+      "activities": "Activities"
+    },
+    "sections": {
+      "contactInfo": "Contact Information",
+      "keyDates": "Key Dates",
+      "address": "Address",
+      "description": "Description"
+    },
+    "labels": {
+      "estimatedValue": "Estimated Value",
+      "estimatedCloseDate": "Estimated Close Date",
+      "mobile": "(Mobile)"
+    },
+    "empty": {
+      "noContactInfo": "No contact information available",
+      "noLeadDetails": "No lead details available"
+    },
+    "stage": {
+      "stageLabel": "{{name}} Stage",
+      "qualifyFirst": "Qualify Lead First"
+    }
+  },
+  "card": {
+    "estClose": "Est. Close:"
+  },
+  "header": {
+    "salesLead": "Sales Lead",
+    "lead": "LEAD",
+    "origin": "Origin:",
+    "owner": "Owner:"
+  },
+  "score": {
+    "title": "Lead Score",
+    "subtitle": "Automatic scoring based on multiple factors",
+    "details": "Details",
+    "breakdown": "Lead Score Breakdown",
+    "breakdownFor": "Detailed scoring analysis for {{name}}",
+    "overallQuality": "Overall Quality",
+    "scoreBreakdown": "Score Breakdown",
+    "sourceQuality": "Source Quality",
+    "sourceTooltip": "Score based on lead source (Partner, Referral, Web, etc.)",
+    "engagementLevel": "Engagement Level",
+    "engagementTooltip": "Score based on activities (emails, calls, meetings)",
+    "customerFit": "Customer Fit",
+    "fitTooltip": "Score based on industry, revenue, company size, location",
+    "bantQualification": "BANT Qualification",
+    "bantTooltip": "Score based on Budget, Authority, Need, Timeframe",
+    "recommendation": "Recommendation",
+    "hotLead": "Hot Lead",
+    "warmLead": "Warm Lead",
+    "coldLead": "Cold Lead",
+    "highPriority": "High priority lead.",
+    "highPriorityDesc": "Contact immediately. This lead shows strong buying signals and good fit.",
+    "promising": "Promising lead.",
+    "promisingDesc": "Continue nurturing with targeted content. Schedule a discovery call.",
+    "lowPriority": "Low priority lead.",
+    "lowPriorityDesc": "Add to nurture campaign. Gather more qualification information before investing time."
+  },
+  "bpf": {
+    "qualify": "Qualify",
+    "qualifyDesc": "Complete qualification criteria to determine fit",
+    "develop": "Develop",
+    "developDesc": "Research opportunity and identify stakeholders",
+    "propose": "Propose",
+    "proposeDesc": "Present finalized proposal, pricing, and terms",
+    "close": "Close",
+    "closeDesc": "Finalize the deal - mark as Won or Lost",
+    "leadDisqualified": "Lead disqualified",
+    "qualifiedSuccessfully": "Qualified successfully",
+    "viewOpportunity": "View opportunity",
+    "fields": {
+      "budgetAmount": "Budget Amount",
+      "budgetStatus": "Budget Status (No Budget / May Buy / Can Buy / Will Buy)",
+      "purchaseTimeframe": "Purchase Timeframe",
+      "needAnalysis": "Need Analysis",
+      "decisionMaker": "Decision Maker Contact",
+      "proposedSolution": "Proposed Solution",
+      "implementationTimeline": "Implementation Timeline",
+      "identifyCompetitors": "Identify Competitors",
+      "customerNeeds": "Customer Needs Analysis",
+      "currentSituation": "Current Situation Documentation",
+      "stakeholders": "Stakeholders (Decision Makers, Influencers, Champions)",
+      "presentationDate": "Presentation Date",
+      "finalDecisionDate": "Final Decision Date",
+      "customerContacts": "Customer Contacts Identified",
+      "pursuitTeam": "Pursuit Team Assigned",
+      "quoteWithProducts": "Quote with Product Lines",
+      "thankYouNote": "Thank You Note Sent",
+      "actualValue": "Actual Value (if Won)",
+      "actualCloseDate": "Actual Close Date",
+      "activeQuote": "Active Quote (if Won)",
+      "winLossReason": "Win/Loss Reason",
+      "competitorWon": "Competitor Who Won (if Lost)"
+    }
+  },
+  "qualify": {
+    "title": "Qualify Lead",
+    "subtitle": "Configure how to qualify this lead and create related records",
+    "b2bQualification": "B2B Qualification",
+    "b2cQualification": "B2C Qualification",
+    "company": "Company: {{name}}",
+    "individualCustomer": "Individual customer (no company)",
+    "missingFields": "Missing Required Fields",
+    "missingFieldsHint": "Complete these fields in the Qualify Stage first:",
+    "incompleteStage": "Incomplete Qualify Stage",
+    "incompleteStageDesc": "Please complete the following fields:",
+    "account": "Account",
+    "accountDesc": "Choose how to handle the company account",
+    "createNewAccount": "Create new account",
+    "createAccountHint": "Create \"{{name}}\" as a new account",
+    "useExistingAccount": "Use existing account",
+    "useExistingAccountHint": "Link to an account that already exists",
+    "selectAccount": "Select Account",
+    "contact": "Contact",
+    "contactDesc": "Choose how to handle the contact person",
+    "createNewContact": "Create new contact",
+    "createContactHint": "Create \"{{name}}\" as a new contact",
+    "useExistingContact": "Use existing contact",
+    "useExistingContactHint": "Link to a contact that already exists",
+    "selectContact": "Select Contact",
+    "opportunity": "Opportunity",
+    "opportunityDesc": "Configure the sales opportunity details",
+    "opportunityName": "Opportunity Name",
+    "estimatedValue": "Estimated Value",
+    "estCloseDate": "Est. Close Date",
+    "selectCloseDate": "Select close date",
+    "opportunityDescription": "Description",
+    "descriptionPlaceholder": "Describe the opportunity and customer needs...",
+    "qualifying": "Qualifying...",
+    "qualifyLead": "Qualify Lead",
+    "success": "Lead Qualified Successfully!",
+    "successDesc": "The following records have been created from this lead:",
+    "accountCreated": "Account Created",
+    "contactCreated": "Contact Created",
+    "opportunityCreated": "Opportunity Created",
+    "viewOpportunity": "View Opportunity",
+    "done": "Done",
+    "failed": "Qualification Failed",
+    "failedDesc": "Failed to qualify lead",
+    "successToast": "Lead Qualified Successfully",
+    "successToastDesc": "Opportunity \"{{name}}\" has been created",
+    "validationError": "Please select an existing record when choosing \"Use existing\""
+  },
+  "duplicate": {
+    "title": "Possible Duplicate {{entity}} Detected",
+    "foundRecords": "We found {{count}} existing record that matches the information you entered.",
+    "foundRecordsPlural": "We found {{count}} existing records that match the information you entered.",
+    "detectionConfidence": "Detection confidence:",
+    "highAlert": "Strong match detected. Creating a duplicate may cause data inconsistencies.",
+    "mediumAlert": "Moderate match detected. Please review the existing records before proceeding.",
+    "lowAlert": "Weak match detected. The similarities may be coincidental.",
+    "match": "{{score}}% Match",
+    "useThisInstead": "Use This {{entity}} Instead",
+    "createDuplicateAnyway": "Create Duplicate Anyway",
+    "continuCreating": "Continue Creating"
+  },
+  "related": {
+    "title": "Related Opportunity",
+    "viewOpportunity": "View Opportunity",
+    "closeProbability": "Close Probability",
+    "estCloseDate": "Est. Close Date",
+    "stages": {
+      "qualify": "Qualify (25%)",
+      "develop": "Develop (50%)",
+      "propose": "Propose (75%)",
+      "close": "Close (100%)",
+      "unknown": "Unknown"
+    }
   }
 }

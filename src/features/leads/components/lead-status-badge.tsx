@@ -1,6 +1,7 @@
 import { Badge } from '@/components/ui/badge'
 import { LeadStateCode, LeadStatusCode } from '@/core/contracts'
 import { CheckCircle2, Circle, XCircle } from 'lucide-react'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface LeadStatusBadgeProps {
   statecode: LeadStateCode
@@ -8,32 +9,34 @@ interface LeadStatusBadgeProps {
 }
 
 export function LeadStatusBadge({ statecode, statuscode }: LeadStatusBadgeProps) {
+  const { t } = useTranslation('leads')
+
   const getStatusConfig = () => {
     switch (statecode) {
       case LeadStateCode.Open:
         return {
-          label: statuscode === LeadStatusCode.Contacted ? 'Contacted' : 'New',
+          label: statuscode === LeadStatusCode.Contacted ? t('status.contacted') : t('status.new'),
           variant: 'default' as const,
           icon: Circle,
           className: 'bg-blue-100 text-blue-800 hover:bg-blue-100'
         }
       case LeadStateCode.Qualified:
         return {
-          label: 'Qualified',
+          label: t('status.qualified'),
           variant: 'default' as const,
           icon: CheckCircle2,
           className: 'bg-green-100 text-green-800 hover:bg-green-100'
         }
       case LeadStateCode.Disqualified:
         return {
-          label: 'Disqualified',
+          label: t('status.disqualified'),
           variant: 'destructive' as const,
           icon: XCircle,
           className: 'bg-red-100 text-red-800 hover:bg-red-100'
         }
       default:
         return {
-          label: 'Unknown',
+          label: t('status.unknown'),
           variant: 'secondary' as const,
           icon: Circle,
           className: ''

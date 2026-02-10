@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   FormField,
@@ -48,6 +49,7 @@ interface GeneralInfoSectionProps {
  * 3. Description Card
  */
 export function GeneralInfoSection({ isEditMode = false }: GeneralInfoSectionProps) {
+  const { t } = useTranslation('opportunities')
   const form = useFormContext()
   const [selectedCustomer, setSelectedCustomer] = useState<SelectedCustomer | undefined>()
 
@@ -107,7 +109,7 @@ export function GeneralInfoSection({ isEditMode = false }: GeneralInfoSectionPro
       {/* Basic Information Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base font-semibold">Basic Information</CardTitle>
+          <CardTitle className="text-base font-semibold">{t('form.sections.basicInfo')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <FormField
@@ -116,11 +118,11 @@ export function GeneralInfoSection({ isEditMode = false }: GeneralInfoSectionPro
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-sm font-medium">
-                  Opportunity Name <span className="text-destructive">*</span>
+                  {t('form.fields.opportunityName')} <span className="text-destructive">*</span>
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="e.g., Acme Corp - CRM Implementation"
+                    placeholder={t('form.placeholders.opportunityName')}
                     className="h-10"
                     {...field}
                   />
@@ -137,7 +139,7 @@ export function GeneralInfoSection({ isEditMode = false }: GeneralInfoSectionPro
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium">
-                    Customer Type {!isEditMode && <span className="text-destructive">*</span>}
+                    {t('form.fields.customerType')} {!isEditMode && <span className="text-destructive">*</span>}
                   </FormLabel>
                   <Select
                     onValueChange={field.onChange}
@@ -146,20 +148,20 @@ export function GeneralInfoSection({ isEditMode = false }: GeneralInfoSectionPro
                   >
                     <FormControl>
                       <SelectTrigger className="h-10">
-                        <SelectValue placeholder="Select customer type" />
+                        <SelectValue placeholder={t('form.placeholders.selectCustomerType')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                       <SelectItem value={CustomerType.Account}>
                         <span className="flex items-center gap-2">
                           <Building2 className="size-4" />
-                          Account (B2B)
+                          {t('form.customerTypes.accountB2B')}
                         </span>
                       </SelectItem>
                       <SelectItem value={CustomerType.Contact}>
                         <span className="flex items-center gap-2">
                           <User className="size-4" />
-                          Contact (B2C)
+                          {t('form.customerTypes.contactB2C')}
                         </span>
                       </SelectItem>
                     </SelectContent>
@@ -167,7 +169,7 @@ export function GeneralInfoSection({ isEditMode = false }: GeneralInfoSectionPro
                   <FormMessage className="text-xs" />
                   {isEditMode && (
                     <p className="text-xs text-muted-foreground">
-                      Customer cannot be changed after creation
+                      {t('form.hints.customerCannotChange')}
                     </p>
                   )}
                 </FormItem>
@@ -180,7 +182,7 @@ export function GeneralInfoSection({ isEditMode = false }: GeneralInfoSectionPro
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-sm font-medium">
-                    Customer {!isEditMode && <span className="text-destructive">*</span>}
+                    {t('form.fields.customer')} {!isEditMode && <span className="text-destructive">*</span>}
                   </FormLabel>
                   <FormControl>
                     <CustomerSelectorButton
@@ -197,8 +199,8 @@ export function GeneralInfoSection({ isEditMode = false }: GeneralInfoSectionPro
                       customerType={form.watch('customeridtype') === CustomerType.Account ? 'account' : 'contact'}
                       placeholder={
                         form.watch('customeridtype') === CustomerType.Account
-                          ? 'Select account...'
-                          : 'Select contact...'
+                          ? t('form.placeholders.selectAccount')
+                          : t('form.placeholders.selectContact')
                       }
                       disabled={isEditMode}
                     />
@@ -206,7 +208,7 @@ export function GeneralInfoSection({ isEditMode = false }: GeneralInfoSectionPro
                   <FormMessage className="text-xs" />
                   {isEditMode && (
                     <p className="text-xs text-muted-foreground">
-                      Customer cannot be changed after creation
+                      {t('form.hints.customerCannotChange')}
                     </p>
                   )}
                 </FormItem>
@@ -219,7 +221,7 @@ export function GeneralInfoSection({ isEditMode = false }: GeneralInfoSectionPro
       {/* Sales Details Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base font-semibold">Sales Details</CardTitle>
+          <CardTitle className="text-base font-semibold">{t('form.sections.salesDetails')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <FormFieldGroup columns={2}>
@@ -230,11 +232,11 @@ export function GeneralInfoSection({ isEditMode = false }: GeneralInfoSectionPro
                 <FormItem>
                   <div className="flex items-center gap-2">
                     <FormLabel className="text-sm font-medium">
-                      Sales Stage <span className="text-destructive">*</span>
+                      {t('form.fields.salesStage')} <span className="text-destructive">*</span>
                     </FormLabel>
                     <HelpTooltip
-                      title="Sales Stages"
-                      content="Track your progress through the sales cycle: Qualify (25% - validate fit), Develop (50% - build solution), Propose (75% - formal proposal), Close (100% - win/lose)."
+                      title={t('form.hints.salesStageTooltipTitle')}
+                      content={t('form.hints.salesStageTooltipContent')}
                       guideLink="/USER_GUIDE.md#opportunity-sales-stages"
                     />
                   </div>
@@ -244,14 +246,14 @@ export function GeneralInfoSection({ isEditMode = false }: GeneralInfoSectionPro
                   >
                     <FormControl>
                       <SelectTrigger className="h-10">
-                        <SelectValue placeholder="Select sales stage" />
+                        <SelectValue placeholder={t('form.placeholders.selectSalesStage')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value={SalesStageCode.Qualify.toString()}>Qualify (25%)</SelectItem>
-                      <SelectItem value={SalesStageCode.Develop.toString()}>Develop (50%)</SelectItem>
-                      <SelectItem value={SalesStageCode.Propose.toString()}>Propose (75%)</SelectItem>
-                      <SelectItem value={SalesStageCode.Close.toString()}>Close (100%)</SelectItem>
+                      <SelectItem value={SalesStageCode.Qualify.toString()}>{t('salesStages.qualify')}</SelectItem>
+                      <SelectItem value={SalesStageCode.Develop.toString()}>{t('salesStages.develop')}</SelectItem>
+                      <SelectItem value={SalesStageCode.Propose.toString()}>{t('salesStages.propose')}</SelectItem>
+                      <SelectItem value={SalesStageCode.Close.toString()}>{t('salesStages.close')}</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage className="text-xs" />
@@ -266,11 +268,11 @@ export function GeneralInfoSection({ isEditMode = false }: GeneralInfoSectionPro
                 <FormItem>
                   <div className="flex items-center gap-2">
                     <FormLabel className="text-sm font-medium">
-                      Estimated Value <span className="text-destructive">*</span>
+                      {t('form.fields.estimatedValue')} <span className="text-destructive">*</span>
                     </FormLabel>
                     <HelpTooltip
-                      title="Deal Value"
-                      content="The total estimated value of this opportunity. Update this as you learn more about the customer's budget and requirements."
+                      title={t('form.hints.dealValueTooltipTitle')}
+                      content={t('form.hints.dealValueTooltipContent')}
                       guideLink="/USER_GUIDE.md#working-with-opportunities"
                     />
                   </div>
@@ -279,7 +281,7 @@ export function GeneralInfoSection({ isEditMode = false }: GeneralInfoSectionPro
                       <Euro className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <Input
                         type="number"
-                        placeholder="50000"
+                        placeholder={t('form.placeholders.estimatedValue')}
                         className="h-10 pl-10"
                         {...field}
                         onChange={(e) => field.onChange(Number(e.target.value))}
@@ -298,7 +300,7 @@ export function GeneralInfoSection({ isEditMode = false }: GeneralInfoSectionPro
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-sm font-medium">
-                  Estimated Close Date <span className="text-destructive">*</span>
+                  {t('form.fields.estimatedCloseDate')} <span className="text-destructive">*</span>
                 </FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -311,7 +313,7 @@ export function GeneralInfoSection({ isEditMode = false }: GeneralInfoSectionPro
                         )}
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {field.value ? format(new Date(field.value), "PPP") : "Pick a date"}
+                        {field.value ? format(new Date(field.value), "PPP") : t('form.placeholders.pickDate')}
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
@@ -334,7 +336,7 @@ export function GeneralInfoSection({ isEditMode = false }: GeneralInfoSectionPro
       {/* Description Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base font-semibold">Description</CardTitle>
+          <CardTitle className="text-base font-semibold">{t('form.sections.description')}</CardTitle>
         </CardHeader>
         <CardContent>
           <FormField
@@ -343,11 +345,11 @@ export function GeneralInfoSection({ isEditMode = false }: GeneralInfoSectionPro
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-sm font-medium">
-                  Description
+                  {t('form.fields.description')}
                 </FormLabel>
                 <FormControl>
                   <AutoGrowTextarea
-                    placeholder="Add details about this opportunity, customer needs, or any relevant context..."
+                    placeholder={t('form.placeholders.description')}
                     minRows={3}
                     maxRows={10}
                     {...field}

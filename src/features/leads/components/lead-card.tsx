@@ -1,6 +1,7 @@
 import { memo } from 'react'
 import Link from 'next/link'
 import type { Lead } from '@/core/contracts'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { LeadStatusBadge } from './lead-status-badge'
@@ -27,6 +28,8 @@ interface LeadCardProps {
  * Performance: Only re-renders if lead or onDelete change
  */
 export const LeadCard = memo(function LeadCard({ lead, onDelete }: LeadCardProps) {
+  const { t } = useTranslation('leads')
+  const { t: tc } = useTranslation('common')
   const formatCurrency = (value?: number) => {
     if (!value) return '-'
     return CURRENCY_FORMATTER.format(value)
@@ -101,7 +104,7 @@ export const LeadCard = memo(function LeadCard({ lead, onDelete }: LeadCardProps
           {lead.estimatedclosedate && (
             <div className="flex items-center gap-2 text-muted-foreground">
               <Calendar className="h-4 w-4" />
-              <span>Est. Close: {formatDate(lead.estimatedclosedate)}</span>
+              <span>{t('card.estClose')} {formatDate(lead.estimatedclosedate)}</span>
             </div>
           )}
         </div>
@@ -117,13 +120,13 @@ export const LeadCard = memo(function LeadCard({ lead, onDelete }: LeadCardProps
         <Button asChild variant="outline" size="sm" className="flex-1">
           <Link href={`/leads/${lead.leadid}`}>
             <Eye className="mr-2 h-4 w-4" />
-            View
+            {tc('cardActions.view')}
           </Link>
         </Button>
         <Button asChild variant="outline" size="sm" className="flex-1">
           <Link href={`/leads/${lead.leadid}/edit`}>
             <Edit className="mr-2 h-4 w-4" />
-            Edit
+            {tc('cardActions.edit')}
           </Link>
         </Button>
         {onDelete && (
