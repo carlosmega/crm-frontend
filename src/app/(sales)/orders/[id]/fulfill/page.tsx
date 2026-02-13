@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useForm, Controller } from 'react-hook-form'
 import { useOrder, useFulfillOrder } from '@/features/orders/hooks/use-orders'
+import { useOrderDetails } from '@/features/orders/hooks/use-order-details'
 import { OrderStatusBadge } from '@/features/orders/components/order-status-badge'
 import { OrderStateCode } from '@/core/contracts/enums'
 import { formatCurrency } from '@/features/quotes/utils/quote-calculations'
@@ -31,7 +32,9 @@ import {
   FileText,
   Info,
   ArrowLeft,
+  ClipboardCheck,
 } from 'lucide-react'
+import { FulfillLineItemsVerification, type LineItemVerification } from '@/features/orders/components/fulfill-line-items-verification'
 
 interface OrderFulfillPageProps {
   params: Promise<{ id: string }>
@@ -40,9 +43,15 @@ interface OrderFulfillPageProps {
 interface FulfillFormData {
   datefulfilled: string
   notes?: string
+  lineItems: Array<{
+    orderdetailid: string
+    quantityOrdered: number
+    quantityReceived: number
+    notes?: string
+  }>
 }
 
-export type OrderFulfillTabId = 'details' | 'summary'
+export type OrderFulfillTabId = 'verification' | 'details' | 'summary'
 
 /**
  * Order Fulfill Page
@@ -55,21 +64,39 @@ export default function OrderFulfillPage({ params }: OrderFulfillPageProps) {
   const { toast } = useToast()
 
   const { data: order, isLoading: loading, error } = useOrder(id)
+  const { data: orderDetails } = useOrderDetails(id)
   const fulfillMutation = useFulfillOrder()
 
-  const [activeTab, setActiveTab] = useState<OrderFulfillTabId>('details')
+  const [activeTab, setActiveTab] = useState<OrderFulfillTabId>('verification')
   const [tabsContainer, setTabsContainer] = useState<HTMLElement | null>(null)
+  const [lineItemsVerifications, setLineItemsVerifications] = useState<LineItemVerification[]>([])
 
   const {
     register,
     handleSubmit,
     control,
+    setValue,
     formState: { errors },
   } = useForm<FulfillFormData>({
     defaultValues: {
       datefulfilled: new Date().toISOString().split('T')[0],
+      lineItems: [],
     },
   })
+
+  // Initialize line items verifications when order loads
+  useEffect(() => {
+    if (orderDetails && orderDetails.length > 0) {
+      const initialVerifications: LineItemVerification[] = orderDetails.map((detail) => ({
+        orderdetailid: detail.salesorderdetailid,
+        quantityOrdered: detail.quantity,
+        quantityReceived: detail.quantity, // Default to full quantity
+        notes: '',
+      }))
+      setLineItemsVerifications(initialVerifications)
+      setValue('lineItems', initialVerifications)
+    }
+  }, [orderDetails, setValue])
 
   // Find the tabs container in sticky header on mount
   useEffect(() => {
@@ -78,18 +105,42 @@ export default function OrderFulfillPage({ params }: OrderFulfillPageProps) {
   }, [])
 
   const onSubmit = async (data: FulfillFormData) => {
+    // Validate line items
+    const hasExcess = lineItemsVerifications.some(
+      (v) => v.quantityReceived > v.quantityOrdered
+    )
+
+    if (hasExcess) {
+      toast({
+        title: 'Validation Error',
+        description: 'Some line items have received quantities exceeding ordered amounts. Please correct before proceeding.',
+        variant: 'destructive',
+      })
+      setActiveTab('verification')
+      return
+    }
+
     try {
+      // TODO: In a real implementation, send lineItemsVerifications to backend
+      // For now, we just mark the order as fulfilled
       await fulfillMutation.mutateAsync({
         id,
         dto: {
           statecode: OrderStateCode.Fulfilled,
           datefulfilled: data.datefulfilled,
+          // In production, you would send: lineItems: lineItemsVerifications
         },
       })
 
+      const isPartialFulfillment = lineItemsVerifications.some(
+        (v) => v.quantityReceived < v.quantityOrdered && v.quantityReceived > 0
+      )
+
       toast({
-        title: 'Order Fulfilled',
-        description: 'The order has been successfully marked as fulfilled.',
+        title: isPartialFulfillment ? 'Order Partially Fulfilled' : 'Order Fulfilled',
+        description: isPartialFulfillment
+          ? 'The order has been marked as partially fulfilled with the quantities received.'
+          : 'The order has been successfully marked as fulfilled.',
       })
 
       router.push(`/orders/${id}`)
@@ -101,6 +152,11 @@ export default function OrderFulfillPage({ params }: OrderFulfillPageProps) {
         variant: 'destructive',
       })
     }
+  }
+
+  const handleVerificationsChange = (verifications: LineItemVerification[]) => {
+    setLineItemsVerifications(verifications)
+    setValue('lineItems', verifications)
   }
 
   const handleCancel = () => {
@@ -252,6 +308,19 @@ export default function OrderFulfillPage({ params }: OrderFulfillPageProps) {
               <div className="overflow-x-auto">
                 <TabsList className="h-auto p-0 bg-transparent border-0 gap-0 justify-start rounded-none inline-flex w-full md:w-auto min-w-max">
                   <TabsTrigger
+                    value="verification"
+                    className={cn(
+                      "relative rounded-none border-0 px-4 md:px-6 py-3 text-sm font-medium transition-colors",
+                      "data-[state=active]:bg-transparent data-[state=active]:text-purple-600",
+                      "data-[state=inactive]:text-gray-500 hover:text-gray-900",
+                      "data-[state=active]:after:absolute data-[state=active]:after:bottom-0 data-[state=active]:after:left-0 data-[state=active]:after:right-0 data-[state=active]:after:h-0.5 data-[state=active]:after:bg-purple-600"
+                    )}
+                  >
+                    <ClipboardCheck className="w-4 h-4 mr-2" />
+                    Line Items Verification
+                  </TabsTrigger>
+
+                  <TabsTrigger
                     value="details"
                     className={cn(
                       "relative rounded-none border-0 px-4 md:px-6 py-3 text-sm font-medium transition-colors",
@@ -280,6 +349,15 @@ export default function OrderFulfillPage({ params }: OrderFulfillPageProps) {
               </div>,
               tabsContainer
             )}
+
+            {/* LINE ITEMS VERIFICATION TAB */}
+            <TabsContent value="verification" className="mt-0">
+              <FulfillLineItemsVerification
+                lineItems={orderDetails || []}
+                verifications={lineItemsVerifications}
+                onVerificationChange={handleVerificationsChange}
+              />
+            </TabsContent>
 
             {/* FULFILLMENT DETAILS TAB */}
             <TabsContent value="details" className="mt-0">
