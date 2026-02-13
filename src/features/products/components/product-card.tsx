@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button'
 import type { Product } from '../types'
 import { ProductPriceBadge } from './product-price-badge'
 import { Eye, Edit, Trash2, Package, DollarSign, TrendingUp } from 'lucide-react'
-import { formatCurrency } from '@/shared/utils/formatters'
+import { useCurrencyFormat } from '@/shared/hooks/use-currency-format'
 
 interface ProductCardProps {
   product: Product
@@ -26,13 +26,14 @@ interface ProductCardProps {
  * Memoized ProductCard component
  * Performance:
  * - Only re-renders if product or callbacks change
- * - Uses shared formatters (module-level) to avoid recreating on every render
+ * - Uses user's currency preference from settings
  */
 export const ProductCard = memo(function ProductCard({
   product,
   onDelete,
   onEdit,
 }: ProductCardProps) {
+  const formatCurrency = useCurrencyFormat()
   const isActive = product.statecode === 0
   const hasInventory = product.quantityonhand !== undefined
   const isLowStock =

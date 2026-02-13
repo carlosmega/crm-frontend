@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { useForecastingControls } from '../hooks/use-forecasting'
-import { formatCurrency } from '@/shared/utils/formatters'
+import { useCurrencyFormat } from '@/shared/hooks/use-currency-format'
 import { Download, TrendingUp, TrendingDown } from 'lucide-react'
 import type { ForecastingPeriodType } from '../utils/forecasting-calculations'
 
@@ -31,6 +31,7 @@ import type { ForecastingPeriodType } from '../utils/forecasting-calculations'
  * Table showing sales forecast by period with export functionality
  */
 export function ForecastingGrid() {
+  const formatCurrency = useCurrencyFormat()
   const {
     forecast,
     accuracy,

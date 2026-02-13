@@ -50,7 +50,7 @@ export const DEFAULT_SETTINGS: UserSettings = {
   dateFormat: 'medium',
   timeFormat: '24h',
   timezone: 'Europe/Madrid',
-  currency: 'EUR',
+  currency: 'USD', // Changed from 'EUR' to 'USD' as default
   numberFormat: 'es-ES',
   notifications: {
     desktop: true,

@@ -16,12 +16,17 @@
  * ```
  */
 
-// Currency formatter (EUR - Spain locale)
-const CURRENCY_FORMATTER = new Intl.NumberFormat('es-ES', {
+// Currency formatter (USD - default)
+// NOTE: For dynamic currency based on user settings, use formatCurrencyWithCode() or useCurrencyFormat() hook
+const CURRENCY_FORMATTER = new Intl.NumberFormat('en-US', {
   style: 'currency',
-  currency: 'EUR',
+  currency: 'USD',
   minimumFractionDigits: 0,
 })
+
+// Memoized currency formatters cache for performance
+// Avoids recreating Intl.NumberFormat on every call
+const currencyFormatterCache = new Map<string, Intl.NumberFormat>()
 
 // Date formatter (Spanish format)
 const DATE_FORMATTER = new Intl.DateTimeFormat('es-ES', {
@@ -53,13 +58,60 @@ const NUMBER_FORMATTER = new Intl.NumberFormat('es-ES', {
 })
 
 /**
- * Format a number as currency (EUR)
+ * Get or create a cached currency formatter
+ * @param currency - Currency code (EUR, USD, GBP)
+ * @param locale - Locale for formatting (default: 'en-US')
+ * @returns Cached Intl.NumberFormat instance
+ */
+function getCurrencyFormatter(currency: string, locale: string = 'en-US'): Intl.NumberFormat {
+  const cacheKey = `${currency}-${locale}`
+
+  if (!currencyFormatterCache.has(cacheKey)) {
+    currencyFormatterCache.set(
+      cacheKey,
+      new Intl.NumberFormat(locale, {
+        style: 'currency',
+        currency,
+        minimumFractionDigits: 0,
+      })
+    )
+  }
+
+  return currencyFormatterCache.get(cacheKey)!
+}
+
+/**
+ * Format a number as currency with specific currency code
+ * @param value - Number to format
+ * @param currency - Currency code (EUR, USD, GBP)
+ * @param locale - Locale for formatting (default: 'en-US')
+ * @returns Formatted currency string or '-' if value is null/undefined
+ *
+ * @example
+ * formatCurrencyWithCode(1500.50, 'USD') // "$1,501"
+ * formatCurrencyWithCode(1500.50, 'EUR', 'es-ES') // "1.501 €"
+ * formatCurrencyWithCode(null, 'USD') // "-"
+ */
+export function formatCurrencyWithCode(
+  value?: number | null,
+  currency: string = 'USD',
+  locale?: string
+): string {
+  if (value === undefined || value === null) return '-'
+  const formatter = getCurrencyFormatter(currency, locale)
+  return formatter.format(value)
+}
+
+/**
+ * Format a number as currency (USD default)
  * @param value - Number to format
  * @returns Formatted currency string or '-' if value is null/undefined
  *
  * @example
- * formatCurrency(1500.50) // "1.501 €"
+ * formatCurrency(1500.50) // "$1,501"
  * formatCurrency(null) // "-"
+ *
+ * @deprecated Use formatCurrencyWithCode() or useCurrencyFormat() hook for dynamic currency
  */
 export function formatCurrency(value?: number | null): string {
   if (value === undefined || value === null) return '-'

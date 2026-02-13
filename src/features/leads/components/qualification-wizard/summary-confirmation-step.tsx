@@ -16,7 +16,7 @@ import {
 } from 'lucide-react'
 import type { QualificationWizardFormData } from './types'
 import type { Lead } from '@/core/contracts'
-import { formatCurrency } from '@/shared/utils/formatters'
+import { useCurrencyFormat } from '@/shared/hooks/use-currency-format'
 import { Separator } from '@/components/ui/separator'
 
 interface SummaryConfirmationStepProps {
@@ -29,6 +29,7 @@ interface SummaryConfirmationStepProps {
  * Review all information before qualifying the lead
  */
 export function SummaryConfirmationStep({ lead }: SummaryConfirmationStepProps) {
+  const formatCurrency = useCurrencyFormat()
   const form = useFormContext<QualificationWizardFormData>()
   const formData = form.getValues()
 

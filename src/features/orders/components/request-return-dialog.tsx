@@ -31,8 +31,9 @@ import {
   ReturnTypeCode,
 } from '@/core/contracts/entities/return-request'
 import { CustomerType } from '@/core/contracts/enums'
-import { formatCurrency } from '@/shared/utils/formatters'
+import { useCurrencyFormat } from '@/shared/hooks/use-currency-format'
 import { Badge } from '@/components/ui/badge'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 /**
  * Request Return Dialog Component
@@ -45,28 +46,30 @@ interface RequestReturnDialogProps {
   children?: React.ReactNode
 }
 
-const RETURN_REASONS = [
-  { code: ReturnReasonCode.Defective, label: 'Defective Product' },
-  { code: ReturnReasonCode.WrongItem, label: 'Wrong Item Shipped' },
-  { code: ReturnReasonCode.Damaged, label: 'Damaged in Shipping' },
-  { code: ReturnReasonCode.NotAsDescribed, label: 'Not As Described' },
-  { code: ReturnReasonCode.ChangedMind, label: 'Changed Mind' },
-  { code: ReturnReasonCode.BetterPrice, label: 'Found Better Price' },
-  { code: ReturnReasonCode.OrderError, label: 'Order Error' },
-  { code: ReturnReasonCode.LateDelivery, label: 'Late Delivery' },
-  { code: ReturnReasonCode.NoLongerNeeded, label: 'No Longer Needed' },
-  { code: ReturnReasonCode.Other, label: 'Other' },
-]
+const RETURN_REASON_KEYS: Record<ReturnReasonCode, string> = {
+  [ReturnReasonCode.Defective]: 'defective',
+  [ReturnReasonCode.WrongItem]: 'wrongItem',
+  [ReturnReasonCode.Damaged]: 'damaged',
+  [ReturnReasonCode.NotAsDescribed]: 'notAsDescribed',
+  [ReturnReasonCode.ChangedMind]: 'changedMind',
+  [ReturnReasonCode.BetterPrice]: 'betterPrice',
+  [ReturnReasonCode.OrderError]: 'orderError',
+  [ReturnReasonCode.LateDelivery]: 'lateDelivery',
+  [ReturnReasonCode.NoLongerNeeded]: 'noLongerNeeded',
+  [ReturnReasonCode.Other]: 'other',
+}
 
-const RETURN_TYPES = [
-  { code: ReturnTypeCode.FullRefund, label: 'Full Refund', description: 'Get full refund to original payment method' },
-  { code: ReturnTypeCode.PartialRefund, label: 'Partial Refund', description: 'Refund for specific items only' },
-  { code: ReturnTypeCode.Exchange, label: 'Exchange', description: 'Exchange for different product' },
-  { code: ReturnTypeCode.StoreCredit, label: 'Store Credit', description: 'Receive store credit for future purchases' },
-  { code: ReturnTypeCode.Replacement, label: 'Replacement', description: 'Replace defective item at no charge' },
-]
+const RETURN_TYPE_KEYS: Record<ReturnTypeCode, string> = {
+  [ReturnTypeCode.FullRefund]: 'fullRefund',
+  [ReturnTypeCode.PartialRefund]: 'partialRefund',
+  [ReturnTypeCode.Exchange]: 'exchange',
+  [ReturnTypeCode.StoreCredit]: 'storeCredit',
+  [ReturnTypeCode.Replacement]: 'replacement',
+}
 
 export function RequestReturnDialog({ order, children }: RequestReturnDialogProps) {
+  const { t } = useTranslation('orders')
+  const formatCurrency = useCurrencyFormat()
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -110,29 +113,29 @@ export function RequestReturnDialog({ order, children }: RequestReturnDialogProp
         {children || (
           <Button variant="outline" size="sm">
             <RotateCcw className="h-4 w-4 mr-2" />
-            Request Return
+            {t('requestReturn.button')}
           </Button>
         )}
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Request Return or Refund</DialogTitle>
+          <DialogTitle>{t('requestReturn.dialogTitle')}</DialogTitle>
           <DialogDescription>
-            Submit a return request for order {order.ordernumber}
+            {t('requestReturn.description', { number: order.ordernumber })}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6 py-4">
           {/* Order Summary */}
           <div className="rounded-lg border p-4 bg-muted/50">
-            <h4 className="font-semibold mb-2">Order Details</h4>
+            <h4 className="font-semibold mb-2">{t('requestReturn.orderDetails')}</h4>
             <div className="space-y-1 text-sm">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Order #:</span>
+                <span className="text-muted-foreground">{t('requestReturn.orderNumber')}</span>
                 <span className="font-medium">{order.ordernumber}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Total Amount:</span>
+                <span className="text-muted-foreground">{t('requestReturn.totalAmount')}</span>
                 <span className="font-semibold">{formatCurrency(order.totalamount)}</span>
               </div>
             </div>
@@ -141,19 +144,19 @@ export function RequestReturnDialog({ order, children }: RequestReturnDialogProp
           {/* Return Reason */}
           <div className="space-y-2">
             <Label htmlFor="return-reason">
-              Return Reason <span className="text-destructive">*</span>
+              {t('requestReturn.returnReason')}
             </Label>
             <Select
               value={returnReason?.toString()}
               onValueChange={(val) => setReturnReason(Number(val) as ReturnReasonCode)}
             >
               <SelectTrigger id="return-reason">
-                <SelectValue placeholder="Select reason for return" />
+                <SelectValue placeholder={t('requestReturn.selectReason')} />
               </SelectTrigger>
               <SelectContent>
-                {RETURN_REASONS.map((reason) => (
-                  <SelectItem key={reason.code} value={reason.code.toString()}>
-                    {reason.label}
+                {Object.entries(RETURN_REASON_KEYS).map(([code, key]) => (
+                  <SelectItem key={code} value={code.toString()}>
+                    {t(`requestReturn.reasons.${key}`)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -162,10 +165,10 @@ export function RequestReturnDialog({ order, children }: RequestReturnDialogProp
 
           {/* Return Reason Details */}
           <div className="space-y-2">
-            <Label htmlFor="reason-details">Additional Details</Label>
+            <Label htmlFor="reason-details">{t('requestReturn.reasonDetails')}</Label>
             <Textarea
               id="reason-details"
-              placeholder="Please provide more details about your return reason..."
+              placeholder={t('requestReturn.reasonPlaceholder')}
               value={reasonDetails}
               onChange={(e) => setReasonDetails(e.target.value)}
               rows={3}
@@ -175,22 +178,22 @@ export function RequestReturnDialog({ order, children }: RequestReturnDialogProp
           {/* Return Type */}
           <div className="space-y-2">
             <Label htmlFor="return-type">
-              Resolution Type <span className="text-destructive">*</span>
+              {t('requestReturn.resolutionType')}
             </Label>
             <Select
               value={returnType?.toString()}
               onValueChange={(val) => setReturnType(Number(val) as ReturnTypeCode)}
             >
               <SelectTrigger id="return-type">
-                <SelectValue placeholder="Select resolution type" />
+                <SelectValue placeholder={t('requestReturn.selectResolution')} />
               </SelectTrigger>
               <SelectContent>
-                {RETURN_TYPES.map((type) => (
-                  <SelectItem key={type.code} value={type.code.toString()}>
+                {Object.entries(RETURN_TYPE_KEYS).map(([code, key]) => (
+                  <SelectItem key={code} value={code.toString()}>
                     <div>
-                      <div className="font-medium">{type.label}</div>
+                      <div className="font-medium">{t(`requestReturn.types.${key}`)}</div>
                       <div className="text-xs text-muted-foreground">
-                        {type.description}
+                        {t(`requestReturn.types.${key}Desc`)}
                       </div>
                     </div>
                   </SelectItem>
@@ -201,10 +204,10 @@ export function RequestReturnDialog({ order, children }: RequestReturnDialogProp
 
           {/* Customer Notes */}
           <div className="space-y-2">
-            <Label htmlFor="customer-notes">Additional Comments (Optional)</Label>
+            <Label htmlFor="customer-notes">{t('requestReturn.comments')}</Label>
             <Textarea
               id="customer-notes"
-              placeholder="Any additional information you'd like to share..."
+              placeholder={t('requestReturn.commentsPlaceholder')}
               value={customerNotes}
               onChange={(e) => setCustomerNotes(e.target.value)}
               rows={3}
@@ -217,13 +220,13 @@ export function RequestReturnDialog({ order, children }: RequestReturnDialogProp
               <AlertCircle className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
               <div className="space-y-1 text-sm">
                 <p className="font-semibold text-blue-900 dark:text-blue-100">
-                  Important Information
+                  {t('requestReturn.noticeTitle')}
                 </p>
                 <ul className="list-disc list-inside space-y-1 text-blue-800 dark:text-blue-200">
-                  <li>Your return request will be reviewed within 1-2 business days</li>
-                  <li>A restocking fee may apply based on return reason</li>
-                  <li>Original shipping costs are non-refundable unless item is defective</li>
-                  <li>You'll receive an RMA number once approved</li>
+                  <li>{t('requestReturn.noticeItems.reviewTime')}</li>
+                  <li>{t('requestReturn.noticeItems.restockingFee')}</li>
+                  <li>{t('requestReturn.noticeItems.shippingNonRefundable')}</li>
+                  <li>{t('requestReturn.noticeItems.rmaNumber')}</li>
                 </ul>
               </div>
             </div>
@@ -238,7 +241,7 @@ export function RequestReturnDialog({ order, children }: RequestReturnDialogProp
             onClick={handleSubmit}
             disabled={!returnReason || !returnType || isSubmitting}
           >
-            {isSubmitting ? 'Submitting...' : 'Submit Return Request'}
+            {isSubmitting ? t('requestReturn.submitting') : t('requestReturn.submitButton')}
           </Button>
         </DialogFooter>
       </DialogContent>

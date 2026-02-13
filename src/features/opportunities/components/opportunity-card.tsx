@@ -8,7 +8,8 @@ import type { Opportunity } from '@/core/contracts'
 import { OpportunityStatusBadge } from './opportunity-status-badge'
 import { OpportunityStageBadge } from './opportunity-stage-badge'
 import { Eye, Edit, Trash2, User, Calendar, TrendingUp } from 'lucide-react'
-import { formatCurrency, formatDate } from '@/shared/utils/formatters'
+import { formatDate } from '@/shared/utils/formatters'
+import { useCurrencyFormat } from '@/shared/hooks/use-currency-format'
 import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface OpportunityCardProps {
@@ -20,11 +21,12 @@ interface OpportunityCardProps {
  * Memoized OpportunityCard component
  * Performance:
  * - Only re-renders if opportunity or onDelete change
- * - Uses shared formatters (module-level) to avoid recreating on every render
+ * - Uses user's currency preference from settings
  */
 export const OpportunityCard = memo(function OpportunityCard({ opportunity, onDelete }: OpportunityCardProps) {
   const { t } = useTranslation('opportunities')
   const { t: tc } = useTranslation('common')
+  const formatCurrency = useCurrencyFormat()
 
   return (
     <Card className="hover:shadow-md transition-shadow">

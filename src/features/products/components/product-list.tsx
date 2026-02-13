@@ -13,7 +13,8 @@ import {
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Eye, Edit, Package, TrendingUp } from 'lucide-react'
-import { formatCurrency, formatDate } from '@/shared/utils/formatters'
+import { formatDate } from '@/shared/utils/formatters'
+import { useCurrencyFormat } from '@/shared/hooks/use-currency-format'
 import { EmptyState } from '@/shared/components/empty-state'
 
 interface ProductListProps {
@@ -46,6 +47,7 @@ export function ProductList({
 }: ProductListProps) {
   const { t: tProd } = useTranslation('products')
   const { t: tCommon } = useTranslation('common')
+  const formatCurrency = useCurrencyFormat()
 
   // ✅ PERFORMANCE: Memoize columns to prevent recreation on every render
   // Saves ~10-15ms per render with 100+ products
@@ -246,7 +248,7 @@ export function ProductList({
         </div>
       ),
     },
-  ], []) // Empty deps array - columns are stable
+  ], [tProd, tCommon])
 
   // Empty state
   const emptyState = (

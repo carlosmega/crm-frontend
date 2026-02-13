@@ -3,7 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { usePipelineMetrics } from '../hooks/use-pipeline-metrics'
-import { formatCurrency } from '@/shared/utils/formatters'
+import { useCurrencyFormat } from '@/shared/hooks/use-currency-format'
 import {
   LineChart,
   Line,
@@ -22,6 +22,7 @@ import {
  */
 export function PipelineTrendChart() {
   const { pipelineTrend, loading } = usePipelineMetrics()
+  const formatCurrency = useCurrencyFormat()
 
   if (loading) {
     return (

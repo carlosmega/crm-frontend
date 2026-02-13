@@ -16,7 +16,7 @@ import { DatePicker } from '@/components/ui/date-picker'
 import { TrendingUp, DollarSign, Calendar, FileText } from 'lucide-react'
 import type { QualificationWizardFormData } from './types'
 import type { Lead } from '@/core/contracts'
-import { formatCurrency } from '@/shared/utils/formatters'
+import { useCurrencyFormat } from '@/shared/hooks/use-currency-format'
 
 interface OpportunityCreationStepProps {
   lead: Lead
@@ -28,6 +28,7 @@ interface OpportunityCreationStepProps {
  * Configure the sales opportunity that will be created
  */
 export function OpportunityCreationStep({ lead }: OpportunityCreationStepProps) {
+  const formatCurrency = useCurrencyFormat()
   const form = useFormContext<QualificationWizardFormData>()
   const estimatedValue = form.watch('estimatedValue')
 

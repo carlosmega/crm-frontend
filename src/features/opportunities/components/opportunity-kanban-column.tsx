@@ -8,12 +8,12 @@ import {
 import type { Opportunity } from '@/core/contracts'
 import { SalesStageCode } from '@/core/contracts'
 import { OpportunityKanbanCard } from './opportunity-kanban-card'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { formatCurrency } from '@/shared/utils/formatters'
-import { TrendingUp, DollarSign, Hash, Inbox } from 'lucide-react'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { TrendingUp, DollarSign, Inbox, ArrowDownToLine } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useTranslation } from '@/shared/hooks/use-translation'
+import { useCurrencyFormat } from '@/shared/hooks/use-currency-format'
 
 interface OpportunityKanbanColumnProps {
   stage: SalesStageCode
@@ -21,32 +21,37 @@ interface OpportunityKanbanColumnProps {
   probability: number
   opportunities: Opportunity[]
   customerNames: Record<string, string>
+  pendingMoveId?: string | null
 }
 
-const STAGE_COLORS: Record<SalesStageCode, { bg: string; text: string; border: string; cardBorder: string }> = {
+const STAGE_COLORS: Record<SalesStageCode, { bg: string; text: string; border: string; accent: string; dropBg: string }> = {
   [SalesStageCode.Qualify]: {
     bg: 'bg-blue-50',
     text: 'text-blue-600',
     border: 'border-blue-200',
-    cardBorder: 'border-l-blue-500',
+    accent: 'bg-blue-100',
+    dropBg: 'bg-blue-50/50',
   },
   [SalesStageCode.Develop]: {
     bg: 'bg-purple-50',
     text: 'text-purple-600',
     border: 'border-purple-200',
-    cardBorder: 'border-l-purple-500',
+    accent: 'bg-purple-100',
+    dropBg: 'bg-purple-50/50',
   },
   [SalesStageCode.Propose]: {
     bg: 'bg-orange-50',
     text: 'text-orange-600',
     border: 'border-orange-200',
-    cardBorder: 'border-l-orange-500',
+    accent: 'bg-orange-100',
+    dropBg: 'bg-orange-50/50',
   },
   [SalesStageCode.Close]: {
     bg: 'bg-teal-50',
     text: 'text-teal-600',
     border: 'border-teal-200',
-    cardBorder: 'border-l-teal-500',
+    accent: 'bg-teal-100',
+    dropBg: 'bg-teal-50/50',
   },
 }
 
@@ -56,8 +61,10 @@ export function OpportunityKanbanColumn({
   probability,
   opportunities,
   customerNames,
+  pendingMoveId,
 }: OpportunityKanbanColumnProps) {
   const { t } = useTranslation('opportunities')
+  const formatCurrency = useCurrencyFormat()
   const { setNodeRef, isOver } = useDroppable({
     id: `stage-${stage}`,
     data: { stage },
@@ -71,61 +78,79 @@ export function OpportunityKanbanColumn({
   )
 
   return (
-    <div className="flex flex-col min-w-[320px] h-full">
+    <div className="flex flex-col flex-1 min-w-[280px] h-full">
       <div className={cn(
-        'flex flex-col rounded-lg bg-background border h-full',
-        isOver && 'ring-2 ring-purple-400 border-purple-400'
+        'flex flex-col rounded-lg bg-background border h-full transition-colors duration-200',
+        isOver && `border-dashed border-2 ${colors.border} ${colors.dropBg}`
       )}>
-        {/* Column Header - Fixed height */}
+        {/* Column Header */}
         <div className={cn('px-4 py-3 rounded-t-lg border-b flex-shrink-0', colors.bg)}>
-          <div className="flex items-center justify-between mb-3">
-            <h3 className={cn('font-semibold text-sm', colors.text)}>
-              {title}
-            </h3>
-            <span className={cn('text-sm font-semibold', colors.text)}>
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <h3 className={cn('font-semibold text-sm', colors.text)}>
+                {title}
+              </h3>
+              <Badge variant="secondary" className={cn('h-5 px-1.5 text-xs font-bold', colors.accent, colors.text)}>
+                {opportunities.length}
+              </Badge>
+            </div>
+            <span className={cn('text-xs font-medium', colors.text)}>
               {probability}%
             </span>
           </div>
 
-          <div className="space-y-1.5">
-            <div className="flex justify-between items-center">
-              <span className="text-xs text-muted-foreground">{t('kanban.count')}</span>
-              <span className="text-xs font-semibold text-foreground">{opportunities.length}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-xs text-muted-foreground">{t('kanban.total')}</span>
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-1.5">
+              <DollarSign className={cn('h-3.5 w-3.5', colors.text)} />
               <span className="text-xs font-semibold text-foreground">{formatCurrency(totalValue)}</span>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-xs text-muted-foreground">{t('kanban.weighted')}</span>
+            <div className="flex items-center gap-1.5">
+              <TrendingUp className={cn('h-3.5 w-3.5', colors.text)} />
               <span className={cn('text-xs font-bold', colors.text)}>{formatCurrency(weightedValue)}</span>
             </div>
           </div>
         </div>
 
-        {/* Column Content - Scrollable, takes remaining space */}
-        <div className="flex-1 min-h-0 p-3 overflow-y-auto bg-gray-50/50" ref={setNodeRef}>
-          <SortableContext
-            items={opportunities.map((opp) => opp.opportunityid)}
-            strategy={verticalListSortingStrategy}
-          >
-            {opportunities.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-32 text-sm text-muted-foreground">
-                <Inbox className="h-8 w-8 mb-2 opacity-50" />
-                <span>{t('kanban.noOpportunities')}</span>
-              </div>
-            ) : (
-              opportunities.map((opportunity) => (
-                <OpportunityKanbanCard
-                  key={opportunity.opportunityid}
-                  opportunity={opportunity}
-                  customerName={customerNames[opportunity.customerid]}
-                  stage={stage}
-                />
-              ))
-            )}
-          </SortableContext>
-        </div>
+        {/* Column Content - Scrollable */}
+        <ScrollArea className="flex-1 min-h-0">
+          <div className="p-3" ref={setNodeRef}>
+            <SortableContext
+              items={opportunities.map((opp) => opp.opportunityid)}
+              strategy={verticalListSortingStrategy}
+            >
+              {opportunities.length === 0 ? (
+                <div className={cn(
+                  "flex flex-col items-center justify-center h-32 text-sm text-muted-foreground rounded-lg transition-all duration-200",
+                  isOver && `border-2 border-dashed ${colors.border} ${colors.dropBg}`
+                )}>
+                  {isOver ? (
+                    <>
+                      <ArrowDownToLine className={cn("h-8 w-8 mb-2 animate-bounce", colors.text)} />
+                      <span className={cn("font-medium", colors.text)}>{t('kanban.dropHere')}</span>
+                    </>
+                  ) : (
+                    <>
+                      <div className={cn("rounded-full p-3 mb-2", colors.bg)}>
+                        <Inbox className={cn("h-6 w-6", colors.text)} />
+                      </div>
+                      <span className="text-xs text-center px-4">{t('kanban.emptyHint')}</span>
+                    </>
+                  )}
+                </div>
+              ) : (
+                opportunities.map((opportunity) => (
+                  <OpportunityKanbanCard
+                    key={opportunity.opportunityid}
+                    opportunity={opportunity}
+                    customerName={customerNames[opportunity.customerid]}
+                    stage={stage}
+                    isPending={pendingMoveId === opportunity.opportunityid}
+                  />
+                ))
+              )}
+            </SortableContext>
+          </div>
+        </ScrollArea>
       </div>
     </div>
   )

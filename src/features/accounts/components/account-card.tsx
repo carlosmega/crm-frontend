@@ -7,7 +7,8 @@ import { useTranslation } from '@/shared/hooks/use-translation'
 import { AccountStatusBadge } from './account-status-badge'
 import { AccountCategoryBadge } from './account-category-badge'
 import { Mail, Phone, Globe, MapPin, Users, DollarSign, Eye, Edit, Trash2 } from 'lucide-react'
-import { formatCurrency, formatNumber } from '@/shared/utils/formatters'
+import { formatNumber } from '@/shared/utils/formatters'
+import { useCurrencyFormat } from '@/shared/hooks/use-currency-format'
 
 interface AccountCardProps {
   account: Account
@@ -18,11 +19,12 @@ interface AccountCardProps {
  * Memoized AccountCard component
  * Performance:
  * - Only re-renders if account or onDelete change
- * - Uses shared formatters (module-level) to avoid recreating on every render
+ * - Uses user's currency preference from settings
  */
 export const AccountCard = memo(function AccountCard({ account, onDelete }: AccountCardProps) {
   const { t } = useTranslation('accounts')
   const { t: tc } = useTranslation('common')
+  const formatCurrency = useCurrencyFormat()
 
   return (
     <Card className="hover:shadow-md transition-shadow">

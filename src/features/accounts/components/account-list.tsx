@@ -15,7 +15,8 @@ import { Button } from '@/components/ui/button'
 import { AccountStatusBadge } from './account-status-badge'
 import { AccountCategoryBadge } from './account-category-badge'
 import { Eye, Edit, Mail, Phone, Globe, MapPin, DollarSign, Users, Building2, Filter } from 'lucide-react'
-import { formatCurrency, formatNumber, formatDate } from '@/shared/utils/formatters'
+import { formatNumber, formatDate } from '@/shared/utils/formatters'
+import { useCurrencyFormat } from '@/shared/hooks/use-currency-format'
 import { EmptyState } from '@/shared/components/empty-state'
 
 interface AccountListProps {
@@ -41,6 +42,7 @@ export const AccountList = memo(function AccountList({
 }: AccountListProps) {
   const { t: tAcc } = useTranslation('accounts')
   const { t: tCommon } = useTranslation('common')
+  const formatCurrency = useCurrencyFormat()
 
   // ✅ PERFORMANCE: Memoize columns to prevent recreation on every render
   // Saves ~10-15ms per render with 100+ accounts
@@ -240,7 +242,7 @@ export const AccountList = memo(function AccountList({
         </div>
       ),
     },
-  ], []) // Empty deps array - columns are stable
+  ], [tAcc, tCommon])
 
   // Determine if filters are active
   const hasActiveFilters = filters && Object.keys(filters).length > 0

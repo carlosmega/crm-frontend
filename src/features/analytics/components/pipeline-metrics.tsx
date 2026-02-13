@@ -3,7 +3,7 @@
 import { Skeleton } from '@/components/ui/skeleton'
 import { MetricCard } from '@/shared/components/metric-card'
 import { usePipelineMetrics } from '../hooks/use-pipeline-metrics'
-import { formatCurrency } from '@/shared/utils/formatters'
+import { useCurrencyFormat } from '@/shared/hooks/use-currency-format'
 import {
   DollarSign,
   TrendingUp,
@@ -23,6 +23,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card'
  */
 export function PipelineMetrics() {
   const { metrics, loading } = usePipelineMetrics()
+  const formatCurrency = useCurrencyFormat()
 
   if (loading) {
     return (
