@@ -56,6 +56,7 @@ export function LeadFormTabs({
       <TabsList className="h-auto p-0 bg-transparent border-0 gap-0 justify-start rounded-none inline-flex w-full md:w-auto min-w-max">
         <TabsTrigger
           value="general"
+          data-testid="tab-general"
           className={cn(
             "relative rounded-none border-0 px-4 md:px-6 py-3 text-sm font-medium transition-colors",
             "data-[state=active]:bg-transparent data-[state=active]:text-purple-600",
@@ -69,6 +70,7 @@ export function LeadFormTabs({
 
         <TabsTrigger
           value="qualification"
+          data-testid="tab-qualification"
           className={cn(
             "relative rounded-none border-0 px-4 md:px-6 py-3 text-sm font-medium transition-colors",
             "data-[state=active]:bg-transparent data-[state=active]:text-purple-600",
@@ -82,6 +84,7 @@ export function LeadFormTabs({
 
         <TabsTrigger
           value="address"
+          data-testid="tab-address"
           className={cn(
             "relative rounded-none border-0 px-4 md:px-6 py-3 text-sm font-medium transition-colors",
             "data-[state=active]:bg-transparent data-[state=active]:text-purple-600",
@@ -95,6 +98,7 @@ export function LeadFormTabs({
 
         <TabsTrigger
           value="notes"
+          data-testid="tab-notes"
           className={cn(
             "relative rounded-none border-0 px-4 md:px-6 py-3 text-sm font-medium transition-colors",
             "data-[state=active]:bg-transparent data-[state=active]:text-purple-600",

@@ -12,6 +12,7 @@ import { GenerateInvoiceButton } from '@/features/orders/components/generate-inv
 import { OrderStateCode } from '@/core/contracts/enums'
 import { DetailPageHeader } from '@/components/layout/detail-page-header'
 import { MobileDetailHeader } from '@/components/layout/mobile-detail-header'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 // ✅ PERFORMANCE: Dynamic imports for tabs and dialogs
 const OrderDetailTabs = dynamic(
@@ -70,6 +71,8 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
   const { id } = use(params)
   const router = useRouter()
   const { toast } = useToast()
+  const { t } = useTranslation('orders')
+  const { t: tc } = useTranslation('common')
 
   const { data: order, isLoading: loading, error } = useOrder(id)
   const { data: orderDetails, isLoading: loadingDetails } = useOrderDetails(id)
@@ -164,7 +167,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
           disabled={isExporting}
         >
           <FileDown className="mr-2 h-4 w-4" />
-          {isExporting ? 'Exporting...' : 'Export PDF'}
+          {isExporting ? tc('actions.exporting') : tc('actions.exportPdf')}
         </DropdownMenuItem>
         {canEditLines && (
           <>
@@ -240,8 +243,8 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
       {/* Desktop Header */}
       <DetailPageHeader
         breadcrumbs={[
-          { label: 'Sales', href: '/dashboard' },
-          { label: 'Orders', href: '/orders' },
+          { label: tc('breadcrumbs.sales'), href: '/dashboard' },
+          { label: tc('breadcrumbs.orders'), href: '/orders' },
           { label: order.name },
         ]}
       />
@@ -290,7 +293,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                   disabled={isExporting}
                 >
                   <FileText className="mr-2 h-4 w-4" />
-                  {isExporting ? 'Exporting...' : 'Export PDF'}
+                  {isExporting ? tc('actions.exporting') : tc('actions.exportPdf')}
                 </Button>
                 {canSubmit && (
                   <Button
@@ -374,6 +377,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
+              data-testid="confirm-submit-order-button"
               className="bg-blue-600 hover:bg-blue-700"
               onClick={handleSubmitOrder}
               disabled={submitMutation.isPending}
@@ -384,7 +388,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                   Submitting...
                 </>
               ) : (
-                'Submit Order'
+                tc('actions.submitOrder')
               )}
             </AlertDialogAction>
           </AlertDialogFooter>

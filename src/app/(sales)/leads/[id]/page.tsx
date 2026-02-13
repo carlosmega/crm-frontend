@@ -14,6 +14,7 @@ import { CreateActivityDialog } from '@/features/activities/components/create-ac
 import { SalesBusinessProcessFlow } from '@/shared/components'
 import { DetailPageHeader } from '@/components/layout/detail-page-header'
 import { MobileDetailHeader } from '@/components/layout/mobile-detail-header'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 // ✅ PERFORMANCE: Dynamic import for wizard (reduces initial bundle by ~15-20KB)
 const LeadQualificationWizard = dynamic(
@@ -48,6 +49,8 @@ import {
 export default function LeadDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params)
   const router = useRouter()
+  const { t } = useTranslation('leads')
+  const { t: tc } = useTranslation('common')
   const { lead, loading, refetch } = useLead(resolvedParams.id)
   const { deleteLead, disqualifyLead, loading: mutating } = useLeadMutations()
   const [qualifyDialogOpen, setQualifyDialogOpen] = useState(false)
@@ -55,7 +58,7 @@ export default function LeadDetailPage({ params }: { params: Promise<{ id: strin
   const [stageDialogOpen, setStageDialogOpen] = useState(false)
 
   const handleDelete = async () => {
-    if (confirm('Are you sure you want to delete this lead?')) {
+    if (confirm(tc('confirmations.deleteMessage', { entity: tc('entities.lead') }))) {
       try {
         await deleteLead(resolvedParams.id)
         router.push('/leads')
@@ -66,7 +69,7 @@ export default function LeadDetailPage({ params }: { params: Promise<{ id: strin
   }
 
   const handleDisqualify = async () => {
-    if (confirm('Are you sure you want to disqualify this lead?')) {
+    if (confirm(tc('confirmations.disqualifyMessage'))) {
       try {
         await disqualifyLead(resolvedParams.id)
         window.location.reload()
@@ -87,9 +90,9 @@ export default function LeadDetailPage({ params }: { params: Promise<{ id: strin
   if (!lead) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-4">
-        <p className="text-lg font-semibold text-muted-foreground">Lead not found</p>
+        <p className="text-lg font-semibold text-muted-foreground">{tc('errors.notFound', { entity: tc('entities.lead') })}</p>
         <Button asChild>
-          <Link href="/leads">Back to Leads</Link>
+          <Link href="/leads">{tc('actions.backTo', { entity: tc('breadcrumbs.leads') })}</Link>
         </Button>
       </div>
     )
@@ -107,30 +110,30 @@ export default function LeadDetailPage({ params }: { params: Promise<{ id: strin
         <DropdownMenuItem asChild>
           <Link href={`/leads/${lead.leadid}/edit`} className="flex items-center cursor-pointer">
             <Edit className="mr-2 h-4 w-4" />
-            Edit
+            {tc('buttons.edit')}
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setCreateActivityDialogOpen(true)}>
           <FileText className="mr-2 h-4 w-4" />
-          Log Activity
+          {tc('buttons.logActivity')}
         </DropdownMenuItem>
         {lead.statecode === LeadStateCode.Open && (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => setQualifyDialogOpen(true)} disabled={mutating}>
               <CheckCircle2 className="mr-2 h-4 w-4" />
-              Qualify Lead
+              {tc('actions.qualifyLead')}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleDisqualify} disabled={mutating}>
               <XCircle className="mr-2 h-4 w-4" />
-              Disqualify
+              {tc('actions.disqualify')}
             </DropdownMenuItem>
           </>
         )}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleDelete} disabled={mutating} className="text-destructive focus:text-destructive">
           <Trash2 className="mr-2 h-4 w-4" />
-          Delete
+          {tc('buttons.delete')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -149,8 +152,8 @@ export default function LeadDetailPage({ params }: { params: Promise<{ id: strin
       {/* Desktop Header */}
       <DetailPageHeader
         breadcrumbs={[
-          { label: 'Sales', href: '/dashboard' },
-          { label: 'Leads', href: '/leads' },
+          { label: tc('breadcrumbs.sales'), href: '/dashboard' },
+          { label: tc('breadcrumbs.leads'), href: '/leads' },
           { label: lead.fullname || `${lead.firstname} ${lead.lastname}` },
         ]}
       />
@@ -169,9 +172,9 @@ export default function LeadDetailPage({ params }: { params: Promise<{ id: strin
               <div className="flex flex-wrap gap-2">
                 {lead.statecode === LeadStateCode.Open && (
                   <>
-                    <Button onClick={() => setQualifyDialogOpen(true)} disabled={mutating} className="bg-purple-600 hover:bg-purple-700 text-white font-medium">
+                    <Button data-testid="qualify-lead-button" onClick={() => setQualifyDialogOpen(true)} disabled={mutating} className="bg-purple-600 hover:bg-purple-700 text-white font-medium">
                       <CheckCircle2 className="mr-2 h-4 w-4" />
-                      Qualify Lead
+                      {tc('actions.qualifyLead')}
                     </Button>
                     <Button
                       variant="outline"
@@ -180,7 +183,7 @@ export default function LeadDetailPage({ params }: { params: Promise<{ id: strin
                       className="border-gray-300 text-gray-700 hover:bg-gray-50"
                     >
                       <XCircle className="mr-2 h-4 w-4" />
-                      Disqualify
+                      {tc('actions.disqualify')}
                     </Button>
                   </>
                 )}
@@ -193,7 +196,7 @@ export default function LeadDetailPage({ params }: { params: Promise<{ id: strin
                 <Button asChild variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
                   <Link href={`/leads/${lead.leadid}/edit`}>
                     <Edit className="mr-2 h-4 w-4" />
-                    Edit
+                    {tc('buttons.edit')}
                   </Link>
                 </Button>
                 <Button
@@ -203,7 +206,7 @@ export default function LeadDetailPage({ params }: { params: Promise<{ id: strin
                   className="border-gray-300 text-gray-700 hover:bg-gray-50"
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
-                  Delete
+                  {tc('buttons.delete')}
                 </Button>
               </div>
             </div>

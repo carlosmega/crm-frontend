@@ -169,6 +169,7 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, sec
                     </FormLabel>
                     <FormControl>
                       <Input
+                        data-testid="lead-firstname"
                         placeholder={t('form.placeholders.firstName')}
                         className="h-10"
                         {...field}
@@ -189,6 +190,7 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, sec
                     </FormLabel>
                     <FormControl>
                       <Input
+                        data-testid="lead-lastname"
                         placeholder={t('form.placeholders.lastName')}
                         className="h-10"
                         {...field}
@@ -211,6 +213,7 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, sec
                     </FormLabel>
                     <FormControl>
                       <IconInput
+                        data-testid="lead-company"
                         placeholder={t('form.placeholders.company')}
                         icon={Building2}
                         className=""
@@ -232,6 +235,7 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, sec
                     </FormLabel>
                     <FormControl>
                       <Input
+                        data-testid="lead-jobtitle"
                         placeholder={t('form.placeholders.jobTitle')}
                         className="h-10"
                         {...field}
@@ -263,6 +267,7 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, sec
                     </FormLabel>
                     <FormControl>
                       <IconInput
+                        data-testid="lead-email"
                         type="email"
                         placeholder={t('form.placeholders.email')}
                         icon={Mail}
@@ -285,6 +290,7 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, sec
                     </FormLabel>
                     <FormControl>
                       <IconInput
+                        data-testid="lead-phone"
                         type="tel"
                         placeholder="+34 912 345 678"
                         icon={Phone}
@@ -307,6 +313,7 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, sec
                     </FormLabel>
                     <FormControl>
                       <IconInput
+                        data-testid="lead-mobile"
                         type="tel"
                         placeholder="+34 678 901 234"
                         icon={Smartphone}
@@ -329,6 +336,7 @@ export function LeadForm({ lead, onSubmit, onCancel, isLoading, hideActions, sec
                     </FormLabel>
                     <FormControl>
                       <IconInput
+                        data-testid="lead-website"
                         type="url"
                         placeholder="https://example.com"
                         icon={Globe}

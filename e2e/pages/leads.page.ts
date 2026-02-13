@@ -50,35 +50,35 @@ export class LeadsPage {
     this.newLeadLink = page.getByRole('link', { name: 'Nuevo Lead' })
     this.leadsNavLink = page.getByRole('link', { name: 'Leads' })
 
-    // Lead Form - Basic Info (using exact label text)
-    this.firstNameInput = page.getByLabel(/First Name/i)
-    this.lastNameInput = page.getByLabel(/Last Name/i)
-    this.companyInput = page.getByLabel(/^Company$/i)
-    this.jobTitleInput = page.getByLabel(/Job Title/i)
-    this.emailInput = page.getByLabel(/^Email$/i)
-    this.phoneInput = page.getByLabel(/^Phone$/i)
-    this.mobileInput = page.getByLabel(/^Mobile$/i)
-    this.websiteInput = page.getByLabel(/^Website$/i)
+    // Lead Form - Basic Info (using data-testid for language independence)
+    this.firstNameInput = page.getByTestId('lead-firstname')
+    this.lastNameInput = page.getByTestId('lead-lastname')
+    this.companyInput = page.getByTestId('lead-company')
+    this.jobTitleInput = page.getByTestId('lead-jobtitle')
+    this.emailInput = page.getByTestId('lead-email')
+    this.phoneInput = page.getByTestId('lead-phone')
+    this.mobileInput = page.getByTestId('lead-mobile')
+    this.websiteInput = page.getByTestId('lead-website')
 
     // Qualification fields
     this.estimatedValueInput = page.getByLabel(/Estimated Value/i)
     this.leadSourceSelect = page.getByLabel(/Lead Source/i)
     this.leadQualitySelect = page.getByLabel(/Lead Quality/i)
 
-    // Actions
-    this.createLeadButton = page.getByRole('button', { name: /create lead/i })
+    // Actions (using data-testid for language independence)
+    this.createLeadButton = page.getByTestId('create-lead-button')
     this.updateLeadButton = page.getByRole('button', { name: /update lead/i })
     this.saveButton = page.getByRole('button', { name: /save/i })
     this.cancelButton = page.getByRole('button', { name: /cancel/i })
-    this.qualifyButton = page.getByRole('button', { name: 'Qualify Lead' })
+    this.qualifyButton = page.getByTestId('qualify-lead-button')
     this.editButton = page.getByRole('link', { name: /edit/i })
     this.deleteButton = page.getByRole('button', { name: /delete/i })
 
-    // Tabs
-    this.generalTab = page.getByRole('tab', { name: /general/i })
-    this.qualificationTab = page.getByRole('tab', { name: /qualification/i })
-    this.addressTab = page.getByRole('tab', { name: /address/i })
-    this.notesTab = page.getByRole('tab', { name: /notes/i })
+    // Tabs (using data-testid for language independence)
+    this.generalTab = page.getByTestId('tab-general')
+    this.qualificationTab = page.getByTestId('tab-qualification')
+    this.addressTab = page.getByTestId('tab-address')
+    this.notesTab = page.getByTestId('tab-notes')
   }
 
   /**

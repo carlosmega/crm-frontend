@@ -75,6 +75,7 @@ export default function NewLeadPage() {
                   Cancel
                 </Button>
                 <Button
+                  data-testid="create-lead-button"
                   onClick={() => {
                     const form = document.getElementById('lead-edit-form') as HTMLFormElement
                     form?.requestSubmit()
