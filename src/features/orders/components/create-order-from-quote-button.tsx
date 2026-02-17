@@ -2,8 +2,11 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useCreateOrderFromQuote } from '../hooks/use-orders'
+import Link from 'next/link'
+import { useCreateOrderFromQuote, useOrdersByQuote } from '../hooks/use-orders'
+import { OrderStateCode } from '@/core/contracts/enums'
 import { Button } from '@/components/ui/button'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,8 +17,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { Loader2, Package, CheckCircle2 } from 'lucide-react'
+import { Loader2, Package, CheckCircle2, Info, AlertTriangle, ExternalLink } from 'lucide-react'
 import { toast } from 'sonner'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface CreateOrderFromQuoteButtonProps {
   quote: {
@@ -74,9 +78,14 @@ export function CreateOrderFromQuoteButton({
   size = 'default',
   className,
 }: CreateOrderFromQuoteButtonProps) {
+  const { t } = useTranslation('orders')
+  const { t: tc } = useTranslation('common')
   const router = useRouter()
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
   const createOrderMutation = useCreateOrderFromQuote()
+
+  // ✅ DYNAMICS 365 STANDARD: Check for existing orders from this quote
+  const { data: existingOrders = [], isLoading: isCheckingOrders } = useOrdersByQuote(quote.quoteid)
 
   // Validation: Quote must be Won (state = 2)
   const QuoteStateCode = {
@@ -88,17 +97,29 @@ export function CreateOrderFromQuoteButton({
   const isWon = quote.statecode === QuoteStateCode.Won
   const hasLines = quoteLines.length > 0
 
-  const canCreateOrder = isWon && hasLines
+  // ✅ DYNAMICS 365 STANDARD: Prevent duplicate orders (1 Quote → 1 Order)
+  // Active orders are those NOT in Canceled state
+  const activeOrders = existingOrders.filter(
+    (order) => order.statecode !== OrderStateCode.Canceled
+  )
+  const cancelledOrders = existingOrders.filter(
+    (order) => order.statecode === OrderStateCode.Canceled
+  )
+
+  const hasActiveOrders = activeOrders.length > 0
+  const hasCancelledOrders = cancelledOrders.length > 0
+
+  const canCreateOrder = isWon && hasLines && !hasActiveOrders
 
   const handleCreateOrder = async () => {
     try {
       // Backend/Mock service will fetch quote data and create order automatically
       const order = await createOrderMutation.mutateAsync(quote.quoteid)
 
-      toast.success('Order created successfully from quote', {
-        description: `Order ${order.ordernumber || order.salesorderid} has been created`,
+      toast.success(t('createFromQuote.successToast'), {
+        description: t('createFromQuote.orderCreated', { number: order.ordernumber || order.salesorderid }),
         action: {
-          label: 'View Order',
+          label: t('createFromQuote.viewOrder'),
           onClick: () => router.push(`/orders/${order.salesorderid}`),
         },
       })
@@ -110,38 +131,93 @@ export function CreateOrderFromQuoteButton({
     } catch (error) {
       console.error('Error creating order from quote:', error)
       toast.error(
-        error instanceof Error ? error.message : 'Failed to create order from quote'
+        error instanceof Error ? error.message : t('createFromQuote.errorToast')
       )
     }
   }
 
   // Show tooltip if not available
   let disabledReason = ''
-  if (!isWon) disabledReason = 'Quote must be Won to create an order'
-  else if (!hasLines) disabledReason = 'Quote must have at least one line item'
+  if (!isWon) disabledReason = t('createFromQuote.disabledReasons.mustBeWon')
+  else if (!hasLines) disabledReason = t('createFromQuote.disabledReasons.needsLineItems')
+  else if (hasActiveOrders) disabledReason = t('createFromQuote.disabledReasons.orderExists')
 
+  // Show loading state while checking for existing orders
+  if (isCheckingOrders) {
+    return (
+      <Button variant={variant} size={size} className={className} disabled>
+        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        {t('createFromQuote.checkingOrders')}
+      </Button>
+    )
+  }
+
+  // ✅ SCENARIO 1: Active order exists - prevent duplicate order creation
+  if (hasActiveOrders) {
+    const order = activeOrders[0]
+    return (
+      <div className="space-y-3">
+        <Button
+          variant="outline"
+          size={size}
+          className={className}
+          disabled
+          title={disabledReason}
+        >
+          <Package className="mr-2 h-4 w-4" />
+          {t('createFromQuote.button')}
+        </Button>
+        <Alert>
+          <Info className="h-4 w-4" />
+          <AlertTitle>{t('createFromQuote.alerts.orderExists.title')}</AlertTitle>
+          <AlertDescription className="space-y-2">
+            <p>{t('createFromQuote.alerts.orderExists.description')}</p>
+            <Link
+              href={`/orders/${order.salesorderid}`}
+              className="inline-flex items-center gap-1 font-medium text-primary hover:underline"
+            >
+              {order.ordernumber || order.name}
+              <ExternalLink className="h-3 w-3" />
+            </Link>
+          </AlertDescription>
+        </Alert>
+      </div>
+    )
+  }
+
+  // ✅ SCENARIO 2: No active orders (may have cancelled orders)
   return (
-    <>
+    <div className="space-y-3">
       <Button
         variant={variant}
         size={size}
         className={className}
         onClick={() => setShowConfirmDialog(true)}
         disabled={!canCreateOrder || createOrderMutation.isPending}
-        title={disabledReason || 'Create order from this quote'}
+        title={disabledReason || t('createFromQuote.tooltip')}
       >
         {createOrderMutation.isPending ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Creating...
+            {t('createFromQuote.creating')}
           </>
         ) : (
           <>
             <Package className="mr-2 h-4 w-4" />
-            Create Order
+            {t('createFromQuote.button')}
           </>
         )}
       </Button>
+
+      {/* ✅ SCENARIO 3: Warn if cancelled orders exist */}
+      {hasCancelledOrders && (
+        <Alert variant="default" className="border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950">
+          <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+          <AlertDescription className="text-amber-900 dark:text-amber-100">
+            {t('createFromQuote.alerts.cancelledOrder.description')}
+          </AlertDescription>
+        </Alert>
+      )}
 
       {/* Confirmation Dialog */}
       <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
@@ -149,50 +225,49 @@ export function CreateOrderFromQuoteButton({
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
               <Package className="h-5 w-5 text-primary" />
-              Create Order from Quote?
+              {t('createFromQuote.dialogTitle')}
             </AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div className="space-y-3">
                 <p>
-                  This will create a new sales order based on this quote with all its line
-                  items.
+                  {t('createFromQuote.description')}
                 </p>
                 <div className="border rounded-lg p-3 bg-muted/30 space-y-2 text-sm">
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                    <span>Order will be created in "Active" status</span>
+                    <span>{t('createFromQuote.bulletPoints.activeStatus')}</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                    <span>All quote line items will be copied to the order</span>
+                    <span>{t('createFromQuote.bulletPoints.copyLineItems')}</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                    <span>Order will be linked to this quote and opportunity</span>
+                    <span>{t('createFromQuote.bulletPoints.linkedToQuote')}</span>
                   </div>
                   <div className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
                     <span>
-                      Order can be submitted for fulfillment after review
+                      {t('createFromQuote.bulletPoints.submitAfterReview')}
                     </span>
                   </div>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Quote: <span className="font-medium">{quote.name}</span>
+                  {t('createFromQuote.quoteLabel')} <span className="font-medium">{quote.name}</span>
                   <br />
-                  Total Amount:{' '}
+                  {t('createFromQuote.totalAmount')}{' '}
                   <span className="font-medium">
                     ${quote.totalamount.toFixed(2)}
                   </span>
                   <br />
-                  Line Items: <span className="font-medium">{quoteLines.length}</span>
+                  {t('createFromQuote.lineItemsLabel')} <span className="font-medium">{quoteLines.length}</span>
                 </p>
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={createOrderMutation.isPending}>
-              Cancel
+              {tc('buttons.cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleCreateOrder}
@@ -201,18 +276,18 @@ export function CreateOrderFromQuoteButton({
               {createOrderMutation.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating Order...
+                  {t('createFromQuote.creatingOrder')}
                 </>
               ) : (
                 <>
                   <Package className="mr-2 h-4 w-4" />
-                  Create Order
+                  {t('createFromQuote.button')}
                 </>
               )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
+    </div>
   )
 }

@@ -354,11 +354,18 @@ export const orderServiceMock = {
     }
 
     // 4. Create Order from Quote data
+    const now = new Date()
+    const dateStr = now.toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).replace(/\//g, '-')
+
     const newOrder: Order = {
       salesorderid: `order-${Date.now()}`,
       ordernumber: generateOrderNumber(),
       statecode: OrderStateCode.Active,
-      name: quote.name,
+      name: `${quote.name} - ${dateStr}`, // ✅ Agrega fecha de creación al nombre
       quoteid: quote.quoteid,
       opportunityid: quote.opportunityid,
       customerid: quote.customerid,
@@ -368,8 +375,8 @@ export const orderServiceMock = {
       totaltax: quote.totaltax,
       discountamount: quote.discountamount,
       ...shippingInfo,
-      createdon: new Date().toISOString(),
-      modifiedon: new Date().toISOString(),
+      createdon: now.toISOString(),
+      modifiedon: now.toISOString(),
     }
 
     const orders = getAllOrders()

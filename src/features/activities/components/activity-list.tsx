@@ -272,7 +272,7 @@ export function ActivityList({
         </div>
       ),
     },
-  ], []) // Empty deps - columns are stable
+  ], [tAct, tCommon])
 
   // Empty state
   const emptyState = (

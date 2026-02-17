@@ -14,6 +14,7 @@ import {
 import { QuoteInfoHeader } from "@/features/quotes/components/quote-info-header";
 import { DetailPageHeader } from "@/components/layout/detail-page-header";
 import { MobileDetailHeader } from "@/components/layout/mobile-detail-header";
+import { useTranslation } from '@/shared/hooks/use-translation';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -96,6 +97,8 @@ interface QuoteDetailPageProps {
 export default function QuoteDetailPage({ params }: QuoteDetailPageProps) {
   const { id } = use(params);
   const router = useRouter();
+  const { t } = useTranslation('quotes');
+  const { t: tc } = useTranslation('common');
 
   const { data: quote, isLoading, error } = useQuote(id);
   const { data: quoteLines = [] } = useQuoteDetails(id);
@@ -156,10 +159,10 @@ export default function QuoteDetailPage({ params }: QuoteDetailPageProps) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-4">
         <p className="text-lg font-semibold text-destructive">
-          Error loading quote: {error.message}
+          {tc('errors.loadFailed', { entity: tc('entities.quote') })}: {error.message}
         </p>
         <Button asChild>
-          <Link href="/quotes">Back to Quotes</Link>
+          <Link href="/quotes">{tc('actions.backTo', { entity: tc('breadcrumbs.quotes') })}</Link>
         </Button>
       </div>
     );
@@ -190,12 +193,12 @@ export default function QuoteDetailPage({ params }: QuoteDetailPageProps) {
             <DropdownMenuItem asChild>
               <Link href={`/quotes/${id}/edit`} className="flex items-center cursor-pointer">
                 <Edit className="mr-2 h-4 w-4" />
-                Edit
+                {tc('buttons.edit')}
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setShowActivateDialog(true)}>
               <FileCheck className="mr-2 h-4 w-4" />
-              Activate Quote
+              {tc('actions.activateQuote')}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
           </>
@@ -204,31 +207,31 @@ export default function QuoteDetailPage({ params }: QuoteDetailPageProps) {
           <>
             <DropdownMenuItem onClick={() => setShowWinDialog(true)}>
               <FileCheck className="mr-2 h-4 w-4" />
-              Win Quote
+              {tc('actions.winQuote')}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setShowLoseDialog(true)}>
               <FileX className="mr-2 h-4 w-4" />
-              Lose Quote
+              {tc('actions.loseQuote')}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
           </>
         )}
         <DropdownMenuItem onClick={handleClone} disabled={isCloning}>
           <Copy className="mr-2 h-4 w-4" />
-          Clone Quote
+          {tc('actions.cloneQuote')}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setShowSaveAsTemplateDialog(true)}>
           <FilePlus className="mr-2 h-4 w-4" />
-          Save as Template
+          {tc('actions.saveAsTemplate')}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => setShowCancelDialog(true)}>
           <XCircle className="mr-2 h-4 w-4" />
-          Cancel Quote
+          {tc('actions.cancelQuote')}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setShowDeleteDialog(true)} className="text-destructive focus:text-destructive">
           <Trash2 className="mr-2 h-4 w-4" />
-          Delete
+          {tc('buttons.delete')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -247,16 +250,16 @@ export default function QuoteDetailPage({ params }: QuoteDetailPageProps) {
       {/* Desktop Header */}
       <DetailPageHeader
         breadcrumbs={[
-          { label: 'Sales', href: '/dashboard' },
-          { label: 'Quotes', href: '/quotes' },
+          { label: tc('breadcrumbs.sales'), href: '/dashboard' },
+          { label: tc('breadcrumbs.quotes'), href: '/quotes' },
           { label: quote.name },
         ]}
       />
 
       {/* Content - Fondo gris igual que opportunities/accounts */}
-      <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100">
+      <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100 dark:bg-gray-900">
         {/* STICKY SECTION - Quote Info Header + Actions */}
-        <div className="md:sticky md:top-0 z-40 bg-gray-100/98 backdrop-blur-sm">
+        <div className="md:sticky md:top-0 z-40 bg-gray-100/98 dark:bg-gray-900/98 backdrop-blur-sm">
           {/* Quote Info Header & Actions */}
           <div className="hidden md:block px-4 pt-4 pb-4">
             <QuoteInfoHeader

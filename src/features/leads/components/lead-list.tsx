@@ -302,7 +302,7 @@ export function LeadList({
         </div>
       ),
     },
-  ], [formatCurrency, formatDate]) // Memoize with stable dependencies
+  ], [formatCurrency, formatDate, tLeads, tCommon])
 
   // Determine if filters are active
   const hasActiveFilters = filters && Object.keys(filters).length > 0

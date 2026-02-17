@@ -23,19 +23,19 @@ export function LeadQualityBadge({ quality }: LeadQualityBadgeProps) {
         return {
           label: t(`quality.${qualityKeyMap[quality]}`),
           icon: Flame,
-          className: 'bg-red-100 text-red-800 hover:bg-red-100'
+          className: 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 hover:bg-red-100'
         }
       case LeadQualityCode.Warm:
         return {
           label: t(`quality.${qualityKeyMap[quality]}`),
           icon: Sun,
-          className: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-100'
+          className: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 hover:bg-yellow-100'
         }
       case LeadQualityCode.Cold:
         return {
           label: t(`quality.${qualityKeyMap[quality]}`),
           icon: Snowflake,
-          className: 'bg-blue-100 text-blue-800 hover:bg-blue-100'
+          className: 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 hover:bg-blue-100'
         }
       default:
         return null

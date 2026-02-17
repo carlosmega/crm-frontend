@@ -22,6 +22,7 @@ import {
 } from '../utils/quote-helpers'
 import { Search, SlidersHorizontal, FileText } from 'lucide-react'
 import { EmptyState } from '@/shared/components/empty-state'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface QuoteListProps {
   quotes: Quote[]
@@ -30,34 +31,34 @@ interface QuoteListProps {
 
 type SortOption = 'date-desc' | 'date-asc' | 'amount-desc' | 'amount-asc'
 
-// ✅ OPTIMIZACIÓN: Constantes fuera del componente (no se recrean en cada render)
-const STATE_FILTER_OPTIONS = [
-  { value: 'all', label: 'All States' },
-  { value: QuoteStateCode.Draft.toString(), label: getQuoteStateLabel(QuoteStateCode.Draft) },
-  { value: QuoteStateCode.Active.toString(), label: getQuoteStateLabel(QuoteStateCode.Active) },
-  { value: QuoteStateCode.Won.toString(), label: getQuoteStateLabel(QuoteStateCode.Won) },
-  { value: QuoteStateCode.Closed.toString(), label: getQuoteStateLabel(QuoteStateCode.Closed) },
-] as const
-
-const SORT_OPTIONS = [
-  { value: 'date-desc', label: 'Newest First' },
-  { value: 'date-asc', label: 'Oldest First' },
-  { value: 'amount-desc', label: 'Highest Amount' },
-  { value: 'amount-asc', label: 'Lowest Amount' },
-] as const
-
 /**
  * Quote List Component (Optimizado)
  *
  * Lista de quotes con filtros y búsqueda
  * ✅ Memoización de computaciones pesadas
  * ✅ Callbacks memoizados
- * ✅ Constantes module-level
  */
 export function QuoteList({ quotes, emptyMessage }: QuoteListProps) {
+  const { t } = useTranslation('quotes')
   const [searchQuery, setSearchQuery] = useState('')
   const [stateFilter, setStateFilter] = useState<'all' | QuoteStateCode>('all')
   const [sortBy, setSortBy] = useState<SortOption>('date-desc')
+
+  // Build filter/sort options inside component to use translations
+  const stateFilterOptions = useMemo(() => [
+    { value: 'all', label: t('list.allStates') },
+    { value: QuoteStateCode.Draft.toString(), label: getQuoteStateLabel(QuoteStateCode.Draft) },
+    { value: QuoteStateCode.Active.toString(), label: getQuoteStateLabel(QuoteStateCode.Active) },
+    { value: QuoteStateCode.Won.toString(), label: getQuoteStateLabel(QuoteStateCode.Won) },
+    { value: QuoteStateCode.Closed.toString(), label: getQuoteStateLabel(QuoteStateCode.Closed) },
+  ], [t])
+
+  const sortOptions = useMemo(() => [
+    { value: 'date-desc', label: t('list.newestFirst') },
+    { value: 'date-asc', label: t('list.oldestFirst') },
+    { value: 'amount-desc', label: t('list.highestAmount') },
+    { value: 'amount-asc', label: t('list.lowestAmount') },
+  ], [t])
 
   // ✅ OPTIMIZACIÓN: Memoizar filtrado y sorting (se ejecuta solo cuando cambian dependencies)
   const filteredQuotes = useMemo(() => {
@@ -107,7 +108,7 @@ export function QuoteList({ quotes, emptyMessage }: QuoteListProps) {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             type="text"
-            placeholder="Search quotes by name or number..."
+            placeholder={t('list.searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10"
@@ -123,10 +124,10 @@ export function QuoteList({ quotes, emptyMessage }: QuoteListProps) {
         >
           <SelectTrigger className="w-full sm:w-[180px]">
             <SlidersHorizontal className="mr-2 h-4 w-4" />
-            <SelectValue placeholder="Filter by state" />
+            <SelectValue placeholder={t('list.filterByState')} />
           </SelectTrigger>
           <SelectContent>
-            {STATE_FILTER_OPTIONS.map((option) => (
+            {stateFilterOptions.map((option) => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}
               </SelectItem>
@@ -140,10 +141,10 @@ export function QuoteList({ quotes, emptyMessage }: QuoteListProps) {
           onValueChange={(value) => setSortBy(value as SortOption)}
         >
           <SelectTrigger className="w-full sm:w-[180px]">
-            <SelectValue placeholder="Sort by" />
+            <SelectValue placeholder={t('list.sortBy')} />
           </SelectTrigger>
           <SelectContent>
-            {SORT_OPTIONS.map((option) => (
+            {sortOptions.map((option) => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}
               </SelectItem>
@@ -155,10 +156,10 @@ export function QuoteList({ quotes, emptyMessage }: QuoteListProps) {
       {/* Results Count */}
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          {filteredQuotes.length} {filteredQuotes.length === 1 ? 'quote' : 'quotes'}
-          {searchQuery && ` matching "${searchQuery}"`}
+          {filteredQuotes.length} {filteredQuotes.length === 1 ? t('list.quote') : t('list.quotes')}
+          {searchQuery && ` ${t('list.matching')} "${searchQuery}"`}
           {stateFilter !== 'all' &&
-            ` in ${getQuoteStateLabel(Number(stateFilter) as QuoteStateCode)} state`}
+            ` ${t('list.inState', { state: getQuoteStateLabel(Number(stateFilter) as QuoteStateCode) })}`}
         </p>
 
         {(searchQuery || stateFilter !== 'all') && (
@@ -167,7 +168,7 @@ export function QuoteList({ quotes, emptyMessage }: QuoteListProps) {
             size="sm"
             onClick={handleClearFilters}
           >
-            Clear Filters
+            {t('list.clearFilters')}
           </Button>
         )}
       </div>
@@ -184,19 +185,19 @@ export function QuoteList({ quotes, emptyMessage }: QuoteListProps) {
           icon={FileText}
           title={
             searchQuery || stateFilter !== 'all'
-              ? 'No quotes found'
-              : 'No quotes yet'
+              ? t('list.noQuotesFound')
+              : t('list.noQuotesYet')
           }
           description={
             emptyMessage ||
             (searchQuery || stateFilter !== 'all'
-              ? 'Try adjusting your search or filters to find what you need'
-              : 'Create your first quote to start building proposals for your opportunities')
+              ? t('list.noQuotesDescription')
+              : t('list.firstQuoteDescription'))
           }
           action={
             quotes.length > 0 && (searchQuery || stateFilter !== 'all')
               ? undefined
-              : { href: '/quotes/new', label: 'Create Quote' }
+              : { href: '/quotes/new', label: t('buttons.createQuote') }
           }
         />
       )}

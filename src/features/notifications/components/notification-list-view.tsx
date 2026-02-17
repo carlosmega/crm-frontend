@@ -60,7 +60,7 @@ function NotificationListSkeleton() {
   return (
     <div className="divide-y">
       {/* Select all skeleton */}
-      <div className="flex items-center gap-3 px-4 py-2.5 bg-gray-50">
+      <div className="flex items-center gap-3 px-4 py-2.5 bg-gray-50 dark:bg-gray-800 dark:bg-gray-800">
         <Skeleton className="h-4 w-4 rounded" />
         <Skeleton className="h-4 w-32" />
       </div>
@@ -247,7 +247,7 @@ export function NotificationListView({
       ) : (
         /* Select All Header (when no items selected) */
         notifications.length > 0 && (
-          <div className="flex items-center gap-3 px-4 py-2 bg-gray-50">
+          <div className="flex items-center gap-3 px-4 py-2 bg-gray-50 dark:bg-gray-800 dark:bg-gray-800">
             <Checkbox
               checked={allSelected}
               onCheckedChange={handleSelectAll}

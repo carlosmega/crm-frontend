@@ -15,6 +15,8 @@ import {
 } from '@/components/ui/breadcrumb'
 import { Separator } from '@/components/ui/separator'
 import { SidebarTrigger } from '@/components/ui/sidebar'
+import { NotificationMenu } from '@/components/layout/notification-menu'
+import { UserMenu } from '@/components/layout/user-menu'
 import { ArrowLeft, Loader2, AlertCircle } from 'lucide-react'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
@@ -34,7 +36,8 @@ export default function InvoiceAgingPage() {
   return (
     <>
       {/* Header - Sticky */}
-      <header className="sticky top-0 z-50 flex h-16 shrink-0 items-center gap-2 bg-background border-b transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+      <header className="sticky top-0 z-50 flex h-16 shrink-0 items-center justify-between gap-2 bg-background border-b transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+        {/* Left side: Trigger + Breadcrumb */}
         <div className="flex items-center gap-2 px-4">
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />
@@ -54,10 +57,16 @@ export default function InvoiceAgingPage() {
             </BreadcrumbList>
           </Breadcrumb>
         </div>
+
+        {/* Right side: Notifications + User Menu */}
+        <div className="flex items-center gap-2 px-4">
+          <NotificationMenu />
+          <UserMenu variant="full" />
+        </div>
       </header>
 
       {/* Content */}
-      <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100">
+      <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100 dark:bg-gray-900">
         <div className="px-4 pb-6 pt-6">
           {/* Page Header */}
           <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">

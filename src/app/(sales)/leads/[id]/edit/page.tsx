@@ -87,9 +87,9 @@ export default function EditLeadPage({ params }: { params: Promise<{ id: string 
       />
 
       {/* Content - Fondo gris igual que opportunities */}
-      <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100">
+      <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100 dark:bg-gray-900">
         {/* STICKY HEADER COMPLETO - Lead Info + BPF + Tabs */}
-        <div className="md:sticky top-0 z-40 bg-gray-100/98 backdrop-blur-sm">
+        <div className="md:sticky top-0 z-40 bg-gray-100/98 dark:bg-gray-900/98 backdrop-blur-sm">
           {/* Lead Info Header & Actions - Desktop only */}
           <div className="hidden md:block px-4 pt-4 pb-4">
             <div className="flex items-start justify-between gap-4">
@@ -97,7 +97,7 @@ export default function EditLeadPage({ params }: { params: Promise<{ id: string 
                 <LeadInfoHeader lead={lead} className="border-0 p-0" />
               </div>
               <div className="flex gap-2 pt-1">
-                <Button variant="outline" onClick={handleCancel} className="border-gray-300 text-gray-700 hover:bg-gray-50">
+                <Button variant="outline" onClick={handleCancel} className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800">
                   Cancel
                 </Button>
                 <Button

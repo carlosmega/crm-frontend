@@ -19,6 +19,7 @@ import {
   Award,
 } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface QuoteMetrics {
   // Counts
@@ -188,6 +189,7 @@ function DashboardSkeleton() {
  */
 export function QuoteAnalyticsDashboard() {
   const { data: quotes, isLoading } = useQuotes()
+  const { t } = useTranslation('quotes')
 
   const metrics = useMemo(() => {
     if (!quotes) return null
@@ -202,127 +204,127 @@ export function QuoteAnalyticsDashboard() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Quote Analytics</h2>
+        <h2 className="text-2xl font-bold tracking-tight">{t('analytics.title')}</h2>
         <p className="text-muted-foreground">
-          Comprehensive insights into quote performance and conversion
+          {t('analytics.description')}
         </p>
       </div>
 
       {/* Primary KPIs */}
       <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5">
         <MetricCard
-          title="Total Quotes"
+          title={t('analytics.totalQuotes')}
           value={metrics.totalQuotes}
           icon={FileText}
           iconClassName="text-blue-600"
-          iconBgClassName="bg-blue-100"
+          iconBgClassName="bg-blue-100 dark:bg-blue-900/30"
           trend={metrics.quotesGrowth}
-          trendLabel="vs last 30 days"
+          trendLabel={t('analytics.vsLast30Days')}
         />
         <MetricCard
-          title="Conversion Rate"
+          title={t('analytics.conversionRate')}
           value={metrics.conversionRate.toFixed(1)}
           valueSuffix="%"
-          description="Won / (Won + Lost)"
+          description={t('analytics.wonDivTotal')}
           icon={Percent}
           iconClassName="text-purple-600"
-          iconBgClassName="bg-purple-100"
+          iconBgClassName="bg-purple-100 dark:bg-purple-900/30"
         />
         <MetricCard
-          title="Average Quote Value"
+          title={t('analytics.avgQuoteValue')}
           value={formatCurrency(metrics.avgQuoteValue)}
           icon={DollarSign}
           iconClassName="text-green-600"
-          iconBgClassName="bg-green-100"
+          iconBgClassName="bg-green-100 dark:bg-green-900/30"
         />
         <MetricCard
-          title="Total Revenue (Won)"
+          title={t('analytics.totalRevenueWon')}
           value={formatCurrency(metrics.wonQuoteValue)}
           icon={Award}
           iconClassName="text-orange-600"
-          iconBgClassName="bg-orange-100"
+          iconBgClassName="bg-orange-100 dark:bg-orange-900/30"
           trend={metrics.revenueGrowth}
-          trendLabel="vs last 30 days"
+          trendLabel={t('analytics.vsLast30Days')}
         />
       </div>
 
       {/* Quote States */}
       <div>
-        <h3 className="text-lg font-semibold mb-3">Quote Pipeline</h3>
+        <h3 className="text-lg font-semibold mb-3">{t('analytics.pipeline.title')}</h3>
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5">
           <MetricCard
-            title="Draft Quotes"
+            title={t('analytics.pipeline.draft')}
             value={metrics.draftQuotes}
-            description="Not yet submitted"
+            description={t('analytics.pipeline.draftDesc')}
             icon={Clock}
             iconClassName="text-slate-600"
             iconBgClassName="bg-slate-100"
           />
           <MetricCard
-            title="Active Quotes"
+            title={t('analytics.pipeline.active')}
             value={metrics.activeQuotes}
             description={formatCurrency(metrics.activeQuoteValue)}
             icon={FileText}
             iconClassName="text-blue-600"
-            iconBgClassName="bg-blue-100"
+            iconBgClassName="bg-blue-100 dark:bg-blue-900/30"
           />
           <MetricCard
-            title="Won Quotes"
+            title={t('analytics.pipeline.won')}
             value={metrics.wonQuotes}
             description={formatCurrency(metrics.wonQuoteValue)}
             icon={CheckCircle2}
             iconClassName="text-green-600"
-            iconBgClassName="bg-green-100"
+            iconBgClassName="bg-green-100 dark:bg-green-900/30"
           />
           <MetricCard
-            title="Lost Quotes"
+            title={t('analytics.pipeline.lost')}
             value={metrics.lostQuotes}
             description={formatCurrency(metrics.lostQuoteValue)}
             icon={XCircle}
             iconClassName="text-red-600"
-            iconBgClassName="bg-red-100"
+            iconBgClassName="bg-red-100 dark:bg-red-900/30"
           />
         </div>
       </div>
 
       {/* Performance Metrics */}
       <div>
-        <h3 className="text-lg font-semibold mb-3">Performance Metrics</h3>
+        <h3 className="text-lg font-semibold mb-3">{t('analytics.performance.title')}</h3>
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5">
           <MetricCard
-            title="Win Rate"
+            title={t('analytics.performance.winRate')}
             value={metrics.winRate.toFixed(1)}
             valueSuffix="%"
-            description="Won / Total Quotes"
+            description={t('analytics.performance.winRateDesc')}
             icon={TrendingUp}
             iconClassName="text-green-600"
-            iconBgClassName="bg-green-100"
+            iconBgClassName="bg-green-100 dark:bg-green-900/30"
           />
           <MetricCard
-            title="Loss Rate"
+            title={t('analytics.performance.lossRate')}
             value={metrics.lossRate.toFixed(1)}
             valueSuffix="%"
-            description="Lost / Total Quotes"
+            description={t('analytics.performance.lossRateDesc')}
             icon={TrendingDown}
             iconClassName="text-red-600"
-            iconBgClassName="bg-red-100"
+            iconBgClassName="bg-red-100 dark:bg-red-900/30"
           />
           <MetricCard
-            title="Avg Time to Close"
+            title={t('analytics.performance.avgTimeToClose')}
             value={metrics.avgTimeToClose}
             valueSuffix=" days"
-            description="From creation to close"
+            description={t('analytics.performance.avgTimeToCloseDesc')}
             icon={Calendar}
             iconClassName="text-blue-600"
-            iconBgClassName="bg-blue-100"
+            iconBgClassName="bg-blue-100 dark:bg-blue-900/30"
           />
           <MetricCard
-            title="Avg Products/Quote"
+            title={t('analytics.performance.avgProductsPerQuote')}
             value={metrics.avgProductsPerQuote.toFixed(1)}
-            description="Line items per quote"
+            description={t('analytics.performance.avgProductsPerQuoteDesc')}
             icon={FileText}
             iconClassName="text-purple-600"
-            iconBgClassName="bg-purple-100"
+            iconBgClassName="bg-purple-100 dark:bg-purple-900/30"
           />
         </div>
       </div>
@@ -330,8 +332,8 @@ export function QuoteAnalyticsDashboard() {
       {/* Top Products */}
       <Card>
         <CardHeader>
-          <CardTitle>Top Quoted Products</CardTitle>
-          <CardDescription>Most frequently included in quotes</CardDescription>
+          <CardTitle>{t('analytics.topProducts.title')}</CardTitle>
+          <CardDescription>{t('analytics.topProducts.description')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -340,12 +342,12 @@ export function QuoteAnalyticsDashboard() {
                 <div className="flex-1">
                   <div className="font-medium">{product.productName}</div>
                   <div className="text-sm text-muted-foreground">
-                    {product.count} quotes
+                    {product.count} {t('analytics.topProducts.quotes')}
                   </div>
                 </div>
                 <div className="text-right">
                   <div className="font-semibold">{formatCurrency(product.revenue)}</div>
-                  <div className="text-xs text-muted-foreground">Total Revenue</div>
+                  <div className="text-xs text-muted-foreground">{t('analytics.topProducts.totalRevenue')}</div>
                 </div>
               </div>
             ))}
@@ -356,22 +358,22 @@ export function QuoteAnalyticsDashboard() {
       {/* Summary Stats */}
       <Card className="bg-muted/50">
         <CardHeader>
-          <CardTitle>Summary</CardTitle>
+          <CardTitle>{t('analytics.summary.title')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-3">
             <div>
-              <div className="text-sm text-muted-foreground">Total Quote Value</div>
+              <div className="text-sm text-muted-foreground">{t('analytics.summary.totalQuoteValue')}</div>
               <div className="text-2xl font-bold">{formatCurrency(metrics.totalQuoteValue)}</div>
             </div>
             <div>
-              <div className="text-sm text-muted-foreground">Won Revenue</div>
+              <div className="text-sm text-muted-foreground">{t('analytics.summary.wonRevenue')}</div>
               <div className="text-2xl font-bold text-green-600">
                 {formatCurrency(metrics.wonQuoteValue)}
               </div>
             </div>
             <div>
-              <div className="text-sm text-muted-foreground">Pipeline Value (Active)</div>
+              <div className="text-sm text-muted-foreground">{t('analytics.summary.pipelineValue')}</div>
               <div className="text-2xl font-bold text-blue-600">
                 {formatCurrency(metrics.activeQuoteValue)}
               </div>

@@ -24,6 +24,7 @@ import {
   Percent,
 } from 'lucide-react'
 import { formatCurrency } from '../utils/quote-calculations'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface QuoteVersionTimelineProps {
   quoteid: string
@@ -43,6 +44,7 @@ export function QuoteVersionTimeline({
 }: QuoteVersionTimelineProps) {
   const { data: versions, isLoading } = useQuoteVersions({ quoteid })
   const [selectedVersions, setSelectedVersions] = useState<string[]>([])
+  const { t } = useTranslation('quotes')
 
   const handleSelectVersion = (versionId: string) => {
     if (selectedVersions.includes(versionId)) {
@@ -78,7 +80,7 @@ export function QuoteVersionTimeline({
     return (
       <Card className="min-h-[calc(100vh-12rem)]">
         <CardHeader>
-          <CardTitle>Version History</CardTitle>
+          <CardTitle>{t('versionTimeline.title')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -95,14 +97,14 @@ export function QuoteVersionTimeline({
     return (
       <Card className="min-h-[calc(100vh-12rem)]">
         <CardHeader>
-          <CardTitle>Version History</CardTitle>
+          <CardTitle>{t('versionTimeline.title')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">
             <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground">No version history yet</p>
+            <p className="text-muted-foreground">{t('versionTimeline.empty')}</p>
             <p className="text-sm text-muted-foreground mt-1">
-              Changes to this quote will be tracked here
+              {t('versionTimeline.emptyDescription')}
             </p>
           </div>
         </CardContent>
@@ -114,10 +116,10 @@ export function QuoteVersionTimeline({
     <Card className="min-h-[calc(100vh-12rem)] flex flex-col">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle>Version History ({versions.length})</CardTitle>
+          <CardTitle>{t('versionTimeline.title')} ({versions.length})</CardTitle>
           {selectedVersions.length === 2 && onCompareVersions && (
             <Button size="sm" onClick={handleCompare}>
-              Compare Selected
+              {t('versionTimeline.compareSelected')}
             </Button>
           )}
         </div>
@@ -163,6 +165,7 @@ function VersionTimelineItem({
   onSelect: () => void
   onRestore?: (versionId: string) => void
 }) {
+  const { t } = useTranslation('quotes')
   const icon = getChangeTypeIcon(version.changetype)
   const color = getChangeTypeColor(version.changetype)
 
@@ -193,10 +196,10 @@ function VersionTimelineItem({
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <h4 className="font-semibold">
-                  Version {version.versionnumber}
+                  {t('versionTimeline.version')} {version.versionnumber}
                 </h4>
                 <ChangeTypeBadge changetype={version.changetype} />
-                {isLatest && <Badge variant="default">Latest</Badge>}
+                {isLatest && <Badge variant="default">{t('versionTimeline.latest')}</Badge>}
               </div>
               {version.changedescription && (
                 <p className="text-sm text-muted-foreground mt-1">
@@ -222,11 +225,11 @@ function VersionTimelineItem({
           {/* Metadata */}
           <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground mb-3">
             <div>
-              <span className="font-medium">Date:</span>{' '}
+              <span className="font-medium">{t('versionTimeline.date')}:</span>{' '}
               {new Date(version.createdon).toLocaleString()}
             </div>
             <div>
-              <span className="font-medium">By:</span> {version.createdby}
+              <span className="font-medium">{t('versionTimeline.by')}:</span> {version.createdby}
             </div>
           </div>
 
@@ -235,8 +238,8 @@ function VersionTimelineItem({
             <div className="flex items-center gap-1">
               <Package className="h-4 w-4 text-muted-foreground" />
               <span>
-                {version.versiondata.lines.length} product{version.versiondata.lines.length !== 1 ? 's' : ''}
-                {' '}({version.versiondata.lines.reduce((sum, l) => sum + (Number(l.quantity) || 0), 0)} units)
+                {version.versiondata.lines.length} {version.versiondata.lines.length !== 1 ? t('versionTimeline.products') : t('versionTimeline.product')}
+                {' '}({version.versiondata.lines.reduce((sum, l) => sum + (Number(l.quantity) || 0), 0)} {t('versionTimeline.units')})
               </span>
             </div>
             <div className="flex items-center gap-1">
@@ -261,7 +264,7 @@ function VersionTimelineItem({
           {/* Change reason */}
           {version.changereason && (
             <div className="mt-2 text-xs text-muted-foreground italic">
-              Reason: {version.changereason}
+              {t('versionTimeline.reason')}: {version.changereason}
             </div>
           )}
         </div>
@@ -274,19 +277,20 @@ function VersionTimelineItem({
  * Change type badge
  */
 function ChangeTypeBadge({ changetype }: { changetype: QuoteVersionChangeType }) {
+  const { t } = useTranslation('quotes')
   const labels: Record<QuoteVersionChangeType, string> = {
-    [QuoteVersionChangeType.Created]: 'Created',
-    [QuoteVersionChangeType.Updated]: 'Updated',
-    [QuoteVersionChangeType.Activated]: 'Activated',
-    [QuoteVersionChangeType.Won]: 'Won',
-    [QuoteVersionChangeType.Lost]: 'Lost',
-    [QuoteVersionChangeType.Revised]: 'Revised',
-    [QuoteVersionChangeType.Canceled]: 'Canceled',
-    [QuoteVersionChangeType.ProductAdded]: 'Product Added',
-    [QuoteVersionChangeType.ProductRemoved]: 'Product Removed',
-    [QuoteVersionChangeType.ProductUpdated]: 'Product Updated',
-    [QuoteVersionChangeType.DiscountApplied]: 'Discount Applied',
-    [QuoteVersionChangeType.PriceChanged]: 'Price Changed',
+    [QuoteVersionChangeType.Created]: t('versionTimeline.changeTypes.created'),
+    [QuoteVersionChangeType.Updated]: t('versionTimeline.changeTypes.updated'),
+    [QuoteVersionChangeType.Activated]: t('versionTimeline.changeTypes.activated'),
+    [QuoteVersionChangeType.Won]: t('versionTimeline.changeTypes.won'),
+    [QuoteVersionChangeType.Lost]: t('versionTimeline.changeTypes.lost'),
+    [QuoteVersionChangeType.Revised]: t('versionTimeline.changeTypes.revised'),
+    [QuoteVersionChangeType.Canceled]: t('versionTimeline.changeTypes.canceled'),
+    [QuoteVersionChangeType.ProductAdded]: t('versionTimeline.changeTypes.productAdded'),
+    [QuoteVersionChangeType.ProductRemoved]: t('versionTimeline.changeTypes.productRemoved'),
+    [QuoteVersionChangeType.ProductUpdated]: t('versionTimeline.changeTypes.productUpdated'),
+    [QuoteVersionChangeType.DiscountApplied]: t('versionTimeline.changeTypes.discountApplied'),
+    [QuoteVersionChangeType.PriceChanged]: t('versionTimeline.changeTypes.priceChanged'),
   }
 
   const variants: Record<QuoteVersionChangeType, 'default' | 'secondary' | 'destructive' | 'outline'> = {

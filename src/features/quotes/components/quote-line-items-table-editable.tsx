@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils'
 import { BulkActionsToolbar } from './bulk-actions-toolbar'
 import { BulkDiscountDialog } from './bulk-discount-dialog'
 import { useBulkDeleteQuoteLines, useApplyBulkDiscount } from '../hooks/use-quote-line-bulk-mutations'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface QuoteLineItemsTableEditableProps {
   quoteLines: QuoteDetail[]
@@ -30,7 +31,7 @@ interface QuoteLineItemsTableEditableProps {
   isUpdating?: boolean
 }
 
-// ✅ INLINE EDITING: Row component con modo edición
+// Inline editing row component with edit mode
 const EditableQuoteLineRow = memo(function EditableQuoteLineRow({
   line,
   onUpdate,
@@ -46,6 +47,8 @@ const EditableQuoteLineRow = memo(function EditableQuoteLineRow({
   isSelected: boolean
   onToggleSelect: (lineId: string) => void
 }) {
+  const { t } = useTranslation('quotes')
+  const { t: tc } = useTranslation('common')
   const [isEditing, setIsEditing] = useState(false)
   const [editedQuantity, setEditedQuantity] = useState(line.quantity)
   const [editedPrice, setEditedPrice] = useState(line.priceperunit)
@@ -75,22 +78,22 @@ const EditableQuoteLineRow = memo(function EditableQuoteLineRow({
 
     // Validations
     if (editedQuantity < 1) {
-      toast.warning('Quantity must be at least 1')
+      toast.warning(t('editableTable.quantityMin'))
       return
     }
 
     if (editedPrice < 0) {
-      toast.warning('Price cannot be negative')
+      toast.warning(t('editableTable.priceNegative'))
       return
     }
 
     if (editedDiscount < 0) {
-      toast.warning('Discount cannot be negative')
+      toast.warning(t('editableTable.discountNegative'))
       return
     }
 
     if (editedDiscount > baseAmount) {
-      toast.warning('Discount cannot exceed base amount')
+      toast.warning(t('editableTable.discountExceedsBase'))
       return
     }
 
@@ -103,7 +106,7 @@ const EditableQuoteLineRow = memo(function EditableQuoteLineRow({
     })
 
     setIsEditing(false)
-  }, [line.quotedetailid, editedQuantity, editedPrice, editedDiscount, editedTax, baseAmount, onUpdate])
+  }, [line.quotedetailid, editedQuantity, editedPrice, editedDiscount, editedTax, baseAmount, onUpdate, t])
 
   const handleCancel = useCallback(() => {
     setEditedQuantity(line.quantity)
@@ -114,10 +117,10 @@ const EditableQuoteLineRow = memo(function EditableQuoteLineRow({
   }, [line])
 
   const handleDelete = useCallback(() => {
-    if (confirm(`Remove "${line.productdescription}" from quote?`)) {
+    if (confirm(t('editableTable.removeConfirm', { product: line.productdescription }))) {
       onDelete?.(line.quotedetailid)
     }
-  }, [line, onDelete])
+  }, [line, onDelete, t])
 
   return (
     <TableRow className={cn(isEditing && 'bg-muted/50', isSelected && 'bg-blue-50 dark:bg-blue-950/20')}>
@@ -126,7 +129,7 @@ const EditableQuoteLineRow = memo(function EditableQuoteLineRow({
         <Checkbox
           checked={isSelected}
           onCheckedChange={() => onToggleSelect(line.quotedetailid)}
-          aria-label={`Select ${line.productdescription}`}
+          aria-label={t('editableTable.selectLine', { product: line.productdescription })}
         />
       </TableCell>
 
@@ -252,7 +255,7 @@ const EditableQuoteLineRow = memo(function EditableQuoteLineRow({
                 size="icon-sm"
                 onClick={handleSave}
                 disabled={isUpdating}
-                title="Save changes"
+                title={t('editableTable.saveChanges')}
               >
                 <Check className="h-4 w-4 text-green-600" />
               </Button>
@@ -261,7 +264,7 @@ const EditableQuoteLineRow = memo(function EditableQuoteLineRow({
                 size="icon-sm"
                 onClick={handleCancel}
                 disabled={isUpdating}
-                title="Cancel"
+                title={tc('buttons.cancel')}
               >
                 <X className="h-4 w-4 text-destructive" />
               </Button>
@@ -272,7 +275,7 @@ const EditableQuoteLineRow = memo(function EditableQuoteLineRow({
                 variant="ghost"
                 size="icon-sm"
                 onClick={() => setIsEditing(true)}
-                title="Edit line"
+                title={t('editableTable.editLine')}
               >
                 <Edit2 className="h-4 w-4" />
               </Button>
@@ -280,7 +283,7 @@ const EditableQuoteLineRow = memo(function EditableQuoteLineRow({
                 variant="ghost"
                 size="icon-sm"
                 onClick={handleDelete}
-                title="Remove line"
+                title={t('editableTable.removeLine')}
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -310,6 +313,7 @@ export const QuoteLineItemsTableEditable = memo(function QuoteLineItemsTableEdit
   onDelete,
   isUpdating = false,
 }: QuoteLineItemsTableEditableProps) {
+  const { t } = useTranslation('quotes')
   // Selection state
   const [selectedLineIds, setSelectedLineIds] = useState<Set<string>>(new Set())
   const [showBulkDiscountDialog, setShowBulkDiscountDialog] = useState(false)
@@ -348,7 +352,7 @@ export const QuoteLineItemsTableEditable = memo(function QuoteLineItemsTableEdit
   // Bulk delete
   const handleBulkDelete = useCallback(() => {
     const count = selectedLineIds.size
-    if (!confirm(`Are you sure you want to delete ${count} selected ${count === 1 ? 'line' : 'lines'}?`)) {
+    if (!confirm(t('editableTable.deleteConfirm', { count, item: count === 1 ? t('editableTable.line') : t('editableTable.lines') }))) {
       return
     }
 
@@ -357,7 +361,7 @@ export const QuoteLineItemsTableEditable = memo(function QuoteLineItemsTableEdit
         setSelectedLineIds(new Set())
       },
     })
-  }, [selectedLineIds, bulkDelete])
+  }, [selectedLineIds, bulkDelete, t])
 
   // Bulk discount
   const handleApplyBulkDiscount = useCallback(
@@ -384,10 +388,10 @@ export const QuoteLineItemsTableEditable = memo(function QuoteLineItemsTableEdit
     return (
       <div className="border rounded-lg p-12 text-center">
         <p className="text-muted-foreground">
-          No products added to this quote yet
+          {t('lineItemsTable.emptyMessage')}
         </p>
         <p className="text-sm text-muted-foreground mt-2">
-          Click "Add Product" to add items to this quote
+          {t('lineItemsTable.addHint')}
         </p>
       </div>
     )
@@ -412,20 +416,20 @@ export const QuoteLineItemsTableEditable = memo(function QuoteLineItemsTableEdit
                   <Checkbox
                     checked={isAllSelected ? true : isIndeterminate ? "indeterminate" : false}
                     onCheckedChange={handleToggleSelectAll}
-                    aria-label="Select all"
+                    aria-label={t('editableTable.selectAll')}
                   />
                 </TableHead>
-                <TableHead className="w-[50px]">#</TableHead>
-                <TableHead className="min-w-[200px]">Product</TableHead>
-                <TableHead className="text-center w-[100px]">Quantity</TableHead>
-                <TableHead className="text-center w-[130px]">Price/Unit</TableHead>
-                <TableHead className="text-center w-[120px]">Base Amount</TableHead>
-                <TableHead className="text-center w-[130px]">Discount</TableHead>
-                <TableHead className="text-center w-[100px]">Tax</TableHead>
+                <TableHead className="w-[50px]">{t('editableTable.hash')}</TableHead>
+                <TableHead className="min-w-[200px]">{t('editableTable.product')}</TableHead>
+                <TableHead className="text-center w-[100px]">{t('editableTable.quantity')}</TableHead>
+                <TableHead className="text-center w-[130px]">{t('editableTable.pricePerUnit')}</TableHead>
+                <TableHead className="text-center w-[120px]">{t('editableTable.baseAmount')}</TableHead>
+                <TableHead className="text-center w-[130px]">{t('editableTable.discount')}</TableHead>
+                <TableHead className="text-center w-[100px]">{t('editableTable.tax')}</TableHead>
                 <TableHead className="text-center w-[140px]">
-                  Extended Amount
+                  {t('editableTable.extendedAmount')}
                 </TableHead>
-                <TableHead className="w-[120px] text-right">Actions</TableHead>
+                <TableHead className="w-[120px] text-right">{t('editableTable.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

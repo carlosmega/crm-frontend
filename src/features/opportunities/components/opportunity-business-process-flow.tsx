@@ -38,7 +38,7 @@ export function OpportunityBusinessProcessFlow({
   return (
     <div className={cn("bg-gray-50/50 py-3", className)}>
       <div className="px-6">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200/80 py-4 px-8">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200/80 dark:border-gray-700 py-4 px-8">
           <div className="flex items-center justify-between">
           {STAGES.map((stage, index) => {
             const status = getStageStatus(stage.code)
@@ -69,7 +69,7 @@ export function OpportunityBusinessProcessFlow({
                       "w-10 h-10 rounded-full flex items-center justify-center transition-all border-[2.5px] relative shrink-0",
                       isActive && "bg-purple-600 border-purple-600 shadow-md shadow-purple-200",
                       isCompleted && "bg-purple-600 border-purple-600",
-                      isPending && "bg-white border-gray-300",
+                      isPending && "bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600",
                       onStageClick && "cursor-pointer hover:scale-110 hover:shadow-lg"
                     )}
                   >

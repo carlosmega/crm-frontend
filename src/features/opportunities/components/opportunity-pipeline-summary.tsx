@@ -95,8 +95,8 @@ export const OpportunityPipelineSummary = memo(function OpportunityPipelineSumma
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="rounded-lg bg-blue-100 p-2">
-            <TrendingUp className="h-4 w-4 text-blue-600" />
+          <div className="rounded-lg bg-blue-100 dark:bg-blue-900/30 p-2">
+            <TrendingUp className="h-4 w-4 text-blue-600 dark:text-blue-400" />
           </div>
           <div>
             <p className="text-xs text-muted-foreground">{t('kanban.weightedValue')}</p>
@@ -105,8 +105,8 @@ export const OpportunityPipelineSummary = memo(function OpportunityPipelineSumma
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="rounded-lg bg-amber-100 p-2">
-            <Target className="h-4 w-4 text-amber-600" />
+          <div className="rounded-lg bg-amber-100 dark:bg-amber-900/30 p-2">
+            <Target className="h-4 w-4 text-amber-600 dark:text-amber-400" />
           </div>
           <div>
             <p className="text-xs text-muted-foreground">{t('kanban.avgDealSize')}</p>

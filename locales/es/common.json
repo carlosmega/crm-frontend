@@ -20,7 +20,78 @@
     "viewDetails": "Ver detalles",
     "clearFilters": "Limpiar Filtros",
     "clearAllFilters": "Limpiar Todos los Filtros",
-    "retry": "Reintentar"
+    "retry": "Reintentar",
+    "saveChanges": "Guardar Cambios",
+    "update": "Actualizar",
+    "add": "Agregar",
+    "change": "Cambiar",
+    "confirm": "Confirmar",
+    "logActivity": "Registrar Actividad"
+  },
+  "actions": {
+    "qualifyLead": "Calificar Lead",
+    "disqualify": "Descalificar",
+    "activate": "Activar",
+    "deactivate": "Desactivar",
+    "closeOpportunity": "Cerrar Oportunidad",
+    "winOpportunity": "Ganar Oportunidad",
+    "loseOpportunity": "Perder Oportunidad",
+    "nextStage": "Siguiente Etapa",
+    "previousStage": "Etapa Anterior",
+    "activateQuote": "Activar Cotización",
+    "winQuote": "Ganar Cotización",
+    "loseQuote": "Perder Cotización",
+    "cloneQuote": "Clonar Cotización",
+    "saveAsTemplate": "Guardar como Plantilla",
+    "cancelQuote": "Cancelar Cotización",
+    "compareVersions": "Comparar Versiones",
+    "submitOrder": "Enviar Pedido",
+    "fulfillOrder": "Cumplir Pedido",
+    "exportPdf": "Exportar PDF",
+    "exporting": "Exportando...",
+    "markPaid": "Marcar como Pagado",
+    "cancelInvoice": "Cancelar Factura",
+    "viewOpportunity": "Ver Oportunidad",
+    "viewQuote": "Ver Cotización",
+    "viewOrder": "Ver Pedido",
+    "viewInvoice": "Ver Factura",
+    "backTo": "Volver a {{entity}}"
+  },
+  "confirmations": {
+    "deleteTitle": "¿Eliminar {{entity}}?",
+    "deleteMessage": "¿Está seguro de que desea eliminar este {{entity}}?",
+    "disqualifyTitle": "¿Descalificar Lead?",
+    "disqualifyMessage": "¿Está seguro de que desea descalificar este lead?",
+    "deactivateTitle": "¿Desactivar {{entity}}?",
+    "deactivateMessage": "¿Está seguro de que desea desactivar este {{entity}}?",
+    "cancelTitle": "¿Cancelar {{entity}}?",
+    "cancelMessage": "¿Está seguro de que desea cancelar este {{entity}}?",
+    "confirmAction": "Esta acción no se puede deshacer."
+  },
+  "breadcrumbs": {
+    "sales": "Ventas",
+    "service": "Servicio",
+    "leads": "Leads",
+    "accounts": "Cuentas",
+    "contacts": "Contactos",
+    "opportunities": "Oportunidades",
+    "quotes": "Cotizaciones",
+    "orders": "Pedidos",
+    "invoices": "Facturas",
+    "products": "Productos",
+    "activities": "Actividades",
+    "cases": "Casos",
+    "dashboard": "Panel",
+    "settings": "Configuración",
+    "analytics": "Análisis",
+    "notifications": "Notificaciones"
+  },
+  "errors": {
+    "notFound": "{{entity}} no encontrado",
+    "loadFailed": "Error al cargar {{entity}}",
+    "deleteFailed": "Error al eliminar {{entity}}",
+    "updateFailed": "Error al actualizar {{entity}}",
+    "createFailed": "Error al crear {{entity}}"
   },
   "states": {
     "active": "Activo",
@@ -38,27 +109,32 @@
     "resolved": "Resuelto",
     "paid": "Pagado",
     "canceled": "Cancelado",
-    "scheduled": "Programado"
+    "scheduled": "Programado",
+    "submitted": "Enviado",
+    "fulfilled": "Cumplido",
+    "invoiced": "Facturado",
+    "overdue": "Vencido",
+    "unknown": "Desconocido"
   },
   "messages": {
     "loading": "Cargando...",
     "saving": "Guardando...",
     "saved": "Guardado exitosamente",
-    "error": "Ocurri\u00f3 un error",
-    "success": "Operaci\u00f3n exitosa",
+    "error": "Ocurrió un error",
+    "success": "Operación exitosa",
     "noData": "No hay datos disponibles",
-    "confirmDelete": "\u00bfEst\u00e1 seguro de que desea eliminar este elemento?",
+    "confirmDelete": "¿Está seguro de que desea eliminar este elemento?",
     "unsavedChanges": "Tiene cambios sin guardar",
     "required": "Este campo es obligatorio",
-    "invalid": "Valor inv\u00e1lido",
-    "noContactInfo": "Sin informaci\u00f3n de contacto"
+    "invalid": "Valor inválido",
+    "noContactInfo": "Sin información de contacto"
   },
   "pagination": {
     "previous": "Anterior",
     "next": "Siguiente",
-    "page": "P\u00e1gina",
+    "page": "Página",
     "of": "de",
-    "rowsPerPage": "Filas por p\u00e1gina",
+    "rowsPerPage": "Filas por página",
     "showing": "Mostrando",
     "to": "a",
     "entries": "entradas"
@@ -70,20 +146,20 @@
   },
   "validation": {
     "required": "Este campo es obligatorio",
-    "email": "Debe ser un email v\u00e1lido",
-    "phone": "Debe ser un tel\u00e9fono v\u00e1lido",
-    "minLength": "M\u00ednimo {{min}} caracteres",
-    "maxLength": "M\u00e1ximo {{max}} caracteres",
-    "min": "Valor m\u00ednimo: {{min}}",
-    "max": "Valor m\u00e1ximo: {{max}}",
-    "url": "Debe ser una URL v\u00e1lida"
+    "email": "Debe ser un email válido",
+    "phone": "Debe ser un teléfono válido",
+    "minLength": "Mínimo {{min}} caracteres",
+    "maxLength": "Máximo {{max}} caracteres",
+    "min": "Valor mínimo: {{min}}",
+    "max": "Valor máximo: {{max}}",
+    "url": "Debe ser una URL válida"
   },
   "dateTime": {
     "today": "Hoy",
     "yesterday": "Ayer",
-    "tomorrow": "Ma\u00f1ana",
-    "lastWeek": "\u00daltima semana",
-    "lastMonth": "\u00daltimo mes",
+    "tomorrow": "Mañana",
+    "lastWeek": "Última semana",
+    "lastMonth": "Último mes",
     "custom": "Personalizado"
   },
   "columns": {
@@ -102,19 +178,20 @@
   },
   "filters": {
     "amountPlaceholder": "Ingrese monto...",
-    "numberPlaceholder": "Ingrese n\u00famero...",
+    "numberPlaceholder": "Ingrese número...",
     "searchPlaceholder": "Buscar..."
   },
   "form": {
     "pickDate": "Seleccionar fecha",
     "required": "obligatorio",
     "creating": "Creando...",
-    "updating": "Actualizando..."
+    "updating": "Actualizando...",
+    "optional": "(opcional)"
   },
   "notApplicable": "N/D",
   "emptyState": {
-    "adjustSearch": "Intente ajustar su b\u00fasqueda",
-    "noFiltersDescription": "Intente ajustar sus criterios de b\u00fasqueda o filtros para encontrar lo que busca."
+    "adjustSearch": "Intente ajustar su búsqueda",
+    "noFiltersDescription": "Intente ajustar sus criterios de búsqueda o filtros para encontrar lo que busca."
   },
   "tabs": {
     "general": "General",
@@ -122,35 +199,58 @@
     "related": "Relacionados",
     "notes": "Notas",
     "details": "Detalles",
-    "address": "Direcci\u00f3n",
+    "address": "Dirección",
     "professional": "Profesional",
-    "qualification": "Calificaci\u00f3n"
+    "qualification": "Calificación",
+    "products": "Productos",
+    "shipping": "Envío",
+    "billing": "Facturación",
+    "payment": "Pago",
+    "versions": "Versiones",
+    "items": "Artículos"
   },
   "sections": {
-    "contactInfo": "Informaci\u00f3n de Contacto",
-    "businessInfo": "Informaci\u00f3n del Negocio",
+    "contactInfo": "Información de Contacto",
+    "businessInfo": "Información del Negocio",
     "keyDates": "Fechas Clave",
-    "description": "Descripci\u00f3n",
-    "address": "Direcci\u00f3n",
-    "primaryAddress": "Direcci\u00f3n Principal"
+    "description": "Descripción",
+    "address": "Dirección",
+    "primaryAddress": "Dirección Principal",
+    "customerInfo": "Información del Cliente",
+    "relatedRecords": "Registros Relacionados",
+    "importantDates": "Fechas Importantes",
+    "billingInfo": "Información de Facturación",
+    "basicInfo": "Información Básica"
   },
   "labels": {
     "revenue": "Ingresos",
     "employees": "Empleados",
-    "createdOn": "Fecha de Creaci\u00f3n",
+    "createdOn": "Fecha de Creación",
     "estimatedValue": "Valor Estimado",
     "estimatedClose": "Cierre Estimado",
     "totalAmount": "Monto Total",
     "owner": "Propietario",
     "status": "Estado",
-    "phone": "Tel\u00e9fono",
+    "phone": "Teléfono",
     "email": "Email",
-    "mobile": "M\u00f3vil",
+    "mobile": "Móvil",
     "website": "Sitio Web",
     "unknown": "Desconocido",
     "view": "Ver",
     "closeProbability": "Probabilidad de Cierre",
-    "estCloseDate": "Fecha Est. de Cierre"
+    "estCloseDate": "Fecha Est. de Cierre",
+    "discount": "Descuento",
+    "tax": "Impuesto",
+    "freight": "Flete",
+    "subtotal": "Subtotal",
+    "lastModified": "Última Modificación",
+    "dueDate": "Fecha de Vencimiento",
+    "description": "Descripción",
+    "quantity": "Cantidad",
+    "unitPrice": "Precio Unitario",
+    "amount": "Monto",
+    "preview": "Vista Previa",
+    "total": "Total"
   },
   "cardActions": {
     "view": "Ver",
@@ -158,10 +258,10 @@
     "delete": "Eliminar"
   },
   "empty": {
-    "noContactInfo": "Sin informaci\u00f3n de contacto disponible",
-    "noBusinessInfo": "Sin informaci\u00f3n del negocio disponible",
-    "noAddressInfo": "Sin informaci\u00f3n de direcci\u00f3n disponible",
-    "noProfessionalInfo": "Sin informaci\u00f3n profesional disponible"
+    "noContactInfo": "Sin información de contacto disponible",
+    "noBusinessInfo": "Sin información del negocio disponible",
+    "noAddressInfo": "Sin información de dirección disponible",
+    "noProfessionalInfo": "Sin información profesional disponible"
   },
   "confidence": {
     "high": "Alta Confianza",
@@ -172,6 +272,34 @@
     "lead": "Lead",
     "account": "Cuenta",
     "contact": "Contacto",
-    "opportunity": "Oportunidad"
+    "opportunity": "Oportunidad",
+    "quote": "Cotización",
+    "order": "Pedido",
+    "invoice": "Factura",
+    "product": "Producto"
+  },
+  "address": {
+    "recipientName": "Nombre del Destinatario",
+    "billingName": "Nombre de Facturación",
+    "billToName": "Facturar a Nombre de",
+    "addressLine1": "Línea de Dirección 1",
+    "addressLine2": "Línea de Dirección 2",
+    "city": "Ciudad",
+    "stateProvince": "Estado/Provincia",
+    "postalCode": "Código Postal",
+    "country": "País",
+    "shippingAddress": "Dirección de Envío",
+    "billingAddress": "Dirección de Facturación"
+  },
+  "placeholders": {
+    "companyOrPerson": "Nombre de empresa o persona",
+    "streetAddress": "Dirección",
+    "aptSuite": "Depto, suite, unidad, etc. (opcional)",
+    "zipPostal": "Código postal",
+    "customerBillingName": "Nombre de facturación del cliente",
+    "city": "Ciudad",
+    "stateOrProvince": "Estado o Provincia",
+    "postalCode": "Código postal",
+    "country": "País"
   }
 }

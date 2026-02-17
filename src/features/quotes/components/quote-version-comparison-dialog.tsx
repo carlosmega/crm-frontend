@@ -13,6 +13,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { useCompareVersions } from '../hooks/use-quote-versions'
 import { ArrowRight, Plus, Minus, Edit } from 'lucide-react'
 import { formatCurrency } from '../utils/quote-calculations'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface QuoteVersionComparisonDialogProps {
   open: boolean
@@ -36,15 +37,15 @@ export function QuoteVersionComparisonDialog({
     fromVersionId,
     toVersionId
   )
+  const { t } = useTranslation('quotes')
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh]">
         <DialogHeader>
-          <DialogTitle>Compare Versions</DialogTitle>
+          <DialogTitle>{t('versionComparison.title')}</DialogTitle>
           <DialogDescription>
-            Changes between version {comparison?.fromVersion.versionnumber} and{' '}
-            {comparison?.toVersion.versionnumber}
+            {t('versionComparison.description', { from: comparison?.fromVersion.versionnumber, to: comparison?.toVersion.versionnumber })}
           </DialogDescription>
         </DialogHeader>
 
@@ -59,34 +60,34 @@ export function QuoteVersionComparisonDialog({
             <div className="space-y-6">
               {/* Summary */}
               <div className="bg-muted/50 rounded-lg p-4">
-                <h3 className="font-semibold mb-3">Summary</h3>
+                <h3 className="font-semibold mb-3">{t('versionComparison.summary')}</h3>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <span className="text-muted-foreground">Total Changes:</span>{' '}
+                    <span className="text-muted-foreground">{t('versionComparison.totalChanges')}:</span>{' '}
                     <span className="font-medium">
                       {comparison.summary.totalChanges}
                     </span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Quote Fields:</span>{' '}
+                    <span className="text-muted-foreground">{t('versionComparison.quoteFields')}:</span>{' '}
                     <span className="font-medium">
                       {comparison.summary.quoteFieldsChanged}
                     </span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Lines Added:</span>{' '}
+                    <span className="text-muted-foreground">{t('versionComparison.linesAdded')}:</span>{' '}
                     <span className="font-medium text-green-600">
                       {comparison.summary.linesAdded}
                     </span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Lines Removed:</span>{' '}
+                    <span className="text-muted-foreground">{t('versionComparison.linesRemoved')}:</span>{' '}
                     <span className="font-medium text-red-600">
                       {comparison.summary.linesRemoved}
                     </span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Lines Modified:</span>{' '}
+                    <span className="text-muted-foreground">{t('versionComparison.linesModified')}:</span>{' '}
                     <span className="font-medium text-orange-600">
                       {comparison.summary.linesModified}
                     </span>
@@ -99,7 +100,7 @@ export function QuoteVersionComparisonDialog({
                 <div>
                   <h3 className="font-semibold mb-3 flex items-center gap-2">
                     <Edit className="h-4 w-4" />
-                    Quote Changes
+                    {t('versionComparison.quoteChanges')}
                   </h3>
                   <div className="space-y-2">
                     {comparison.changes.quote.map((change, index) => (
@@ -113,14 +114,14 @@ export function QuoteVersionComparisonDialog({
                         <div className="flex items-center gap-2 text-sm">
                           <div className="flex-1 bg-red-500/10 text-red-700 dark:text-red-400 rounded px-3 py-2">
                             <span className="text-xs text-red-600 dark:text-red-500 font-medium">
-                              OLD:{' '}
+                              {t('versionComparison.old')}:{' '}
                             </span>
                             {formatValue(change.field, change.oldValue)}
                           </div>
                           <ArrowRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                           <div className="flex-1 bg-green-500/10 text-green-700 dark:text-green-400 rounded px-3 py-2">
                             <span className="text-xs text-green-600 dark:text-green-500 font-medium">
-                              NEW:{' '}
+                              {t('versionComparison.new')}:{' '}
                             </span>
                             {formatValue(change.field, change.newValue)}
                           </div>
@@ -134,7 +135,7 @@ export function QuoteVersionComparisonDialog({
               {/* Line changes */}
               {comparison.changes.lines.length > 0 && (
                 <div>
-                  <h3 className="font-semibold mb-3">Product Line Changes</h3>
+                  <h3 className="font-semibold mb-3">{t('versionComparison.productLineChanges')}</h3>
                   <div className="space-y-2">
                     {comparison.changes.lines.map((change, index) => (
                       <div
@@ -184,14 +185,14 @@ export function QuoteVersionComparisonDialog({
               {/* No changes */}
               {comparison.summary.totalChanges === 0 && (
                 <div className="text-center py-8 text-muted-foreground">
-                  No changes detected between these versions
+                  {t('versionComparison.noChanges')}
                 </div>
               )}
             </div>
           </ScrollArea>
         ) : (
           <div className="text-center py-8 text-muted-foreground">
-            Unable to load comparison
+            {t('versionComparison.unableToLoad')}
           </div>
         )}
       </DialogContent>
@@ -203,19 +204,20 @@ export function QuoteVersionComparisonDialog({
  * Action badge for line changes
  */
 function ActionBadge({ action }: { action: 'added' | 'removed' | 'modified' }) {
+  const { t } = useTranslation('quotes')
   const config = {
     added: {
-      label: 'Added',
+      label: t('versionComparison.added'),
       icon: <Plus className="h-3 w-3" />,
       className: 'bg-green-500 text-white',
     },
     removed: {
-      label: 'Removed',
+      label: t('versionComparison.removed'),
       icon: <Minus className="h-3 w-3" />,
       className: 'bg-red-500 text-white',
     },
     modified: {
-      label: 'Modified',
+      label: t('versionComparison.modified'),
       icon: <Edit className="h-3 w-3" />,
       className: 'bg-orange-500 text-white',
     },
@@ -236,7 +238,7 @@ function ActionBadge({ action }: { action: 'added' | 'removed' | 'modified' }) {
  */
 function formatValue(field: string, value: any): string {
   if (value === null || value === undefined) {
-    return '(empty)'
+    return '—'
   }
 
   // Currency fields

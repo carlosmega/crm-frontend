@@ -37,13 +37,13 @@ export function LeadInfoHeader({ lead, className }: LeadInfoHeaderProps) {
 
     switch (stateCode) {
       case LeadStateCode.Open:
-        return { variant: 'default' as const, label: t('status.open').toUpperCase(), color: 'bg-green-100 text-green-700' }
+        return { variant: 'default' as const, label: t('status.open').toUpperCase(), color: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' }
       case LeadStateCode.Qualified:
         return { variant: 'default' as const, label: t('status.qualified').toUpperCase(), color: 'bg-emerald-100 text-emerald-700' }
       case LeadStateCode.Disqualified:
-        return { variant: 'destructive' as const, label: t('status.disqualified').toUpperCase(), color: 'bg-red-100 text-red-700' }
+        return { variant: 'destructive' as const, label: t('status.disqualified').toUpperCase(), color: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300' }
       default:
-        return { variant: 'secondary' as const, label: t('status.unknown').toUpperCase(), color: 'bg-gray-100 text-gray-700' }
+        return { variant: 'secondary' as const, label: t('status.unknown').toUpperCase(), color: 'bg-gray-100 dark:bg-gray-900/30 text-gray-700 dark:text-gray-300' }
     }
   }
 
@@ -81,13 +81,13 @@ export function LeadInfoHeader({ lead, className }: LeadInfoHeaderProps) {
           </h1>
           <Badge
             variant="secondary"
-            className="text-xs font-semibold uppercase bg-purple-100 text-purple-700 border-0 px-3 py-1"
+            className="text-xs font-semibold uppercase bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border-0 px-3 py-1"
           >
             {t('header.salesLead')}
           </Badge>
           <Badge
             variant="secondary"
-            className="text-xs font-semibold uppercase bg-gray-100 text-gray-700 border-0 px-3 py-1"
+            className="text-xs font-semibold uppercase bg-gray-100 dark:bg-gray-900/30 text-gray-700 dark:text-gray-300 border-0 px-3 py-1"
           >
             {t('header.lead')}
           </Badge>
@@ -146,13 +146,13 @@ export function LeadInfoHeader({ lead, className }: LeadInfoHeaderProps) {
           <div className="flex items-center gap-2 flex-wrap">
             <Badge
               variant="secondary"
-              className="text-xs font-semibold uppercase bg-purple-100 text-purple-700 border-0 px-2.5 py-0.5"
+              className="text-xs font-semibold uppercase bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border-0 px-2.5 py-0.5"
             >
               {t('header.salesLead')}
             </Badge>
             <Badge
               variant="secondary"
-              className="text-xs font-semibold uppercase bg-gray-100 text-gray-700 border-0 px-2.5 py-0.5"
+              className="text-xs font-semibold uppercase bg-gray-100 dark:bg-gray-900/30 text-gray-700 dark:text-gray-300 border-0 px-2.5 py-0.5"
             >
               {t('header.lead')}
             </Badge>

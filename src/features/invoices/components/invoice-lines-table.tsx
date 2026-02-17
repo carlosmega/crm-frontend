@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { formatCurrency, calculateInvoiceTotals } from '../utils/invoice-calculations'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 // Sort column definitions
 const SORT_COLUMNS: SortableColumn<InvoiceDetail>[] = [
@@ -30,13 +31,14 @@ interface InvoiceLinesTableProps {
 }
 
 export function InvoiceLinesTable({ lines }: InvoiceLinesTableProps) {
+  const { t } = useTranslation('invoices')
   const totals = calculateInvoiceTotals(lines)
   const { sortedData, sortConfig, handleSort } = useSortableData(lines, SORT_COLUMNS)
 
   if (lines.length === 0) {
     return (
       <div className="rounded-lg border border-dashed p-8 text-center">
-        <p className="text-sm text-gray-500">No line items</p>
+        <p className="text-sm text-gray-500">{t('linesTable.noLineItems')}</p>
       </div>
     )
   }
@@ -46,24 +48,24 @@ export function InvoiceLinesTable({ lines }: InvoiceLinesTableProps) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-12">#</TableHead>
+            <TableHead className="w-12">{t('linesTable.hash')}</TableHead>
             <TableHead>
-              <SortableColumnHeader columnId="product" label="Product" sortConfig={sortConfig} onSort={handleSort} />
+              <SortableColumnHeader columnId="product" label={t('linesTable.product')} sortConfig={sortConfig} onSort={handleSort} />
             </TableHead>
             <TableHead className="text-center">
-              <SortableColumnHeader columnId="quantity" label="Qty" sortConfig={sortConfig} onSort={handleSort} className="justify-center" />
+              <SortableColumnHeader columnId="quantity" label={t('linesTable.qty')} sortConfig={sortConfig} onSort={handleSort} className="justify-center" />
             </TableHead>
             <TableHead className="text-center">
-              <SortableColumnHeader columnId="priceperunit" label="Unit Price" sortConfig={sortConfig} onSort={handleSort} className="justify-center" />
+              <SortableColumnHeader columnId="priceperunit" label={t('linesTable.unitPrice')} sortConfig={sortConfig} onSort={handleSort} className="justify-center" />
             </TableHead>
             <TableHead className="text-center">
-              <SortableColumnHeader columnId="discount" label="Discount" sortConfig={sortConfig} onSort={handleSort} className="justify-center" />
+              <SortableColumnHeader columnId="discount" label={t('linesTable.discount')} sortConfig={sortConfig} onSort={handleSort} className="justify-center" />
             </TableHead>
             <TableHead className="text-center">
-              <SortableColumnHeader columnId="tax" label="Tax" sortConfig={sortConfig} onSort={handleSort} className="justify-center" />
+              <SortableColumnHeader columnId="tax" label={t('linesTable.tax')} sortConfig={sortConfig} onSort={handleSort} className="justify-center" />
             </TableHead>
             <TableHead className="text-center">
-              <SortableColumnHeader columnId="amount" label="Amount" sortConfig={sortConfig} onSort={handleSort} className="justify-center" />
+              <SortableColumnHeader columnId="amount" label={t('linesTable.amount')} sortConfig={sortConfig} onSort={handleSort} className="justify-center" />
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -82,7 +84,7 @@ export function InvoiceLinesTable({ lines }: InvoiceLinesTableProps) {
                     <p className="font-medium">{line.productdescription}</p>
                     {line.isproductoverridden && (
                       <Badge variant="outline" className="text-xs">
-                        Custom
+                        {t('linesTable.custom')}
                       </Badge>
                     )}
                   </div>
@@ -113,7 +115,7 @@ export function InvoiceLinesTable({ lines }: InvoiceLinesTableProps) {
         <TableFooter>
           <TableRow>
             <TableCell colSpan={6} className="text-right font-medium">
-              Subtotal
+              {t('linesTable.subtotal')}
             </TableCell>
             <TableCell className="text-right font-semibold tabular-nums">
               {formatCurrency(totals.totalLineItems)}
@@ -122,7 +124,7 @@ export function InvoiceLinesTable({ lines }: InvoiceLinesTableProps) {
           {totals.totalDiscount > 0 && (
             <TableRow>
               <TableCell colSpan={6} className="text-right font-medium">
-                Total Discount
+                {t('linesTable.totalDiscount')}
               </TableCell>
               <TableCell className="text-right font-semibold text-green-600 tabular-nums">
                 -{formatCurrency(totals.totalDiscount)}
@@ -132,7 +134,7 @@ export function InvoiceLinesTable({ lines }: InvoiceLinesTableProps) {
           {totals.totalTax > 0 && (
             <TableRow>
               <TableCell colSpan={6} className="text-right font-medium">
-                Total Tax
+                {t('linesTable.totalTax')}
               </TableCell>
               <TableCell className="text-right font-semibold tabular-nums">
                 {formatCurrency(totals.totalTax)}
@@ -141,7 +143,7 @@ export function InvoiceLinesTable({ lines }: InvoiceLinesTableProps) {
           )}
           <TableRow>
             <TableCell colSpan={6} className="text-right font-bold text-lg">
-              Grand Total
+              {t('linesTable.grandTotal')}
             </TableCell>
             <TableCell className="text-right font-bold text-lg tabular-nums">
               {formatCurrency(totals.grandTotal)}

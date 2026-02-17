@@ -21,6 +21,7 @@ import {
 } from '@/core/contracts/enums'
 import { Package, Truck, MapPin, CheckCircle2, Clock, AlertCircle } from 'lucide-react'
 import { formatDate } from '@/shared/utils/formatters'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 /**
  * Shipping Tracker Component
@@ -120,6 +121,7 @@ export function ShippingTracker({
   estimatedDeliveryDate,
   onUpdateTracking,
 }: ShippingTrackerProps) {
+  const { t } = useTranslation('orders')
   const [isEditing, setIsEditing] = useState(!initialTrackingNumber)
   const [trackingNumber, setTrackingNumber] = useState(initialTrackingNumber || '')
   const [selectedMethod, setSelectedMethod] = useState<ShippingMethodCode | undefined>(
@@ -158,13 +160,13 @@ export function ShippingTracker({
           <div>
             <CardTitle className="flex items-center gap-2">
               <Truck className="h-5 w-5" />
-              Shipping Tracker
+              {t('tracker.title')}
             </CardTitle>
-            <CardDescription>Track your shipment status and location</CardDescription>
+            <CardDescription>{t('tracker.description')}</CardDescription>
           </div>
           {!isEditing && onUpdateTracking && (
             <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
-              Update Tracking
+              {t('tracker.updateTracking')}
             </Button>
           )}
         </div>
@@ -174,7 +176,7 @@ export function ShippingTracker({
         {isEditing ? (
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="shipping-method">Shipping Method</Label>
+              <Label htmlFor="shipping-method">{t('tracker.shippingMethod')}</Label>
               <Select
                 value={selectedMethod?.toString()}
                 onValueChange={(val) =>
@@ -182,7 +184,7 @@ export function ShippingTracker({
                 }
               >
                 <SelectTrigger id="shipping-method">
-                  <SelectValue placeholder="Select shipping method" />
+                  <SelectValue placeholder={t('tracker.selectShippingMethod')} />
                 </SelectTrigger>
                 <SelectContent>
                   {[
@@ -206,15 +208,15 @@ export function ShippingTracker({
 
             {needsTracking && (
               <div className="space-y-2">
-                <Label htmlFor="tracking-number">Tracking Number</Label>
+                <Label htmlFor="tracking-number">{t('tracker.trackingNumber')}</Label>
                 <Input
                   id="tracking-number"
-                  placeholder="Enter tracking number"
+                  placeholder={t('tracker.enterTracking')}
                   value={trackingNumber}
                   onChange={(e) => setTrackingNumber(e.target.value)}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Enter the carrier tracking number for this shipment
+                  {t('tracker.carrierHint')}
                 </p>
               </div>
             )}
@@ -224,7 +226,7 @@ export function ShippingTracker({
                 onClick={handleSave}
                 disabled={isSaving || !selectedMethod || (needsTracking && !trackingNumber)}
               >
-                {isSaving ? 'Saving...' : 'Save Tracking Info'}
+                {isSaving ? t('tracker.saving') : t('tracker.save')}
               </Button>
               {!initialTrackingNumber && (
                 <Button variant="outline" onClick={() => setIsEditing(false)}>
@@ -236,12 +238,12 @@ export function ShippingTracker({
         ) : (
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Carrier:</span>
+              <span className="text-sm font-medium">{t('tracker.carrier')}</span>
               <span className="text-sm">{selectedMethod && getShippingMethodLabel(selectedMethod)}</span>
             </div>
             {trackingNumber && (
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Tracking #:</span>
+                <span className="text-sm font-medium">{t('tracker.trackingHash')}</span>
                 <code className="text-sm bg-muted px-2 py-1 rounded">
                   {trackingNumber}
                 </code>
@@ -249,7 +251,7 @@ export function ShippingTracker({
             )}
             {estimatedDeliveryDate && (
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Est. Delivery:</span>
+                <span className="text-sm font-medium">{t('tracker.estDelivery')}</span>
                 <Badge variant="outline" className="gap-1">
                   <Clock className="h-3 w-3" />
                   {formatDate(estimatedDeliveryDate)}
@@ -264,7 +266,7 @@ export function ShippingTracker({
           <>
             <Separator />
             <div>
-              <h4 className="text-sm font-semibold mb-4">Tracking History</h4>
+              <h4 className="text-sm font-semibold mb-4">{t('tracker.trackingHistory')}</h4>
               <div className="space-y-4">
                 {timeline.map((status, index) => {
                   const Icon = status.icon
@@ -306,7 +308,7 @@ export function ShippingTracker({
                           </p>
                           {isCurrent && (
                             <Badge variant="default" className="text-xs">
-                              Current
+                              {t('tracker.current')}
                             </Badge>
                           )}
                         </div>
@@ -322,7 +324,7 @@ export function ShippingTracker({
                         <p className="text-xs text-muted-foreground mt-1">
                           {isCompleted
                             ? formatDate(status.timestamp)
-                            : `Expected: ${formatDate(status.timestamp)}`}
+                            : `${t('tracker.expected')} ${formatDate(status.timestamp)}`}
                         </p>
                       </div>
                     </div>
@@ -337,8 +339,8 @@ export function ShippingTracker({
         {!isEditing && !trackingNumber && (
           <div className="text-center py-8 text-muted-foreground">
             <AlertCircle className="h-12 w-12 mx-auto mb-2 opacity-50" />
-            <p>No tracking information available</p>
-            <p className="text-sm">Add tracking details to monitor shipment</p>
+            <p>{t('tracker.noTracking')}</p>
+            <p className="text-sm">{t('tracker.addTracking')}</p>
           </div>
         )}
       </CardContent>

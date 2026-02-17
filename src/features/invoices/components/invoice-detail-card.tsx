@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslation } from '@/shared/hooks/use-translation'
 import type { Invoice } from '@/core/contracts/entities/invoice'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -16,6 +17,7 @@ interface InvoiceDetailCardProps {
 }
 
 export function InvoiceDetailCard({ invoice }: InvoiceDetailCardProps) {
+  const { t } = useTranslation('invoices')
   const status = getInvoiceStatusColor(invoice)
   const daysUntilDue = getDaysUntilDue(invoice)
   const overdue = isInvoiceOverdue(invoice)
@@ -36,13 +38,13 @@ export function InvoiceDetailCard({ invoice }: InvoiceDetailCardProps) {
         {/* Dates */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <p className="text-sm text-gray-500">Invoice Date</p>
+            <p className="text-sm text-gray-500">{t('detailCard.invoiceDate')}</p>
             <p className="font-medium">
               {new Date(invoice.createdon).toLocaleDateString()}
             </p>
           </div>
           <div>
-            <p className="text-sm text-gray-500">Due Date</p>
+            <p className="text-sm text-gray-500">{t('detailCard.dueDate')}</p>
             <p className={`font-medium ${overdue ? 'text-red-600' : ''}`}>
               {new Date(invoice.duedate).toLocaleDateString()}
               {!overdue && daysUntilDue > 0 && (
@@ -51,7 +53,7 @@ export function InvoiceDetailCard({ invoice }: InvoiceDetailCardProps) {
                 </span>
               )}
               {overdue && (
-                <span className="text-sm text-red-600 ml-2">(Overdue)</span>
+                <span className="text-sm text-red-600 ml-2">{t('detailCard.overdue')}</span>
               )}
             </p>
           </div>
@@ -60,7 +62,7 @@ export function InvoiceDetailCard({ invoice }: InvoiceDetailCardProps) {
         {/* Amounts */}
         <div className="space-y-3 border-t pt-4">
           <div className="flex justify-between">
-            <span className="text-gray-600">Subtotal</span>
+            <span className="text-gray-600">{t('detailCard.subtotal')}</span>
             <span className="font-medium">
               {formatCurrency(invoice.totalamountlessfreight || invoice.totalamount)}
             </span>
@@ -68,7 +70,7 @@ export function InvoiceDetailCard({ invoice }: InvoiceDetailCardProps) {
 
           {invoice.discountamount > 0 && (
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Discount</span>
+              <span className="text-gray-600">{t('detailCard.discount')}</span>
               <span className="text-green-600">
                 -{formatCurrency(invoice.discountamount)}
               </span>
@@ -77,20 +79,20 @@ export function InvoiceDetailCard({ invoice }: InvoiceDetailCardProps) {
 
           {invoice.totaltax > 0 && (
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Tax</span>
+              <span className="text-gray-600">{t('detailCard.tax')}</span>
               <span>{formatCurrency(invoice.totaltax)}</span>
             </div>
           )}
 
           {invoice.freightamount > 0 && (
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Freight</span>
+              <span className="text-gray-600">{t('detailCard.freight')}</span>
               <span>{formatCurrency(invoice.freightamount)}</span>
             </div>
           )}
 
           <div className="flex justify-between border-t pt-3">
-            <span className="font-semibold">Total Amount</span>
+            <span className="font-semibold">{t('detailCard.totalAmount')}</span>
             <span className="text-xl font-bold">
               {formatCurrency(invoice.totalamount)}
             </span>
@@ -99,14 +101,14 @@ export function InvoiceDetailCard({ invoice }: InvoiceDetailCardProps) {
           {invoice.totalpaid > 0 && (
             <>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Amount Paid</span>
+                <span className="text-gray-600">{t('detailCard.amountPaid')}</span>
                 <span className="text-green-600">
                   {formatCurrency(invoice.totalpaid)}
                 </span>
               </div>
 
               <div className="flex justify-between border-t pt-3">
-                <span className="font-semibold">Balance Due</span>
+                <span className="font-semibold">{t('detailCard.balanceDue')}</span>
                 <span className="text-xl font-bold text-orange-600">
                   {formatCurrency(invoice.totalbalance ?? invoice.totalamount)}
                 </span>

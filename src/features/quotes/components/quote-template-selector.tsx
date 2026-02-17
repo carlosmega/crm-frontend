@@ -17,6 +17,7 @@ import { useSharedQuoteTemplates } from '../hooks/use-quote-templates'
 import { Package, Search, Users, User, FileText } from 'lucide-react'
 import { formatCurrency } from '../utils/quote-calculations'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface QuoteTemplateSelectorProps {
   open: boolean
@@ -34,6 +35,7 @@ export function QuoteTemplateSelectorDialog({
   onOpenChange,
   onSelectTemplate,
 }: QuoteTemplateSelectorProps) {
+  const { t } = useTranslation('quotes')
   const [searchQuery, setSearchQuery] = useState('')
   const { data: templates, isLoading } = useSharedQuoteTemplates()
 
@@ -57,9 +59,9 @@ export function QuoteTemplateSelectorDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Choose a Template</DialogTitle>
+          <DialogTitle>{t('templateSelector.title')}</DialogTitle>
           <DialogDescription>
-            Select a quote template to get started quickly
+            {t('templateSelector.description')}
           </DialogDescription>
         </DialogHeader>
 
@@ -69,7 +71,7 @@ export function QuoteTemplateSelectorDialog({
           <Input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search templates..."
+            placeholder={t('templateSelector.searchPlaceholder')}
             className="pl-9"
           />
         </div>
@@ -96,7 +98,7 @@ export function QuoteTemplateSelectorDialog({
             <div className="flex flex-col items-center justify-center h-[300px] text-center">
               <FileText className="h-12 w-12 text-muted-foreground mb-4" />
               <p className="text-muted-foreground">
-                {searchQuery ? 'No templates match your search' : 'No templates available'}
+                {searchQuery ? t('templateSelector.noMatch') : t('templateSelector.noTemplates')}
               </p>
               {searchQuery && (
                 <Button
@@ -104,7 +106,7 @@ export function QuoteTemplateSelectorDialog({
                   onClick={() => setSearchQuery('')}
                   className="mt-2"
                 >
-                  Clear search
+                  {t('templateSelector.clearSearch')}
                 </Button>
               )}
             </div>
@@ -122,6 +124,8 @@ function TemplateCard({
   template: QuoteTemplate
   onSelect: () => void
 }) {
+  const { t } = useTranslation('quotes')
+
   // Calculate total from template lines
   const total = template.templatedata.lines.reduce((sum, line) => {
     const baseAmount = line.quantity * line.priceperunit
@@ -156,7 +160,7 @@ function TemplateCard({
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
             <div className="flex items-center gap-1">
               <FileText className="h-3 w-3" />
-              <span>{template.templatedata.lines.length} items</span>
+              <span>{template.templatedata.lines.length} {t('templateSelector.items')}</span>
             </div>
             <div className="flex items-center gap-1">
               {template.isshared ? (
@@ -164,10 +168,10 @@ function TemplateCard({
               ) : (
                 <User className="h-3 w-3" />
               )}
-              <span>{template.isshared ? 'Shared' : 'Private'}</span>
+              <span>{template.isshared ? t('templateSelector.shared') : t('templateSelector.private')}</span>
             </div>
             {template.usagecount > 0 && (
-              <span>Used {template.usagecount}×</span>
+              <span>{t('templateSelector.usedCount', { count: template.usagecount })}</span>
             )}
           </div>
         </div>

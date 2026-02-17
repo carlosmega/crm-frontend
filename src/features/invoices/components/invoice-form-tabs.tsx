@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { InvoiceForm } from './invoice-form'
 import { cn } from '@/lib/utils'
 import { FileText, Receipt } from 'lucide-react'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 export type InvoiceFormTabId = 'general' | 'billing'
 
@@ -33,6 +34,7 @@ interface InvoiceFormTabsProps {
  * - Consistent naming with detail view tabs
  */
 export function InvoiceFormTabs({ invoice, onSubmit, onCancel, isSubmitting, hideActions }: InvoiceFormTabsProps) {
+  const { t } = useTranslation('invoices')
   const [activeTab, setActiveTab] = useState<InvoiceFormTabId>('general')
   const [tabsContainer, setTabsContainer] = useState<HTMLElement | null>(null)
 
@@ -56,7 +58,7 @@ export function InvoiceFormTabs({ invoice, onSubmit, onCancel, isSubmitting, hid
           )}
         >
           <FileText className="w-4 h-4 mr-2" />
-          General
+          {t('formTabs.general')}
         </TabsTrigger>
 
         <TabsTrigger
@@ -69,7 +71,7 @@ export function InvoiceFormTabs({ invoice, onSubmit, onCancel, isSubmitting, hid
           )}
         >
           <Receipt className="w-4 h-4 mr-2" />
-          Billing
+          {t('formTabs.billing')}
         </TabsTrigger>
       </TabsList>
     </div>

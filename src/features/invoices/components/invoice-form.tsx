@@ -12,6 +12,7 @@ import { CustomerSelectorButton } from '@/shared/components/selectors'
 import type { SelectedCustomer } from '@/shared/types/selected-customer'
 import type { Invoice, CreateInvoiceDto, UpdateInvoiceDto } from '@/core/contracts'
 import { CustomerType } from '@/core/contracts/enums'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 export type InvoiceFormSection = 'general' | 'billing' | 'all'
 
@@ -32,6 +33,8 @@ export function InvoiceForm({
   hideActions = false,
   section = 'all',
 }: InvoiceFormProps) {
+  const { t } = useTranslation('invoices')
+  const { t: tc } = useTranslation('common')
   const { data: session } = useSession()
   const isEdit = !!invoice
 
@@ -87,18 +90,18 @@ export function InvoiceForm({
           {/* Basic Information */}
           <Card>
             <CardHeader>
-              <CardTitle>Basic Information</CardTitle>
+              <CardTitle>{t('form.basicInfo')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Invoice Name */}
               <div className="space-y-2">
                 <Label htmlFor="name">
-                  Invoice Name <span className="text-destructive">*</span>
+                  {t('form.invoiceName')} <span className="text-destructive">*</span>
                 </Label>
                 <Input
                   id="name"
-                  {...register('name', { required: 'Invoice name is required' })}
-                  placeholder="e.g., INV-2024-001 - Acme Corp"
+                  {...register('name', { required: t('form.invoiceNameRequired') })}
+                  placeholder={t('form.invoiceNamePlaceholder')}
                 />
                 {errors.name && (
                   <p className="text-sm text-destructive">{errors.name.message}</p>
@@ -108,17 +111,17 @@ export function InvoiceForm({
               {/* Due Date */}
               <div className="space-y-2">
                 <Label htmlFor="duedate">
-                  Due Date <span className="text-destructive">*</span>
+                  {t('form.dueDate')} <span className="text-destructive">*</span>
                 </Label>
                 <Controller
                   name="duedate"
                   control={control}
-                  rules={{ required: 'Due date is required' }}
+                  rules={{ required: t('form.dueDateRequired') }}
                   render={({ field }) => (
                     <DatePicker
                       value={field.value}
                       onChange={(date) => field.onChange(date?.toISOString().split('T')[0])}
-                      placeholder="Select due date"
+                      placeholder={t('form.selectDueDate')}
                     />
                   )}
                 />
@@ -132,12 +135,12 @@ export function InvoiceForm({
           {/* Customer Information */}
           <Card>
             <CardHeader>
-              <CardTitle>Customer Information</CardTitle>
+              <CardTitle>{t('form.customerInfo')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label>
-                  Customer <span className="text-destructive">*</span>
+                  {t('form.customer')} <span className="text-destructive">*</span>
                 </Label>
                 <CustomerSelectorButton
                   value={selectedCustomer}
@@ -149,7 +152,7 @@ export function InvoiceForm({
                 )}
                 {selectedCustomer && (
                   <p className="text-sm text-muted-foreground">
-                    Selected: {selectedCustomer.name} ({selectedCustomer.type})
+                    {t('form.selectedCustomer', { name: selectedCustomer.name, type: selectedCustomer.type })}
                   </p>
                 )}
               </div>
@@ -159,30 +162,30 @@ export function InvoiceForm({
           {/* Optional Relationships */}
           <Card>
             <CardHeader>
-              <CardTitle>Related Records (Optional)</CardTitle>
+              <CardTitle>{t('form.relatedRecords')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="salesorderid">Sales Order ID</Label>
+                <Label htmlFor="salesorderid">{t('form.salesOrderId')}</Label>
                 <Input
                   id="salesorderid"
                   {...register('salesorderid')}
-                  placeholder="Order that generated this invoice"
+                  placeholder={t('form.salesOrderPlaceholder')}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Link this invoice to a sales order
+                  {t('form.salesOrderHint')}
                 </p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="opportunityid">Opportunity ID</Label>
+                <Label htmlFor="opportunityid">{t('form.opportunityId')}</Label>
                 <Input
                   id="opportunityid"
                   {...register('opportunityid')}
-                  placeholder="Related opportunity"
+                  placeholder={t('form.opportunityPlaceholder')}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Link this invoice to an opportunity
+                  {t('form.opportunityHint')}
                 </p>
               </div>
             </CardContent>
@@ -194,82 +197,82 @@ export function InvoiceForm({
       {showBilling && (
         <Card>
           <CardHeader>
-            <CardTitle>Billing Information</CardTitle>
+            <CardTitle>{t('form.billingInfo')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {!isEdit ? (
               <div className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  Billing address information can be added after creating the invoice.
+                  {t('form.billingInfoHint')}
                 </p>
                 <div className="p-4 bg-muted/50 rounded-md">
-                  <p className="text-sm font-medium mb-2">Next Steps:</p>
+                  <p className="text-sm font-medium mb-2">{t('form.nextSteps')}</p>
                   <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
-                    <li>Create the invoice with basic information</li>
-                    <li>Edit the invoice to add billing details</li>
-                    <li>Add line items for products or services</li>
-                    <li>Send the invoice to the customer</li>
+                    <li>{t('form.nextStepsList.create')}</li>
+                    <li>{t('form.nextStepsList.edit')}</li>
+                    <li>{t('form.nextStepsList.addLines')}</li>
+                    <li>{t('form.nextStepsList.send')}</li>
                   </ul>
                 </div>
               </div>
             ) : (
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="billto_name">Bill To Name</Label>
+                  <Label htmlFor="billto_name">{tc('address.billToName')}</Label>
                   <Input
                     id="billto_name"
-                    placeholder="Customer billing name"
+                    placeholder={tc('placeholders.customerBillingName')}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="billto_line1">Address Line 1</Label>
+                  <Label htmlFor="billto_line1">{tc('address.addressLine1')}</Label>
                   <Input
                     id="billto_line1"
-                    placeholder="Street address"
+                    placeholder={tc('placeholders.streetAddress')}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="billto_line2">Address Line 2</Label>
+                  <Label htmlFor="billto_line2">{tc('address.addressLine2')}</Label>
                   <Input
                     id="billto_line2"
-                    placeholder="Apartment, suite, etc. (optional)"
+                    placeholder={tc('placeholders.aptSuite')}
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="billto_city">City</Label>
+                    <Label htmlFor="billto_city">{tc('address.city')}</Label>
                     <Input
                       id="billto_city"
-                      placeholder="City"
+                      placeholder={tc('placeholders.city')}
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="billto_stateorprovince">State/Province</Label>
+                    <Label htmlFor="billto_stateorprovince">{tc('address.stateProvince')}</Label>
                     <Input
                       id="billto_stateorprovince"
-                      placeholder="State or Province"
+                      placeholder={tc('placeholders.stateOrProvince')}
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="billto_postalcode">Postal Code</Label>
+                    <Label htmlFor="billto_postalcode">{tc('address.postalCode')}</Label>
                     <Input
                       id="billto_postalcode"
-                      placeholder="Postal code"
+                      placeholder={tc('placeholders.postalCode')}
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="billto_country">Country</Label>
+                    <Label htmlFor="billto_country">{tc('address.country')}</Label>
                     <Input
                       id="billto_country"
-                      placeholder="Country"
+                      placeholder={tc('placeholders.country')}
                     />
                   </div>
                 </div>
@@ -295,8 +298,8 @@ export function InvoiceForm({
             disabled={isSubmitting}
             className="h-10 min-w-[140px]"
           >
-            {isSubmitting && <span className="mr-2">Loading...</span>}
-            {invoice ? 'Update Invoice' : 'Create Invoice'}
+            {isSubmitting && <span className="mr-2">{tc('messages.loading')}</span>}
+            {invoice ? t('form.updateInvoice') : t('form.createInvoice')}
           </Button>
         </div>
       )}

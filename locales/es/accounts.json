@@ -67,7 +67,8 @@
     "primaryAddress": "Dirección Principal",
     "description": "Descripción",
     "noContactInfo": "Sin información de contacto disponible",
-    "noBusinessInfo": "Sin información comercial disponible"
+    "noBusinessInfo": "Sin información comercial disponible",
+    "noAddress": "Sin dirección disponible"
   },
   "form": {
     "sections": {

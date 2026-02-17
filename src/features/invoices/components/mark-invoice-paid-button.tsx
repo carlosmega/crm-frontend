@@ -19,12 +19,14 @@ import { useMarkInvoiceAsPaid } from '../hooks'
 import type { Invoice } from '@/core/contracts/entities/invoice'
 import { canMarkAsPaid, getRemainingBalance } from '../utils'
 import { formatCurrency } from '../utils/invoice-calculations'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface MarkInvoicePaidButtonProps {
   invoice: Invoice
 }
 
 export function MarkInvoicePaidButton({ invoice }: MarkInvoicePaidButtonProps) {
+  const { t } = useTranslation('invoices')
   const router = useRouter()
   const { toast } = useToast()
   const [isOpen, setIsOpen] = useState(false)
@@ -48,8 +50,8 @@ export function MarkInvoicePaidButton({ invoice }: MarkInvoicePaidButtonProps) {
 
     if (isNaN(amountPaid) || amountPaid <= 0) {
       toast({
-        title: 'Invalid amount',
-        description: 'Please enter a valid payment amount',
+        title: t('markPaid.invalidAmount'),
+        description: t('markPaid.invalidAmountDesc'),
         variant: 'destructive',
       })
       return
@@ -57,8 +59,8 @@ export function MarkInvoicePaidButton({ invoice }: MarkInvoicePaidButtonProps) {
 
     if (amountPaid > remainingBalance) {
       toast({
-        title: 'Amount too high',
-        description: 'Payment amount cannot exceed the remaining balance',
+        title: t('markPaid.amountTooHigh'),
+        description: t('markPaid.amountTooHighDesc'),
         variant: 'destructive',
       })
       return
@@ -72,17 +74,17 @@ export function MarkInvoicePaidButton({ invoice }: MarkInvoicePaidButtonProps) {
       })
 
       toast({
-        title: 'Payment recorded',
-        description: `Successfully marked invoice as paid`,
+        title: t('markPaid.successToast'),
+        description: t('markPaid.successDescription'),
       })
 
       setIsOpen(false)
       router.refresh()
     } catch (error) {
       toast({
-        title: 'Error',
+        title: t('markPaid.errorTitle'),
         description:
-          error instanceof Error ? error.message : 'Failed to record payment',
+          error instanceof Error ? error.message : t('markPaid.errorToast'),
         variant: 'destructive',
       })
     }
@@ -92,22 +94,22 @@ export function MarkInvoicePaidButton({ invoice }: MarkInvoicePaidButtonProps) {
     <>
       <Button onClick={() => setIsOpen(true)}>
         <CheckCircle className="h-4 w-4 mr-2" />
-        Mark as Paid
+        {t('markPaid.button')}
       </Button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent>
           <form onSubmit={handleSubmit}>
             <DialogHeader>
-              <DialogTitle>Record Payment</DialogTitle>
+              <DialogTitle>{t('markPaid.dialogTitle')}</DialogTitle>
               <DialogDescription>
-                Enter the payment amount received for this invoice
+                {t('markPaid.description')}
               </DialogDescription>
             </DialogHeader>
 
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="amount">Payment Amount</Label>
+                <Label htmlFor="amount">{t('markPaid.paymentAmount')}</Label>
                 <Input
                   id="amount"
                   type="number"
@@ -116,11 +118,11 @@ export function MarkInvoicePaidButton({ invoice }: MarkInvoicePaidButtonProps) {
                   max={remainingBalance}
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  placeholder="0.00"
+                  placeholder={t('markPaid.placeholder')}
                   required
                 />
                 <p className="text-sm text-gray-500">
-                  Remaining balance: {formatCurrency(remainingBalance)}
+                  {t('markPaid.remainingBalance', { amount: formatCurrency(remainingBalance) })}
                 </p>
               </div>
             </div>
@@ -138,7 +140,7 @@ export function MarkInvoicePaidButton({ invoice }: MarkInvoicePaidButtonProps) {
                 {markAsPaidMutation.isPending && (
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                 )}
-                Record Payment
+                {t('markPaid.recordPayment')}
               </Button>
             </DialogFooter>
           </form>

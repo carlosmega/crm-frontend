@@ -89,7 +89,7 @@ export function ConfirmChangeDialog({
 
               {/* Current value display (if provided) */}
               {currentValue && (
-                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm">
+                <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3 text-sm">
                   <p className="font-medium text-amber-900 mb-1">
                     {currentValueLabel}:
                   </p>
@@ -101,8 +101,8 @@ export function ConfirmChangeDialog({
 
               {/* Note/Warning (if provided) */}
               {note && (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                  <p className="text-xs text-blue-900">
+                <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+                  <p className="text-xs text-blue-900 dark:text-blue-100">
                     <strong>Note:</strong> {note}
                   </p>
                 </div>

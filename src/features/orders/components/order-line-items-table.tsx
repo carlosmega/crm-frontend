@@ -28,6 +28,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Trash2, Package, Edit, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 // Sort column definitions
 const SORT_COLUMNS: SortableColumn<OrderDetail>[] = [
@@ -66,6 +67,7 @@ export function OrderLineItemsTable({
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [itemToDelete, setItemToDelete] = useState<OrderDetail | null>(null)
 
+  const { t } = useTranslation('orders')
   const deleteMutation = useDeleteOrderDetail()
   const { sortedData, sortConfig, handleSort } = useSortableData(items, SORT_COLUMNS)
 
@@ -83,7 +85,7 @@ export function OrderLineItemsTable({
         orderId,
       })
 
-      toast.success('Order line item deleted successfully')
+      toast.success(t('lineItems.deleteSuccess'))
       setDeleteDialogOpen(false)
       setItemToDelete(null)
     } catch (error) {
@@ -108,11 +110,11 @@ export function OrderLineItemsTable({
         <div className="rounded-full bg-muted p-3 mb-4">
           <Package className="h-6 w-6 text-muted-foreground" />
         </div>
-        <p className="text-sm font-medium text-foreground mb-1">No line items</p>
+        <p className="text-sm font-medium text-foreground mb-1">{t('lineItems.noLineItems')}</p>
         <p className="text-xs text-muted-foreground max-w-sm">
           {canEdit
-            ? 'Add products to this order using the button above'
-            : 'This order has no line items'}
+            ? t('lineItems.addPrompt')
+            : t('lineItems.noLineItemsAlt')}
         </p>
       </div>
     )
@@ -137,24 +139,24 @@ export function OrderLineItemsTable({
             <TableRow>
               <TableHead className="w-[50px]">#</TableHead>
               <TableHead>
-                <SortableColumnHeader columnId="product" label="Product" sortConfig={sortConfig} onSort={handleSort} />
+                <SortableColumnHeader columnId="product" label={t('lineItems.product')} sortConfig={sortConfig} onSort={handleSort} />
               </TableHead>
               <TableHead className="text-center">
-                <SortableColumnHeader columnId="quantity" label="Qty" sortConfig={sortConfig} onSort={handleSort} className="justify-center" />
+                <SortableColumnHeader columnId="quantity" label={t('lineItems.qty')} sortConfig={sortConfig} onSort={handleSort} className="justify-center" />
               </TableHead>
               <TableHead className="text-center">
-                <SortableColumnHeader columnId="priceperunit" label="Unit Price" sortConfig={sortConfig} onSort={handleSort} className="justify-center" />
+                <SortableColumnHeader columnId="priceperunit" label={t('lineItems.unitPrice')} sortConfig={sortConfig} onSort={handleSort} className="justify-center" />
               </TableHead>
               <TableHead className="text-center">
-                <SortableColumnHeader columnId="discount" label="Discount" sortConfig={sortConfig} onSort={handleSort} className="justify-center" />
+                <SortableColumnHeader columnId="discount" label={t('lineItems.discount')} sortConfig={sortConfig} onSort={handleSort} className="justify-center" />
               </TableHead>
               <TableHead className="text-center">
-                <SortableColumnHeader columnId="tax" label="Tax" sortConfig={sortConfig} onSort={handleSort} className="justify-center" />
+                <SortableColumnHeader columnId="tax" label={t('lineItems.tax')} sortConfig={sortConfig} onSort={handleSort} className="justify-center" />
               </TableHead>
               <TableHead className="text-center">
-                <SortableColumnHeader columnId="amount" label="Amount" sortConfig={sortConfig} onSort={handleSort} className="justify-center" />
+                <SortableColumnHeader columnId="amount" label={t('lineItems.amount')} sortConfig={sortConfig} onSort={handleSort} className="justify-center" />
               </TableHead>
-              {canEdit && <TableHead className="w-[100px]">Actions</TableHead>}
+              {canEdit && <TableHead className="w-[100px]">{t('lineItems.actions')}</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -180,17 +182,17 @@ export function OrderLineItemsTable({
                     <div className="flex gap-1 mt-1">
                       {(item.quantityshipped || 0) > 0 && (
                         <Badge variant="outline" className="text-xs">
-                          Shipped: {item.quantityshipped}
+                          {t('lineItems.shipped')} {item.quantityshipped}
                         </Badge>
                       )}
                       {(item.quantitybackordered || 0) > 0 && (
-                        <Badge variant="outline" className="text-xs bg-orange-50">
-                          Backorder: {item.quantitybackordered}
+                        <Badge variant="outline" className="text-xs bg-orange-50 dark:bg-orange-950/30">
+                          {t('lineItems.backorder')} {item.quantitybackordered}
                         </Badge>
                       )}
                       {(item.quantitycancelled || 0) > 0 && (
-                        <Badge variant="outline" className="text-xs bg-red-50">
-                          Cancelled: {item.quantitycancelled}
+                        <Badge variant="outline" className="text-xs bg-red-50 dark:bg-red-950/30">
+                          {t('lineItems.cancelled')} {item.quantitycancelled}
                         </Badge>
                       )}
                     </div>
@@ -241,7 +243,7 @@ export function OrderLineItemsTable({
                           variant="ghost"
                           size="icon-sm"
                           onClick={() => onEditItem(item)}
-                          title="Edit line item"
+                          title={t('lineItems.editLine')}
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
@@ -250,7 +252,7 @@ export function OrderLineItemsTable({
                         variant="ghost"
                         size="icon-sm"
                         onClick={() => handleDeleteClick(item)}
-                        title="Delete line item"
+                        title={t('lineItems.deleteLine')}
                       >
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
@@ -267,13 +269,13 @@ export function OrderLineItemsTable({
       <div className="flex justify-end">
         <div className="w-full max-w-sm space-y-2 border rounded-lg p-4 bg-muted/30">
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Subtotal:</span>
+            <span className="text-muted-foreground">{t('lineItems.subtotal')}</span>
             <span className="font-medium tabular-nums">{formatCurrency(subtotal)}</span>
           </div>
 
           {totalDiscount > 0 && (
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Total Discount:</span>
+              <span className="text-muted-foreground">{t('lineItems.totalDiscount')}</span>
               <span className="font-medium text-red-600 tabular-nums">
                 -{formatCurrency(totalDiscount)}
               </span>
@@ -282,14 +284,14 @@ export function OrderLineItemsTable({
 
           {totalTax > 0 && (
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Total Tax:</span>
+              <span className="text-muted-foreground">{t('lineItems.totalTax')}</span>
               <span className="font-medium tabular-nums">{formatCurrency(totalTax)}</span>
             </div>
           )}
 
           <div className="border-t pt-2 mt-2">
             <div className="flex justify-between">
-              <span className="font-semibold">Total:</span>
+              <span className="font-semibold">{t('lineItems.total')}</span>
               <span className="text-xl font-bold tabular-nums">{formatCurrency(total)}</span>
             </div>
           </div>
@@ -300,15 +302,13 @@ export function OrderLineItemsTable({
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Line Item?</AlertDialogTitle>
+            <AlertDialogTitle>{t('lineItems.delete.title')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this line item? This will update the order
-              total. This action cannot be undone.
+              {t('lineItems.delete.description')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={deleteMutation.isPending}>
-              Cancel
             </AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive"
@@ -318,10 +318,10 @@ export function OrderLineItemsTable({
               {deleteMutation.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Deleting...
+                  {t('lineItems.delete.deleting')}
                 </>
               ) : (
-                'Delete'
+                t('lineItems.delete.deleteButton')
               )}
             </AlertDialogAction>
           </AlertDialogFooter>

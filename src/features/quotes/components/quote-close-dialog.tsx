@@ -16,6 +16,7 @@ import { useWinQuote, useLoseQuote } from '../hooks/use-quote-mutations'
 import type { Quote, CloseQuoteDto } from '../types'
 import { formatCurrency } from '../utils/quote-calculations'
 import { TrendingUp, TrendingDown } from 'lucide-react'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface QuoteCloseDialogProps {
   quote: Quote
@@ -39,6 +40,8 @@ export function QuoteCloseDialog({
 }: QuoteCloseDialogProps) {
   const { mutate: winQuote, isPending: isWinning } = useWinQuote()
   const { mutate: loseQuote, isPending: isLosing } = useLoseQuote()
+  const { t } = useTranslation('quotes')
+  const { t: tc } = useTranslation('common')
 
   const isPending = isWinning || isLosing
 
@@ -89,21 +92,21 @@ export function QuoteCloseDialog({
             {isWin ? (
               <>
                 <TrendingUp className="h-5 w-5 text-green-600" />
-                Win Quote
+                {t('dialog.close.winTitle')}
               </>
             ) : (
               <>
                 <TrendingDown className="h-5 w-5 text-destructive" />
-                Lose Quote
+                {t('dialog.close.loseTitle')}
               </>
             )}
           </DialogTitle>
           <DialogDescription>
             {isWin
               ? quote.opportunityid
-                ? 'Mark this quote as won. The linked Opportunity will be automatically closed as Won. You can then create an Order from the quote detail page.'
-                : 'Mark this quote as won. You can then create an Order from the quote detail page.'
-              : 'Mark this quote as lost. You can optionally provide a reason for losing this quote.'}
+                ? t('dialog.close.winDescriptionWithOpp')
+                : t('dialog.close.winDescription')
+              : t('dialog.close.loseDescription')}
           </DialogDescription>
         </DialogHeader>
 
@@ -113,15 +116,15 @@ export function QuoteCloseDialog({
             <div className="rounded-lg border p-4 bg-muted/50">
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Quote Name:</span>
+                  <span className="text-muted-foreground">{t('dialog.close.quoteName')}</span>
                   <span className="font-medium">{quote.name}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Quote Number:</span>
-                  <span className="font-medium">{quote.quotenumber || 'N/A'}</span>
+                  <span className="text-muted-foreground">{t('dialog.close.quoteNumber')}</span>
+                  <span className="font-medium">{quote.quotenumber || tc('notApplicable')}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Total Amount:</span>
+                  <span className="text-muted-foreground">{t('dialog.close.totalAmount')}</span>
                   <span className="font-bold text-lg">
                     {formatCurrency(quote.totalamount)}
                   </span>
@@ -133,13 +136,13 @@ export function QuoteCloseDialog({
             {isWin && (
               <div className="rounded-lg border border-green-600 bg-green-50 dark:bg-green-950 p-4">
                 <p className="text-sm text-green-900 dark:text-green-100">
-                  <strong>Congratulations!</strong> Winning this quote will:
+                  <strong>{t('dialog.close.congratulations')}</strong>
                 </p>
                 <ul className="list-disc list-inside text-sm text-green-900 dark:text-green-100 mt-2 space-y-1">
-                  <li>Mark the quote as Won</li>
-                  <li>Update the linked Opportunity to Won (if exists)</li>
-                  <li>Automatically create an Order for {formatCurrency(quote.totalamount)}</li>
-                  <li>Copy all quote lines to the new order</li>
+                  <li>{t('dialog.close.markAsWon')}</li>
+                  <li>{t('dialog.close.updateOpportunity')}</li>
+                  <li>{t('dialog.close.createOrder', { amount: formatCurrency(quote.totalamount) })}</li>
+                  <li>{t('dialog.close.copyLines')}</li>
                 </ul>
               </div>
             )}
@@ -147,7 +150,7 @@ export function QuoteCloseDialog({
             {/* Closing Notes */}
             <div className="space-y-2">
               <Label htmlFor="closingnotes">
-                {isWin ? 'Closing Notes (Optional)' : 'Reason for Losing *'}
+                {isWin ? t('dialog.close.closingNotes') : t('dialog.close.reasonForLosing')}
               </Label>
               <Textarea
                 id="closingnotes"
@@ -156,8 +159,8 @@ export function QuoteCloseDialog({
                 })}
                 placeholder={
                   isWin
-                    ? 'Add any notes about winning this quote...'
-                    : 'Why was this quote lost? (e.g., price too high, went with competitor, timing not right...)'
+                    ? t('dialog.close.winNotesPlaceholder')
+                    : t('dialog.close.losePlaceholder')
                 }
                 rows={4}
               />
@@ -171,7 +174,7 @@ export function QuoteCloseDialog({
               onClick={handleCancel}
               disabled={isPending}
             >
-              Cancel
+              {tc('buttons.cancel')}
             </Button>
             <Button
               type="submit"
@@ -180,11 +183,11 @@ export function QuoteCloseDialog({
             >
               {isPending
                 ? isWin
-                  ? 'Winning...'
-                  : 'Closing...'
+                  ? t('dialog.close.winning')
+                  : t('dialog.close.closing')
                 : isWin
-                ? 'Win Quote'
-                : 'Lose Quote'}
+                ? t('dialog.close.winButton')
+                : t('dialog.close.loseButton')}
             </Button>
           </DialogFooter>
         </form>

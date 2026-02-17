@@ -17,6 +17,7 @@ import { useActivateQuote } from '../hooks/use-quote-mutations'
 import type { Quote, ActivateQuoteDto } from '../types'
 import { formatCurrency } from '../utils/quote-calculations'
 import { AlertTriangle, CheckCircle } from 'lucide-react'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface QuoteActivateDialogProps {
   quote: Quote
@@ -39,6 +40,8 @@ export function QuoteActivateDialog({
   onOpenChange,
   onSuccess,
 }: QuoteActivateDialogProps) {
+  const { t } = useTranslation('quotes')
+  const { t: tc } = useTranslation('common')
   const { mutate: activateQuote, isPending } = useActivateQuote()
   const [validationErrors, setValidationErrors] = useState<string[]>([])
   const [validationWarnings, setValidationWarnings] = useState<string[]>([])
@@ -60,22 +63,22 @@ export function QuoteActivateDialog({
     const errors: string[] = []
     const warnings: string[] = []
 
-    // ⚠️ PERMISSIVE: Quote lines and total amount are warnings, not errors
+    // PERMISSIVE: Quote lines and total amount are warnings, not errors
     if (quoteLineCount === 0) {
-      warnings.push('Quote has no product lines - consider adding products before activation')
+      warnings.push(t('dialog.activate.noProductLines'))
     }
 
     if (quote.totalamount <= 0) {
-      warnings.push('Quote total amount is zero - this may not be valid for customer review')
+      warnings.push(t('dialog.activate.zeroAmount'))
     }
 
-    // ❌ BLOCKING: Date validations remain as errors
+    // BLOCKING: Date validations remain as errors
     if (!data.effectivefrom) {
-      errors.push('Effective From date is required')
+      errors.push(t('dialog.activate.effectiveFromRequired'))
     }
 
     if (!data.effectiveto) {
-      errors.push('Effective To date is required')
+      errors.push(t('dialog.activate.effectiveToRequired'))
     }
 
     if (data.effectivefrom && data.effectiveto) {
@@ -83,7 +86,7 @@ export function QuoteActivateDialog({
       const toDate = new Date(data.effectiveto)
 
       if (toDate <= fromDate) {
-        errors.push('Effective To date must be after Effective From date')
+        errors.push(t('dialog.activate.effectiveToAfter'))
       }
     }
 
@@ -119,10 +122,9 @@ export function QuoteActivateDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Activate Quote</DialogTitle>
+          <DialogTitle>{t('dialog.activate.title')}</DialogTitle>
           <DialogDescription>
-            Activating this quote will lock it from editing and make it ready for
-            customer review. Please confirm the validity period.
+            {t('dialog.activate.description')}
           </DialogDescription>
         </DialogHeader>
 
@@ -132,15 +134,15 @@ export function QuoteActivateDialog({
             <div className="rounded-lg border p-4 bg-muted/50">
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Quote Name:</span>
+                  <span className="text-muted-foreground">{t('dialog.activate.quoteName')}</span>
                   <span className="font-medium">{quote.name}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Product Lines:</span>
+                  <span className="text-muted-foreground">{t('dialog.activate.productLines')}</span>
                   <span className="font-medium">{quoteLineCount}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Total Amount:</span>
+                  <span className="text-muted-foreground">{t('dialog.activate.totalAmount')}</span>
                   <span className="font-bold text-lg">
                     {formatCurrency(quote.totalamount)}
                   </span>
@@ -155,7 +157,7 @@ export function QuoteActivateDialog({
                   <AlertTriangle className="h-5 w-5 text-destructive flex-shrink-0" />
                   <div className="flex-1">
                     <p className="font-semibold text-sm text-destructive mb-2">
-                      Cannot activate quote:
+                      {t('dialog.activate.cannotActivate')}
                     </p>
                     <ul className="list-disc list-inside text-sm text-destructive space-y-1">
                       {validationErrors.map((error, index) => (
@@ -174,7 +176,7 @@ export function QuoteActivateDialog({
                   <AlertTriangle className="h-5 w-5 text-yellow-600 flex-shrink-0" />
                   <div className="flex-1">
                     <p className="font-semibold text-sm text-yellow-700 mb-2">
-                      Warning - Consider reviewing:
+                      {t('dialog.activate.warningTitle')}
                     </p>
                     <ul className="list-disc list-inside text-sm text-yellow-700 space-y-1">
                       {validationWarnings.map((warning, index) => (
@@ -182,7 +184,7 @@ export function QuoteActivateDialog({
                       ))}
                     </ul>
                     <p className="text-xs text-yellow-600 mt-2">
-                      You can still activate, but these issues should typically be addressed first.
+                      {t('dialog.activate.warningHint')}
                     </p>
                   </div>
                 </div>
@@ -192,11 +194,11 @@ export function QuoteActivateDialog({
             {/* Validity Period */}
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="effectivefrom">Effective From *</Label>
+                <Label htmlFor="effectivefrom">{t('dialog.activate.effectiveFrom')}</Label>
                 <Controller
                   name="effectivefrom"
                   control={control}
-                  rules={{ required: 'Effective From date is required' }}
+                  rules={{ required: t('dialog.activate.effectiveFromRequired') }}
                   render={({ field }) => (
                     <DatePicker
                       value={field.value}
@@ -213,11 +215,11 @@ export function QuoteActivateDialog({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="effectiveto">Effective To *</Label>
+                <Label htmlFor="effectiveto">{t('dialog.activate.effectiveTo')}</Label>
                 <Controller
                   name="effectiveto"
                   control={control}
-                  rules={{ required: 'Effective To date is required' }}
+                  rules={{ required: t('dialog.activate.effectiveToRequired') }}
                   render={({ field }) => (
                     <DatePicker
                       value={field.value}
@@ -241,11 +243,10 @@ export function QuoteActivateDialog({
                   <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
                   <div className="flex-1 text-sm">
                     <p className="font-semibold text-primary mb-1">
-                      Ready to activate
+                      {t('dialog.activate.readyToActivate')}
                     </p>
                     <p className="text-muted-foreground">
-                      This quote will be marked as Active and ready for customer
-                      review. You will not be able to edit it after activation.
+                      {t('dialog.activate.readyDescription')}
                     </p>
                   </div>
                 </div>
@@ -260,13 +261,13 @@ export function QuoteActivateDialog({
               onClick={handleCancel}
               disabled={isPending}
             >
-              Cancel
+              {tc('buttons.cancel')}
             </Button>
             <Button
               type="submit"
               disabled={isPending || validationErrors.length > 0}
             >
-              {isPending ? 'Activating...' : 'Activate Quote'}
+              {isPending ? t('dialog.activate.activating') : t('dialog.activate.activateButton')}
             </Button>
           </DialogFooter>
         </form>

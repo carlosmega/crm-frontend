@@ -10,6 +10,8 @@ import {
 } from '@/components/ui/breadcrumb'
 import { Separator } from '@/components/ui/separator'
 import { SidebarTrigger } from '@/components/ui/sidebar'
+import { NotificationMenu } from '@/components/layout/notification-menu'
+import { UserMenu } from '@/components/layout/user-menu'
 
 export const metadata: Metadata = {
   title: 'Quote Analytics | CRM',
@@ -29,7 +31,8 @@ export default function QuoteAnalyticsPage() {
   return (
     <>
       {/* Header - Sticky */}
-      <header className="sticky top-0 z-50 flex h-16 shrink-0 items-center gap-2 bg-background border-b transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+      <header className="sticky top-0 z-50 flex h-16 shrink-0 items-center justify-between gap-2 bg-background border-b transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+        {/* Left side: Trigger + Breadcrumb */}
         <div className="flex items-center gap-2 px-4">
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />
@@ -49,10 +52,16 @@ export default function QuoteAnalyticsPage() {
             </BreadcrumbList>
           </Breadcrumb>
         </div>
+
+        {/* Right side: Notifications + User Menu */}
+        <div className="flex items-center gap-2 px-4">
+          <NotificationMenu />
+          <UserMenu variant="full" />
+        </div>
       </header>
 
       {/* Content */}
-      <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100">
+      <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100 dark:bg-gray-900">
         <div className="px-4 pb-6 pt-6">
           <QuoteAnalyticsDashboard />
         </div>

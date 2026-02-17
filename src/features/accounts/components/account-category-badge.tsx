@@ -19,14 +19,14 @@ export function AccountCategoryBadge({ categorycode }: AccountCategoryBadgeProps
           label: t('category.preferredCustomer'),
           variant: 'default' as const,
           icon: Star,
-          className: 'bg-purple-100 text-purple-800 hover:bg-purple-100'
+          className: 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 hover:bg-purple-100'
         }
       case AccountCategoryCode.Standard:
         return {
           label: t('category.standard'),
           variant: 'secondary' as const,
           icon: User,
-          className: 'bg-gray-100 text-gray-800 hover:bg-gray-100'
+          className: 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-300 hover:bg-gray-100'
         }
       default:
         return {

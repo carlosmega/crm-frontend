@@ -40,7 +40,7 @@ export function MobileDetailHeader({
   actions,
 }: MobileDetailHeaderProps) {
   return (
-    <header className="md:hidden sticky top-0 z-50 bg-white border-b">
+    <header className="md:hidden sticky top-0 z-50 bg-white dark:bg-gray-900 border-b dark:border-gray-800">
       <div className="flex items-center justify-between px-4 py-3">
         {/* LEFT: Back Button + Title */}
         <div className="flex items-center gap-3 flex-1 min-w-0">

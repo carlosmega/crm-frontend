@@ -23,7 +23,7 @@ export const NotificationItem = memo(function NotificationItem({ notification, o
       className={cn(
         'group relative flex gap-3 pl-3 pr-2 py-3 transition-all duration-200 cursor-pointer',
         !notification.isRead
-          ? 'bg-purple-50/70 hover:bg-purple-50'
+          ? 'bg-purple-50/70 dark:bg-purple-950/30 hover:bg-purple-50 dark:hover:bg-purple-950/50'
           : 'hover:bg-accent/20'
       )}
     >

@@ -25,21 +25,21 @@ export function OpportunityStatusBadge({
           label: t('status.open'),
           variant: 'default' as const,
           icon: Clock,
-          className: 'bg-blue-100 text-blue-800 hover:bg-blue-200',
+          className: 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 hover:bg-blue-200',
         }
       case OpportunityStateCode.Won:
         return {
           label: t('status.won'),
           variant: 'default' as const,
           icon: CheckCircle2,
-          className: 'bg-green-100 text-green-800 hover:bg-green-200',
+          className: 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 hover:bg-green-200',
         }
       case OpportunityStateCode.Lost:
         return {
           label: t('status.lost'),
           variant: 'destructive' as const,
           icon: XCircle,
-          className: 'bg-red-100 text-red-800 hover:bg-red-200',
+          className: 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 hover:bg-red-200',
         }
       default:
         return {

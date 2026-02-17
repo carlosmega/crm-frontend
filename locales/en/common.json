@@ -20,7 +20,78 @@
     "viewDetails": "View details",
     "clearFilters": "Clear Filters",
     "clearAllFilters": "Clear All Filters",
-    "retry": "Retry"
+    "retry": "Retry",
+    "saveChanges": "Save Changes",
+    "update": "Update",
+    "add": "Add",
+    "change": "Change",
+    "confirm": "Confirm",
+    "logActivity": "Log Activity"
+  },
+  "actions": {
+    "qualifyLead": "Qualify Lead",
+    "disqualify": "Disqualify",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "closeOpportunity": "Close Opportunity",
+    "winOpportunity": "Win Opportunity",
+    "loseOpportunity": "Lose Opportunity",
+    "nextStage": "Next Stage",
+    "previousStage": "Previous Stage",
+    "activateQuote": "Activate Quote",
+    "winQuote": "Win Quote",
+    "loseQuote": "Lose Quote",
+    "cloneQuote": "Clone Quote",
+    "saveAsTemplate": "Save as Template",
+    "cancelQuote": "Cancel Quote",
+    "compareVersions": "Compare Versions",
+    "submitOrder": "Submit Order",
+    "fulfillOrder": "Fulfill Order",
+    "exportPdf": "Export PDF",
+    "exporting": "Exporting...",
+    "markPaid": "Mark as Paid",
+    "cancelInvoice": "Cancel Invoice",
+    "viewOpportunity": "View Opportunity",
+    "viewQuote": "View Quote",
+    "viewOrder": "View Order",
+    "viewInvoice": "View Invoice",
+    "backTo": "Back to {{entity}}"
+  },
+  "confirmations": {
+    "deleteTitle": "Delete {{entity}}?",
+    "deleteMessage": "Are you sure you want to delete this {{entity}}?",
+    "disqualifyTitle": "Disqualify Lead?",
+    "disqualifyMessage": "Are you sure you want to disqualify this lead?",
+    "deactivateTitle": "Deactivate {{entity}}?",
+    "deactivateMessage": "Are you sure you want to deactivate this {{entity}}?",
+    "cancelTitle": "Cancel {{entity}}?",
+    "cancelMessage": "Are you sure you want to cancel this {{entity}}?",
+    "confirmAction": "This action cannot be undone."
+  },
+  "breadcrumbs": {
+    "sales": "Sales",
+    "service": "Service",
+    "leads": "Leads",
+    "accounts": "Accounts",
+    "contacts": "Contacts",
+    "opportunities": "Opportunities",
+    "quotes": "Quotes",
+    "orders": "Orders",
+    "invoices": "Invoices",
+    "products": "Products",
+    "activities": "Activities",
+    "cases": "Cases",
+    "dashboard": "Dashboard",
+    "settings": "Settings",
+    "analytics": "Analytics",
+    "notifications": "Notifications"
+  },
+  "errors": {
+    "notFound": "{{entity}} not found",
+    "loadFailed": "Failed to load {{entity}}",
+    "deleteFailed": "Failed to delete {{entity}}",
+    "updateFailed": "Failed to update {{entity}}",
+    "createFailed": "Failed to create {{entity}}"
   },
   "states": {
     "active": "Active",
@@ -38,7 +109,12 @@
     "resolved": "Resolved",
     "paid": "Paid",
     "canceled": "Canceled",
-    "scheduled": "Scheduled"
+    "scheduled": "Scheduled",
+    "submitted": "Submitted",
+    "fulfilled": "Fulfilled",
+    "invoiced": "Invoiced",
+    "overdue": "Overdue",
+    "unknown": "Unknown"
   },
   "messages": {
     "loading": "Loading...",
@@ -109,7 +185,8 @@
     "pickDate": "Pick a date",
     "required": "required",
     "creating": "Creating...",
-    "updating": "Updating..."
+    "updating": "Updating...",
+    "optional": "(optional)"
   },
   "notApplicable": "N/A",
   "emptyState": {
@@ -124,7 +201,13 @@
     "details": "Details",
     "address": "Address",
     "professional": "Professional",
-    "qualification": "Qualification"
+    "qualification": "Qualification",
+    "products": "Products",
+    "shipping": "Shipping",
+    "billing": "Billing",
+    "payment": "Payment",
+    "versions": "Versions",
+    "items": "Items"
   },
   "sections": {
     "contactInfo": "Contact Information",
@@ -132,7 +215,12 @@
     "keyDates": "Key Dates",
     "description": "Description",
     "address": "Address",
-    "primaryAddress": "Primary Address"
+    "primaryAddress": "Primary Address",
+    "customerInfo": "Customer Information",
+    "relatedRecords": "Related Records",
+    "importantDates": "Important Dates",
+    "billingInfo": "Billing Information",
+    "basicInfo": "Basic Information"
   },
   "labels": {
     "revenue": "Revenue",
@@ -150,7 +238,19 @@
     "unknown": "Unknown",
     "view": "View",
     "closeProbability": "Close Probability",
-    "estCloseDate": "Est. Close Date"
+    "estCloseDate": "Est. Close Date",
+    "discount": "Discount",
+    "tax": "Tax",
+    "freight": "Freight",
+    "subtotal": "Subtotal",
+    "lastModified": "Last Modified",
+    "dueDate": "Due Date",
+    "description": "Description",
+    "quantity": "Quantity",
+    "unitPrice": "Unit Price",
+    "amount": "Amount",
+    "preview": "Preview",
+    "total": "Total"
   },
   "cardActions": {
     "view": "View",
@@ -172,6 +272,34 @@
     "lead": "Lead",
     "account": "Account",
     "contact": "Contact",
-    "opportunity": "Opportunity"
+    "opportunity": "Opportunity",
+    "quote": "Quote",
+    "order": "Order",
+    "invoice": "Invoice",
+    "product": "Product"
+  },
+  "address": {
+    "recipientName": "Recipient Name",
+    "billingName": "Billing Name",
+    "billToName": "Bill To Name",
+    "addressLine1": "Address Line 1",
+    "addressLine2": "Address Line 2",
+    "city": "City",
+    "stateProvince": "State/Province",
+    "postalCode": "Postal Code",
+    "country": "Country",
+    "shippingAddress": "Shipping Address",
+    "billingAddress": "Billing Address"
+  },
+  "placeholders": {
+    "companyOrPerson": "Company or person name",
+    "streetAddress": "Street address",
+    "aptSuite": "Apt, suite, unit, etc. (optional)",
+    "zipPostal": "ZIP / Postal code",
+    "customerBillingName": "Customer billing name",
+    "city": "City",
+    "stateOrProvince": "State or Province",
+    "postalCode": "Postal code",
+    "country": "Country"
   }
 }

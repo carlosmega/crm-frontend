@@ -49,9 +49,9 @@ export function AccountInfoHeader({ account, className }: AccountInfoHeaderProps
 
     switch (categoryCode) {
       case AccountCategoryCode.Preferred_Customer:
-        return { icon: Star, label: t('category.preferredCustomer'), color: 'text-purple-600 bg-purple-50 border-purple-200' }
+        return { icon: Star, label: t('category.preferredCustomer'), color: 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/30 border-purple-200 dark:border-purple-800' }
       case AccountCategoryCode.Standard:
-        return { icon: User, label: t('category.standard'), color: 'text-gray-600 bg-gray-50 border-gray-200' }
+        return { icon: User, label: t('category.standard'), color: 'text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700' }
       default:
         return null
     }
@@ -68,10 +68,10 @@ export function AccountInfoHeader({ account, className }: AccountInfoHeaderProps
           <h1 className="text-2xl font-bold text-gray-900">
             {account.name}
           </h1>
-          <Badge variant="secondary" className="text-xs font-semibold uppercase bg-purple-100 text-purple-700 border-0 px-3 py-1">
+          <Badge variant="secondary" className="text-xs font-semibold uppercase bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border-0 px-3 py-1">
             {t('header.account')}
           </Badge>
-          <Badge variant="secondary" className="text-xs font-semibold uppercase bg-gray-100 text-gray-700 border-0 px-3 py-1">
+          <Badge variant="secondary" className="text-xs font-semibold uppercase bg-gray-100 dark:bg-gray-900/30 text-gray-700 dark:text-gray-300 border-0 px-3 py-1">
             {t('header.accountLabel')}
           </Badge>
         </div>

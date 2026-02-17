@@ -21,6 +21,7 @@ import {
   DollarSign,
   MapPin,
 } from 'lucide-react'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 export type InvoiceTabId = 'general' | 'items' | 'details' | 'related' | 'activities'
 
@@ -42,6 +43,7 @@ interface InvoiceDetailTabsProps {
  * - Activities: Activity timeline and history
  */
 export function InvoiceDetailTabs({ invoice, invoiceLines = [] }: InvoiceDetailTabsProps) {
+  const { t } = useTranslation('invoices')
   const [activeTab, setActiveTab] = useState<InvoiceTabId>('general')
   const [tabsContainer, setTabsContainer] = useState<HTMLElement | null>(null)
 
@@ -75,7 +77,7 @@ export function InvoiceDetailTabs({ invoice, invoiceLines = [] }: InvoiceDetailT
           )}
         >
           <FileText className="w-4 h-4 mr-2" />
-          General
+          {t('detailTabs.general')}
         </TabsTrigger>
 
         <TabsTrigger
@@ -88,7 +90,7 @@ export function InvoiceDetailTabs({ invoice, invoiceLines = [] }: InvoiceDetailT
           )}
         >
           <Receipt className="w-4 h-4 mr-2" />
-          Items ({invoiceLines.length})
+          {t('detailTabs.itemsCount', { count: invoiceLines.length })}
         </TabsTrigger>
 
         <TabsTrigger
@@ -101,7 +103,7 @@ export function InvoiceDetailTabs({ invoice, invoiceLines = [] }: InvoiceDetailT
           )}
         >
           <Calendar className="w-4 h-4 mr-2" />
-          Details
+          {t('detailTabs.details')}
         </TabsTrigger>
 
         <TabsTrigger
@@ -114,7 +116,7 @@ export function InvoiceDetailTabs({ invoice, invoiceLines = [] }: InvoiceDetailT
           )}
         >
           <Link2 className="w-4 h-4 mr-2" />
-          Related
+          {t('detailTabs.related')}
         </TabsTrigger>
 
         <TabsTrigger
@@ -127,7 +129,7 @@ export function InvoiceDetailTabs({ invoice, invoiceLines = [] }: InvoiceDetailT
           )}
         >
           <History className="w-4 h-4 mr-2" />
-          Activities
+          {t('detailTabs.activities')}
         </TabsTrigger>
       </TabsList>
     </div>
@@ -151,16 +153,16 @@ export function InvoiceDetailTabs({ invoice, invoiceLines = [] }: InvoiceDetailT
                 ) : (
                   <User className="h-5 w-5" />
                 )}
-                Customer Information
+                {t('detailTabs.customerInfo')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div>
-                <p className="text-sm text-muted-foreground">Customer Type</p>
+                <p className="text-sm text-muted-foreground">{t('detailTabs.customerType')}</p>
                 <p className="font-medium capitalize">{invoice.customeridtype}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Customer ID</p>
+                <p className="text-sm text-muted-foreground">{t('detailTabs.customerId')}</p>
                 <p className="font-mono text-sm">{invoice.customerid}</p>
               </div>
             </CardContent>
@@ -171,31 +173,31 @@ export function InvoiceDetailTabs({ invoice, invoiceLines = [] }: InvoiceDetailT
             <CardHeader>
               <CardTitle className="text-base font-semibold flex items-center gap-2">
                 <DollarSign className="h-5 w-5" />
-                Invoice Summary
+                {t('detailTabs.invoiceSummary')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {invoice.discountamount && invoice.discountamount > 0 && (
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Discount</span>
+                  <span className="text-sm text-muted-foreground">{t('detailCard.discount')}</span>
                   <span className="text-red-600 font-medium">
                     -{formatCurrency(invoice.discountamount)}
                   </span>
                 </div>
               )}
               <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Tax</span>
+                <span className="text-sm text-muted-foreground">{t('detailCard.tax')}</span>
                 <span className="font-medium">{formatCurrency(invoice.totaltax || 0)}</span>
               </div>
               {invoice.freightamount && (
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Freight</span>
+                  <span className="text-sm text-muted-foreground">{t('detailCard.freight')}</span>
                   <span className="font-medium">{formatCurrency(invoice.freightamount)}</span>
                 </div>
               )}
               <div className="pt-3 border-t">
                 <div className="flex justify-between items-center">
-                  <span className="font-semibold">Total Amount</span>
+                  <span className="font-semibold">{t('detailCard.totalAmount')}</span>
                   <span className="text-lg font-bold text-purple-600">
                     {formatCurrency(invoice.totalamount)}
                   </span>
@@ -210,28 +212,28 @@ export function InvoiceDetailTabs({ invoice, invoiceLines = [] }: InvoiceDetailT
           <CardHeader>
             <CardTitle className="text-base font-semibold flex items-center gap-2">
               <Calendar className="h-5 w-5" />
-              Important Dates
+              {t('detailTabs.importantDates')}
             </CardTitle>
           </CardHeader>
           <CardContent className="grid gap-4 md:grid-cols-2">
             {invoice.duedate && (
               <div>
-                <p className="text-sm text-muted-foreground">Due Date</p>
+                <p className="text-sm text-muted-foreground">{t('detailTabs.dueDate')}</p>
                 <p className="font-medium">{formatDate(invoice.duedate)}</p>
               </div>
             )}
             {invoice.datedelivered && (
               <div>
-                <p className="text-sm text-muted-foreground">Delivered</p>
+                <p className="text-sm text-muted-foreground">{t('detailTabs.delivered')}</p>
                 <p className="font-medium">{formatDate(invoice.datedelivered)}</p>
               </div>
             )}
             <div>
-              <p className="text-sm text-muted-foreground">Created</p>
+              <p className="text-sm text-muted-foreground">{t('detailTabs.created')}</p>
               <p className="font-medium">{formatDate(invoice.createdon)}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Last Modified</p>
+              <p className="text-sm text-muted-foreground">{t('detailTabs.lastModified')}</p>
               <p className="font-medium">{formatDate(invoice.modifiedon)}</p>
             </div>
           </CardContent>
@@ -241,7 +243,7 @@ export function InvoiceDetailTabs({ invoice, invoiceLines = [] }: InvoiceDetailT
         {invoice.description && (
           <Card>
             <CardHeader>
-              <CardTitle className="text-base font-semibold">Description</CardTitle>
+              <CardTitle className="text-base font-semibold">{t('detailTabs.description')}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm">{invoice.description}</p>
@@ -256,7 +258,7 @@ export function InvoiceDetailTabs({ invoice, invoiceLines = [] }: InvoiceDetailT
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Receipt className="h-5 w-5" />
-              Invoice Items ({invoiceLines.length})
+              {t('detailTabs.invoiceItems', { count: invoiceLines.length })}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -265,7 +267,7 @@ export function InvoiceDetailTabs({ invoice, invoiceLines = [] }: InvoiceDetailT
             ) : (
               <div className="py-12 text-center">
                 <Receipt className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                <p className="text-muted-foreground">No items in this invoice</p>
+                <p className="text-muted-foreground">{t('detailTabs.noItems')}</p>
               </div>
             )}
           </CardContent>
@@ -280,7 +282,7 @@ export function InvoiceDetailTabs({ invoice, invoiceLines = [] }: InvoiceDetailT
             <CardHeader>
               <CardTitle className="text-base font-semibold flex items-center gap-2">
                 <MapPin className="h-5 w-5" />
-                Billing Address
+                {t('detailTabs.billingAddress')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -307,23 +309,23 @@ export function InvoiceDetailTabs({ invoice, invoiceLines = [] }: InvoiceDetailT
           <CardHeader>
             <CardTitle className="text-base font-semibold flex items-center gap-2">
               <DollarSign className="h-5 w-5" />
-              Payment Information
+              {t('detailTabs.paymentInfo')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             {invoice.paymenttermscode !== undefined && (
               <div>
-                <p className="text-sm text-muted-foreground">Payment Terms</p>
+                <p className="text-sm text-muted-foreground">{t('detailTabs.paymentTerms')}</p>
                 <p className="font-medium">
-                  {invoice.paymenttermscode === 1 ? 'Net 30' :
-                   invoice.paymenttermscode === 2 ? 'Net 45' :
-                   invoice.paymenttermscode === 3 ? 'Net 60' : 'Default'}
+                  {invoice.paymenttermscode === 1 ? t('detailTabs.paymentTermsValues.net30') :
+                   invoice.paymenttermscode === 2 ? t('detailTabs.paymentTermsValues.net45') :
+                   invoice.paymenttermscode === 3 ? t('detailTabs.paymentTermsValues.net60') : t('detailTabs.paymentTermsValues.default')}
                 </p>
               </div>
             )}
             {invoice.duedate && (
               <div>
-                <p className="text-sm text-muted-foreground">Due Date</p>
+                <p className="text-sm text-muted-foreground">{t('detailTabs.dueDate')}</p>
                 <p className="font-medium">{formatDate(invoice.duedate)}</p>
               </div>
             )}
@@ -334,7 +336,7 @@ export function InvoiceDetailTabs({ invoice, invoiceLines = [] }: InvoiceDetailT
           <Card>
             <CardContent className="py-12 text-center">
               <MapPin className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">No billing information available</p>
+              <p className="text-muted-foreground">{t('detailTabs.noBillingInfo')}</p>
             </CardContent>
           </Card>
         )}
@@ -344,33 +346,33 @@ export function InvoiceDetailTabs({ invoice, invoiceLines = [] }: InvoiceDetailT
       <TabsContent value="related" className="mt-0 space-y-4">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base font-semibold">Related Records</CardTitle>
+            <CardTitle className="text-base font-semibold">{t('detailTabs.relatedRecords')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             {invoice.salesorderid && (
               <div>
-                <p className="text-sm text-muted-foreground">Order</p>
+                <p className="text-sm text-muted-foreground">{t('detailTabs.order')}</p>
                 <Link
                   href={`/orders/${invoice.salesorderid}`}
                   className="text-sm hover:underline text-primary font-medium"
                 >
-                  View Original Order
+                  {t('detailTabs.viewOriginalOrder')}
                 </Link>
               </div>
             )}
             {invoice.opportunityid && (
               <div>
-                <p className="text-sm text-muted-foreground">Opportunity</p>
+                <p className="text-sm text-muted-foreground">{t('detailTabs.opportunity')}</p>
                 <Link
                   href={`/opportunities/${invoice.opportunityid}`}
                   className="text-sm hover:underline text-primary font-medium"
                 >
-                  View Opportunity
+                  {t('detailTabs.viewOpportunity')}
                 </Link>
               </div>
             )}
             {!invoice.salesorderid && !invoice.opportunityid && (
-              <p className="text-sm text-muted-foreground">No related records available</p>
+              <p className="text-sm text-muted-foreground">{t('detailTabs.noRelated')}</p>
             )}
           </CardContent>
         </Card>

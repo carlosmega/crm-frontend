@@ -34,6 +34,7 @@ import {
   FileText,
 } from 'lucide-react'
 import { useQuotePdfExport } from '../hooks/use-quote-pdf-export'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface QuoteInfoHeaderProps {
   quote: Quote
@@ -70,6 +71,7 @@ export function QuoteInfoHeader({
   const router = useRouter()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { exportToPdf, isExporting } = useQuotePdfExport()
+  const { t } = useTranslation('quotes')
 
   const canEdit = isQuoteEditable(quote)
   const canActivate = isQuoteDraft(quote)
@@ -92,7 +94,7 @@ export function QuoteInfoHeader({
 
         {quote.quotenumber && (
           <p className="text-sm text-muted-foreground mb-3">
-            Quote Number: {quote.quotenumber}
+            {t('header.quoteNumber')} {quote.quotenumber}
           </p>
         )}
 
@@ -115,21 +117,21 @@ export function QuoteInfoHeader({
           {canActivate && onActivate && (
             <Button onClick={onActivate} size="lg">
               <CheckCircle className="mr-2 h-4 w-4" />
-              Activate Quote
+              {t('header.activateQuote')}
             </Button>
           )}
 
           {canWin && onWin && (
             <Button onClick={onWin} size="lg">
               <TrendingUp className="mr-2 h-4 w-4" />
-              Win Quote
+              {t('header.winQuote')}
             </Button>
           )}
 
           {canEdit && (
             <Button onClick={handleEdit} variant="outline" size="lg">
               <Edit className="mr-2 h-4 w-4" />
-              Edit
+              {t('header.edit')}
             </Button>
           )}
 
@@ -145,7 +147,7 @@ export function QuoteInfoHeader({
                 <>
                   <DropdownMenuItem onClick={handleEdit}>
                     <Edit className="mr-2 h-4 w-4" />
-                    Edit Quote
+                    {t('header.editQuote')}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                 </>
@@ -154,21 +156,21 @@ export function QuoteInfoHeader({
               {canActivate && onActivate && (
                 <DropdownMenuItem onClick={onActivate}>
                   <CheckCircle className="mr-2 h-4 w-4" />
-                  Activate Quote
+                  {t('header.activateQuote')}
                 </DropdownMenuItem>
               )}
 
               {canWin && onWin && (
                 <DropdownMenuItem onClick={onWin}>
                   <TrendingUp className="mr-2 h-4 w-4" />
-                  Win Quote
+                  {t('header.winQuote')}
                 </DropdownMenuItem>
               )}
 
               {canLose && onLose && (
                 <DropdownMenuItem onClick={onLose}>
                   <TrendingDown className="mr-2 h-4 w-4" />
-                  Lose Quote
+                  {t('header.loseQuote')}
                 </DropdownMenuItem>
               )}
 
@@ -177,7 +179,7 @@ export function QuoteInfoHeader({
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={onRevise}>
                     <RotateCcw className="mr-2 h-4 w-4" />
-                    Revise Quote
+                    {t('header.reviseQuote')}
                   </DropdownMenuItem>
                 </>
               )}
@@ -185,7 +187,7 @@ export function QuoteInfoHeader({
               {onCancel && !isQuoteWon(quote) && (
                 <DropdownMenuItem onClick={onCancel}>
                   <XCircle className="mr-2 h-4 w-4" />
-                  Cancel Quote
+                  {t('header.cancelQuote')}
                 </DropdownMenuItem>
               )}
 
@@ -194,14 +196,14 @@ export function QuoteInfoHeader({
               {onClone && (
                 <DropdownMenuItem onClick={onClone} disabled={isCloning}>
                   <Copy className="mr-2 h-4 w-4" />
-                  {isCloning ? 'Cloning...' : 'Clone Quote'}
+                  {isCloning ? t('header.cloning') : t('header.cloneQuote')}
                 </DropdownMenuItem>
               )}
 
               {onSaveAsTemplate && (
                 <DropdownMenuItem onClick={onSaveAsTemplate}>
                   <Save className="mr-2 h-4 w-4" />
-                  Save as Template
+                  {t('header.saveAsTemplate')}
                 </DropdownMenuItem>
               )}
 
@@ -212,7 +214,7 @@ export function QuoteInfoHeader({
                 disabled={isExporting}
               >
                 <FileText className="mr-2 h-4 w-4" />
-                {isExporting ? 'Exporting...' : 'Export to PDF'}
+                {isExporting ? t('header.exporting') : t('header.exportPdf')}
               </DropdownMenuItem>
 
               <DropdownMenuItem
@@ -221,7 +223,7 @@ export function QuoteInfoHeader({
                 }}
               >
                 <Copy className="mr-2 h-4 w-4" />
-                Copy Quote ID
+                {t('header.copyQuoteId')}
               </DropdownMenuItem>
 
               {canDelete && onDelete && (
@@ -232,7 +234,7 @@ export function QuoteInfoHeader({
                     className="text-destructive"
                   >
                     <Trash2 className="mr-2 h-4 w-4" />
-                    Delete Quote
+                    {t('header.deleteQuote')}
                   </DropdownMenuItem>
                 </>
               )}

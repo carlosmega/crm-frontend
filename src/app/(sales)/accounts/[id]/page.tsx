@@ -11,6 +11,7 @@ import { LogActivityButton } from '@/features/activities/components'
 import { AccountStateCode } from '@/core/contracts'
 import { DetailPageHeader } from '@/components/layout/detail-page-header'
 import { MobileDetailHeader } from '@/components/layout/mobile-detail-header'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -38,11 +39,13 @@ const AccountDetailTabs = dynamic(
 export default function AccountDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params)
   const router = useRouter()
+  const { t } = useTranslation('accounts')
+  const { t: tc } = useTranslation('common')
   const { account, loading } = useAccount(resolvedParams.id)
   const { deleteAccount, deactivateAccount, activateAccount, loading: mutating } = useAccountMutations()
 
   const handleDelete = async () => {
-    if (confirm('Are you sure you want to delete this account?')) {
+    if (confirm(tc('confirmations.deleteMessage', { entity: tc('entities.account') }))) {
       try {
         await deleteAccount(resolvedParams.id)
         router.push('/accounts')
@@ -53,7 +56,7 @@ export default function AccountDetailPage({ params }: { params: Promise<{ id: st
   }
 
   const handleDeactivate = async () => {
-    if (confirm('Are you sure you want to deactivate this account?')) {
+    if (confirm(tc('confirmations.deactivateMessage', { entity: tc('entities.account') }))) {
       try {
         await deactivateAccount(resolvedParams.id)
         window.location.reload()
@@ -83,9 +86,9 @@ export default function AccountDetailPage({ params }: { params: Promise<{ id: st
   if (!account) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-4">
-        <p className="text-lg font-semibold text-muted-foreground">Account not found</p>
+        <p className="text-lg font-semibold text-muted-foreground">{tc('errors.notFound', { entity: tc('entities.account') })}</p>
         <Button asChild>
-          <Link href="/accounts">Back to Accounts</Link>
+          <Link href="/accounts">{tc('actions.backTo', { entity: tc('breadcrumbs.accounts') })}</Link>
         </Button>
       </div>
     )
@@ -103,29 +106,29 @@ export default function AccountDetailPage({ params }: { params: Promise<{ id: st
         <DropdownMenuItem asChild>
           <Link href={`/accounts/${account.accountid}/edit`} className="flex items-center cursor-pointer">
             <Edit className="mr-2 h-4 w-4" />
-            Edit
+            {tc('buttons.edit')}
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
           <FileText className="mr-2 h-4 w-4" />
-          Log Activity
+          {tc('buttons.logActivity')}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         {account.statecode === AccountStateCode.Active ? (
           <DropdownMenuItem onClick={handleDeactivate} disabled={mutating}>
             <XCircle className="mr-2 h-4 w-4" />
-            Deactivate
+            {tc('actions.deactivate')}
           </DropdownMenuItem>
         ) : (
           <DropdownMenuItem onClick={handleActivate} disabled={mutating}>
             <CheckCircle2 className="mr-2 h-4 w-4" />
-            Activate
+            {tc('actions.activate')}
           </DropdownMenuItem>
         )}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleDelete} disabled={mutating} className="text-destructive focus:text-destructive">
           <Trash2 className="mr-2 h-4 w-4" />
-          Delete
+          {tc('buttons.delete')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -144,16 +147,16 @@ export default function AccountDetailPage({ params }: { params: Promise<{ id: st
       {/* Desktop Header */}
       <DetailPageHeader
         breadcrumbs={[
-          { label: 'Sales', href: '/dashboard' },
-          { label: 'Accounts', href: '/accounts' },
+          { label: tc('breadcrumbs.sales'), href: '/dashboard' },
+          { label: tc('breadcrumbs.accounts'), href: '/accounts' },
           { label: account.name },
         ]}
       />
 
       {/* Content - Fondo gris igual que opportunities/leads */}
-      <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100">
+      <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100 dark:bg-gray-900">
         {/* STICKY SECTION - Account Info Header + Actions + Tabs */}
-        <div className="md:sticky md:top-0 z-40 bg-gray-100/98 backdrop-blur-sm">
+        <div className="md:sticky md:top-0 z-40 bg-gray-100/98 dark:bg-gray-900/98 backdrop-blur-sm">
           {/* Account Info Header & Actions */}
           <div className="px-4 pt-4 pb-4">
             {/* Desktop Layout: Side by side */}
@@ -173,10 +176,10 @@ export default function AccountDetailPage({ params }: { params: Promise<{ id: st
                     variant="outline"
                     onClick={handleDeactivate}
                     disabled={mutating}
-                    className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                    className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                   >
                     <XCircle className="mr-2 h-4 w-4" />
-                    Deactivate
+                    {tc('actions.deactivate')}
                   </Button>
                 ) : (
                   <Button
@@ -185,23 +188,23 @@ export default function AccountDetailPage({ params }: { params: Promise<{ id: st
                     className="bg-purple-600 hover:bg-purple-700 text-white font-medium"
                   >
                     <CheckCircle2 className="mr-2 h-4 w-4" />
-                    Activate
+                    {tc('actions.activate')}
                   </Button>
                 )}
-                <Button asChild variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
+                <Button asChild variant="outline" className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800">
                   <Link href={`/accounts/${account.accountid}/edit`}>
                     <Edit className="mr-2 h-4 w-4" />
-                    Edit
+                    {tc('buttons.edit')}
                   </Link>
                 </Button>
                 <Button
                   variant="outline"
                   onClick={handleDelete}
                   disabled={mutating}
-                  className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                  className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
-                  Delete
+                  {tc('buttons.delete')}
                 </Button>
               </div>
             </div>

@@ -12,7 +12,7 @@ export default function DashboardPage() {
   return (
     <>
       {/* Mobile Header */}
-      <header className="md:hidden sticky top-0 z-50 bg-white border-b">
+      <header className="md:hidden sticky top-0 z-50 bg-white dark:bg-gray-900 border-b dark:border-gray-800">
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3 flex-1 min-w-0">
             <SidebarTrigger className="h-8 w-8 -ml-1" />
@@ -37,7 +37,7 @@ export default function DashboardPage() {
       />
 
       {/* Content - Gray background with consistent structure */}
-      <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100">
+      <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100 dark:bg-gray-900">
         <DashboardClient />
       </div>
     </>

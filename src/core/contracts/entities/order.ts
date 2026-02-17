@@ -2,6 +2,7 @@ import type {
   OrderStateCode,
   OrderStatusCode,
   PaymentTermsCode,
+  PaymentMethodCode,
   FreightTermsCode,
   ShippingMethodCode,
   PriorityCode,
@@ -81,6 +82,7 @@ export interface Order {
 
   // Payment Terms
   paymenttermscode?: PaymentTermsCode;  // Net 30, Net 60, etc.
+  paymentmethodcode?: PaymentMethodCode; // Credit Card, Bank Transfer, etc.
   freighttermscode?: FreightTermsCode;  // FOB, CIF, etc.
 
   // Priority
@@ -116,7 +118,9 @@ export interface UpdateOrderDto {
   requestdeliveryby?: string;
   prioritycode?: PriorityCode;
   paymenttermscode?: PaymentTermsCode;
+  paymentmethodcode?: PaymentMethodCode;
   freighttermscode?: FreightTermsCode;
+  freightamount?: number;
   shippingmethodcode?: ShippingMethodCode;
   shipto_name?: string;
   shipto_line1?: string;

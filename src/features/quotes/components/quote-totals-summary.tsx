@@ -1,7 +1,10 @@
+'use client'
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import type { Quote } from '../types'
 import { formatCurrency } from '../utils/quote-calculations'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import { DollarSign } from 'lucide-react'
 
 interface QuoteTotalsSummaryProps {
@@ -18,18 +21,20 @@ export function QuoteTotalsSummary({
   quote,
   className,
 }: QuoteTotalsSummaryProps) {
+  const { t } = useTranslation('quotes')
+
   return (
     <Card className={className}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <DollarSign className="h-5 w-5" />
-          Quote Totals
+          {t('totals.title')}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         {/* Line Items Total */}
         <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground">Subtotal:</span>
+          <span className="text-muted-foreground">{t('totals.subtotal')}</span>
           <span className="font-medium">
             {formatCurrency(quote.totallineitemamount)}
           </span>
@@ -38,7 +43,7 @@ export function QuoteTotalsSummary({
         {/* Discount */}
         {quote.totaldiscountamount > 0 && (
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Discount:</span>
+            <span className="text-muted-foreground">{t('totals.discount')}</span>
             <span className="font-medium text-green-600">
               -{formatCurrency(quote.totaldiscountamount)}
             </span>
@@ -49,7 +54,7 @@ export function QuoteTotalsSummary({
         {quote.totaldiscountamount > 0 && (
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">
-              Subtotal (after discount):
+              {t('totals.afterDiscount')}
             </span>
             <span className="font-medium">
               {formatCurrency(
@@ -62,7 +67,7 @@ export function QuoteTotalsSummary({
         {/* Tax */}
         {quote.totaltax > 0 && (
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Tax:</span>
+            <span className="text-muted-foreground">{t('totals.tax')}</span>
             <span className="font-medium">
               {formatCurrency(quote.totaltax)}
             </span>
@@ -72,7 +77,7 @@ export function QuoteTotalsSummary({
         {/* Freight */}
         {quote.freightamount > 0 && (
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Freight:</span>
+            <span className="text-muted-foreground">{t('totals.freight')}</span>
             <span className="font-medium">
               {formatCurrency(quote.freightamount)}
             </span>
@@ -83,7 +88,7 @@ export function QuoteTotalsSummary({
 
         {/* Total Amount */}
         <div className="flex justify-between">
-          <span className="font-semibold">Total Amount:</span>
+          <span className="font-semibold">{t('totals.totalAmount')}</span>
           <span className="font-bold text-xl">
             {formatCurrency(quote.totalamount)}
           </span>
@@ -92,7 +97,7 @@ export function QuoteTotalsSummary({
         {/* Amount less freight (if applicable) */}
         {quote.freightamount > 0 && (
           <div className="flex justify-between text-xs text-muted-foreground">
-            <span>Amount (excl. freight):</span>
+            <span>{t('totals.amountExclFreight')}</span>
             <span>{formatCurrency(quote.totalamountlessfreight)}</span>
           </div>
         )}

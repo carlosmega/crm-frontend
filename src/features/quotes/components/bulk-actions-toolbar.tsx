@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { Trash2, Percent, X } from 'lucide-react'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface BulkActionsToolbarProps {
   selectedCount: number
@@ -22,6 +23,8 @@ export function BulkActionsToolbar({
   onBulkDelete,
   onBulkDiscount,
 }: BulkActionsToolbarProps) {
+  const { t } = useTranslation('quotes')
+
   if (selectedCount === 0) return null
 
   return (
@@ -29,7 +32,7 @@ export function BulkActionsToolbar({
       <div className="flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-4">
           <span className="text-sm font-medium">
-            {selectedCount} {selectedCount === 1 ? 'item' : 'items'} selected
+            {t('bulkActions.selected', { count: selectedCount, item: selectedCount === 1 ? t('bulkActions.item') : t('bulkActions.items') })}
           </span>
 
           <div className="flex items-center gap-2">
@@ -40,7 +43,7 @@ export function BulkActionsToolbar({
               className="gap-2"
             >
               <Percent className="h-4 w-4" />
-              Apply Discount
+              {t('bulkActions.applyDiscount')}
             </Button>
 
             <Button
@@ -50,7 +53,7 @@ export function BulkActionsToolbar({
               className="gap-2 text-destructive hover:bg-destructive hover:text-destructive-foreground"
             >
               <Trash2 className="h-4 w-4" />
-              Delete Selected
+              {t('bulkActions.deleteSelected')}
             </Button>
           </div>
         </div>
@@ -62,7 +65,7 @@ export function BulkActionsToolbar({
           className="gap-2"
         >
           <X className="h-4 w-4" />
-          Clear Selection
+          {t('bulkActions.clearSelection')}
         </Button>
       </div>
     </div>

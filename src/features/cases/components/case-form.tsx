@@ -380,7 +380,7 @@ export function CaseForm({
                 type="button"
                 variant="outline"
                 onClick={onCancel}
-                className="h-10 border-gray-300 text-gray-700 hover:bg-gray-50"
+                className="h-10 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800"
               >
                 Cancel
               </Button>

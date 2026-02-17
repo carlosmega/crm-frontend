@@ -11,6 +11,7 @@ import { LogActivityButton } from '@/features/activities/components'
 import { ContactStateCode } from '@/core/contracts'
 import { DetailPageHeader } from '@/components/layout/detail-page-header'
 import { MobileDetailHeader } from '@/components/layout/mobile-detail-header'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -39,6 +40,8 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
   const resolvedParams = use(params)
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { t } = useTranslation('contacts')
+  const { t: tc } = useTranslation('common')
   const { contact, loading, refetch } = useContact(resolvedParams.id)
   const { deleteContact, deactivateContact, loading: mutating } = useContactMutations()
 
@@ -60,7 +63,7 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
   }, [searchParams, refetch, router])
 
   const handleDelete = async () => {
-    if (confirm('Are you sure you want to delete this contact?')) {
+    if (confirm(tc('confirmations.deleteMessage', { entity: tc('entities.contact') }))) {
       try {
         await deleteContact(resolvedParams.id)
         router.push('/contacts')
@@ -71,7 +74,7 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
   }
 
   const handleDeactivate = async () => {
-    if (confirm('Are you sure you want to deactivate this contact?')) {
+    if (confirm(tc('confirmations.deactivateMessage', { entity: tc('entities.contact') }))) {
       try {
         await deactivateContact(resolvedParams.id)
         // ✅ Refetch para mostrar estado actualizado (sin reload)
@@ -93,9 +96,9 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
   if (!contact) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-4">
-          <p className="text-lg font-semibold text-muted-foreground">Contact not found</p>
+          <p className="text-lg font-semibold text-muted-foreground">{tc('errors.notFound', { entity: tc('entities.contact') })}</p>
           <Button asChild>
-            <Link href="/contacts">Back to Contacts</Link>
+            <Link href="/contacts">{tc('actions.backTo', { entity: tc('breadcrumbs.contacts') })}</Link>
           </Button>
         </div>
     )
@@ -113,24 +116,24 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
         <DropdownMenuItem asChild>
           <Link href={`/contacts/${contact.contactid}/edit`} className="flex items-center cursor-pointer">
             <Edit className="mr-2 h-4 w-4" />
-            Edit
+            {tc('buttons.edit')}
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
           <FileText className="mr-2 h-4 w-4" />
-          Log Activity
+          {tc('buttons.logActivity')}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         {contact.statecode === ContactStateCode.Active && (
           <DropdownMenuItem onClick={handleDeactivate} disabled={mutating}>
             <XCircle className="mr-2 h-4 w-4" />
-            Deactivate
+            {tc('actions.deactivate')}
           </DropdownMenuItem>
         )}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleDelete} disabled={mutating} className="text-destructive focus:text-destructive">
           <Trash2 className="mr-2 h-4 w-4" />
-          Delete
+          {tc('buttons.delete')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -156,9 +159,9 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
       />
 
       {/* Content - Fondo gris igual que opportunities/leads */}
-      <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100">
+      <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100 dark:bg-gray-900">
         {/* STICKY SECTION - Contact Info Header + Actions + Tabs */}
-        <div className="md:sticky md:top-0 z-40 bg-gray-100/98 backdrop-blur-sm">
+        <div className="md:sticky md:top-0 z-40 bg-gray-100/98 dark:bg-gray-900/98 backdrop-blur-sm">
           {/* Contact Info Header & Actions */}
           <div className="px-4 pt-4 pb-4">
             {/* Desktop Layout: Side by side */}
@@ -178,10 +181,10 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
                     variant="outline"
                     onClick={handleDeactivate}
                     disabled={mutating}
-                    className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                    className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                   >
                     <XCircle className="mr-2 h-4 w-4" />
-                    Deactivate
+                    {tc('actions.deactivate')}
                   </Button>
                 ) : (
                   <Button
@@ -190,23 +193,23 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
                     className="border-gray-300 text-gray-700"
                   >
                     <CheckCircle2 className="mr-2 h-4 w-4" />
-                    Activate
+                    {tc('actions.activate')}
                   </Button>
                 )}
-                <Button asChild variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
+                <Button asChild variant="outline" className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800">
                   <Link href={`/contacts/${contact.contactid}/edit`}>
                     <Edit className="mr-2 h-4 w-4" />
-                    Edit
+                    {tc('buttons.edit')}
                   </Link>
                 </Button>
                 <Button
                   variant="outline"
                   onClick={handleDelete}
                   disabled={mutating}
-                  className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                  className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
-                  Delete
+                  {tc('buttons.delete')}
                 </Button>
               </div>
             </div>

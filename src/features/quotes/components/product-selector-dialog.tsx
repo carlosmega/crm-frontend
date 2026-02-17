@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input'
 import { useProducts } from '@/features/products/hooks/use-products'
 import type { Product } from '@/core/contracts/entities/product'
 import { formatCurrency } from '../utils/quote-calculations'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import { Search, Package, CheckCircle } from 'lucide-react'
 
 interface ProductSelectorDialogProps {
@@ -34,6 +35,8 @@ export function ProductSelectorDialog({
 }: ProductSelectorDialogProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const { products = [], loading: isLoading } = useProducts()
+  const { t } = useTranslation('quotes')
+  const { t: tc } = useTranslation('common')
 
   // Filter products by search query
   const filteredProducts = useMemo(() => products.filter((product) => {
@@ -57,9 +60,9 @@ export function ProductSelectorDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[700px] max-h-[80vh]">
         <DialogHeader>
-          <DialogTitle>Select Product</DialogTitle>
+          <DialogTitle>{t('productSelector.title')}</DialogTitle>
           <DialogDescription>
-            Search and select a product from the catalog to add to this quote
+            {t('productSelector.description')}
           </DialogDescription>
         </DialogHeader>
 
@@ -69,7 +72,7 @@ export function ProductSelectorDialog({
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="text"
-              placeholder="Search products by name or number..."
+              placeholder={t('productSelector.searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
@@ -81,7 +84,7 @@ export function ProductSelectorDialog({
             <div className="max-h-[400px] overflow-y-auto">
               {isLoading ? (
                 <div className="p-8 text-center text-muted-foreground">
-                  Loading products...
+                  {t('productSelector.loading')}
                 </div>
               ) : filteredProducts.length > 0 ? (
                 <div className="divide-y">
@@ -110,7 +113,7 @@ export function ProductSelectorDialog({
                                 {formatCurrency(product.price)}
                               </p>
                               <p className="text-xs text-muted-foreground">
-                                per unit
+                                {t('productSelector.perUnit')}
                               </p>
                             </div>
                           </div>
@@ -121,7 +124,7 @@ export function ProductSelectorDialog({
                           )}
                           {product.quantityonhand !== undefined && (
                             <p className="text-xs text-muted-foreground mt-2">
-                              Stock: {product.quantityonhand} units
+                              {t('productSelector.stock')} {product.quantityonhand} {t('productSelector.units')}
                             </p>
                           )}
                         </div>
@@ -133,8 +136,8 @@ export function ProductSelectorDialog({
               ) : (
                 <div className="p-8 text-center text-muted-foreground">
                   {searchQuery
-                    ? 'No products found matching your search'
-                    : 'No active products available'}
+                    ? t('productSelector.noMatch')
+                    : t('productSelector.noProducts')}
                 </div>
               )}
             </div>
@@ -143,9 +146,7 @@ export function ProductSelectorDialog({
           {/* Results Count */}
           {!isLoading && (
             <p className="text-sm text-muted-foreground">
-              Showing {filteredProducts.length} product
-              {filteredProducts.length !== 1 ? 's' : ''}
-              {searchQuery && ` matching "${searchQuery}"`}
+              {t('productSelector.showing', { count: filteredProducts.length, plural: filteredProducts.length !== 1 ? 's' : '', filter: searchQuery ? t('productSelector.matchingFilter', { query: searchQuery }) : '' })}
             </p>
           )}
         </div>
@@ -156,7 +157,7 @@ export function ProductSelectorDialog({
             variant="outline"
             onClick={() => onOpenChange(false)}
           >
-            Cancel
+            {tc('buttons.cancel')}
           </Button>
         </DialogFooter>
       </DialogContent>

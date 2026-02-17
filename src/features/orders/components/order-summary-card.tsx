@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { DollarSign, TrendingUp, Percent, Package } from 'lucide-react'
 import { formatCurrency } from '@/features/invoices/utils/invoice-calculations'
 import { getPriorityLabel, getPaymentTermsLabel } from '@/core/contracts/enums'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface OrderSummaryCardProps {
   order: Order
@@ -13,6 +14,7 @@ interface OrderSummaryCardProps {
 }
 
 export function OrderSummaryCard({ order, linesCount = 0 }: OrderSummaryCardProps) {
+  const { t } = useTranslation('orders')
   const subtotal = order.totalamountlessfreight || order.totalamount
   const hasDiscount = (order.discountamount || 0) > 0
   const hasTax = (order.totaltax || 0) > 0
@@ -21,14 +23,14 @@ export function OrderSummaryCard({ order, linesCount = 0 }: OrderSummaryCardProp
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Order Summary</CardTitle>
+        <CardTitle>{t('summaryCard.title')}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Total Amount - Highlighted */}
         <div className="flex justify-between items-center p-4 bg-primary/10 rounded-lg">
           <div className="flex items-center gap-2">
             <DollarSign className="h-5 w-5 text-primary" />
-            <span className="font-medium">Total Amount</span>
+            <span className="font-medium">{t('summaryCard.totalAmount')}</span>
           </div>
           <span className="text-2xl font-bold">
             {formatCurrency(order.totalamount)}
@@ -38,7 +40,7 @@ export function OrderSummaryCard({ order, linesCount = 0 }: OrderSummaryCardProp
         {/* Breakdown */}
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
-            <span className="text-muted-foreground">Subtotal</span>
+            <span className="text-muted-foreground">{t('summaryCard.subtotal')}</span>
             <span className="font-medium">{formatCurrency(subtotal)}</span>
           </div>
 
@@ -46,7 +48,7 @@ export function OrderSummaryCard({ order, linesCount = 0 }: OrderSummaryCardProp
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground flex items-center gap-1">
                 <Percent className="h-3 w-3" />
-                Discount
+                {t('summaryCard.discount')}
                 {order.discountpercentage > 0 && (
                   <span className="text-xs">
                     ({order.discountpercentage.toFixed(1)}%)
@@ -61,14 +63,14 @@ export function OrderSummaryCard({ order, linesCount = 0 }: OrderSummaryCardProp
 
           {hasTax && (
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Tax</span>
+              <span className="text-muted-foreground">{t('summaryCard.tax')}</span>
               <span className="font-medium">{formatCurrency(order.totaltax)}</span>
             </div>
           )}
 
           {hasFreight && (
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Freight</span>
+              <span className="text-muted-foreground">{t('summaryCard.freight')}</span>
               <span className="font-medium">
                 {formatCurrency(order.freightamount)}
               </span>
@@ -81,7 +83,7 @@ export function OrderSummaryCard({ order, linesCount = 0 }: OrderSummaryCardProp
           <div className="flex items-center gap-2 text-sm pt-2 border-t">
             <Package className="h-4 w-4 text-muted-foreground" />
             <span className="text-muted-foreground">
-              {linesCount} line item{linesCount !== 1 ? 's' : ''}
+              {t('summaryCard.lineItems', { count: linesCount, item: linesCount !== 1 ? t('summaryCard.lineItems_plural') : t('summaryCard.lineItem') })}
             </span>
           </div>
         )}
@@ -89,7 +91,7 @@ export function OrderSummaryCard({ order, linesCount = 0 }: OrderSummaryCardProp
         {/* Priority */}
         {order.prioritycode !== undefined && (
           <div className="flex items-center justify-between pt-2 border-t">
-            <span className="text-sm text-muted-foreground">Priority</span>
+            <span className="text-sm text-muted-foreground">{t('summaryCard.priority')}</span>
             <Badge variant={order.prioritycode === 2 ? 'destructive' : 'outline'}>
               {getPriorityLabel(order.prioritycode)}
             </Badge>
@@ -99,7 +101,7 @@ export function OrderSummaryCard({ order, linesCount = 0 }: OrderSummaryCardProp
         {/* Payment Terms */}
         {order.paymenttermscode !== undefined && (
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Payment Terms</span>
+            <span className="text-sm text-muted-foreground">{t('summaryCard.paymentTerms')}</span>
             <span className="text-sm font-medium">
               {getPaymentTermsLabel(order.paymenttermscode)}
             </span>
@@ -112,7 +114,7 @@ export function OrderSummaryCard({ order, linesCount = 0 }: OrderSummaryCardProp
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <TrendingUp className="h-4 w-4 text-green-600" />
-                <span className="text-sm font-medium">Order Value</span>
+                <span className="text-sm font-medium">{t('summaryCard.orderValue')}</span>
               </div>
               <span className="text-lg font-bold text-green-600">
                 {formatCurrency(order.totalamount)}

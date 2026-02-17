@@ -9,6 +9,7 @@ import { formatCurrency } from '@/shared/utils/formatters'
 import { Calendar, AlertCircle, Clock, DollarSign } from 'lucide-react'
 import type { Invoice } from '@/core/contracts/entities/invoice'
 import { InvoiceStateCode } from '@/core/contracts/enums'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 /**
  * Invoice Aging Report
@@ -44,6 +45,8 @@ function calculateDaysOverdue(dueDate: string): number {
 }
 
 export function InvoiceAgingReport({ invoices }: InvoiceAgingReportProps) {
+  const { t } = useTranslation('invoices')
+
   const agingBuckets = useMemo(() => {
     // Filtrar solo invoices Active (unpaid) con due date
     const unpaidInvoices = invoices.filter(
@@ -52,40 +55,17 @@ export function InvoiceAgingReport({ invoices }: InvoiceAgingReportProps) {
         inv.duedate !== undefined
     )
 
-    const buckets: AgingBucket[] = [
-      {
-        label: 'Current',
-        days: '0-30 days',
-        invoices: [],
-        totalAmount: 0,
-        count: 0,
-        color: 'default',
-      },
-      {
-        label: '31-60 Days',
-        days: '31-60 days overdue',
-        invoices: [],
-        totalAmount: 0,
-        count: 0,
-        color: 'secondary',
-      },
-      {
-        label: '61-90 Days',
-        days: '61-90 days overdue',
-        invoices: [],
-        totalAmount: 0,
-        count: 0,
-        color: 'destructive',
-      },
-      {
-        label: '90+ Days',
-        days: 'Over 90 days overdue',
-        invoices: [],
-        totalAmount: 0,
-        count: 0,
-        color: 'destructive',
-      },
-    ]
+    const bucketKeys = ['current', 'days31_60', 'days61_90', 'days90plus'] as const
+    const bucketColors: Array<'default' | 'secondary' | 'destructive'> = ['default', 'secondary', 'destructive', 'destructive']
+
+    const buckets: AgingBucket[] = bucketKeys.map((key, index) => ({
+      label: t(`aging.buckets.${key}`),
+      days: t(`aging.bucketDescriptions.${key}`),
+      invoices: [],
+      totalAmount: 0,
+      count: 0,
+      color: bucketColors[index],
+    }))
 
     unpaidInvoices.forEach((invoice) => {
       const daysOverdue = calculateDaysOverdue(invoice.duedate)
@@ -146,7 +126,7 @@ export function InvoiceAgingReport({ invoices }: InvoiceAgingReportProps) {
               key={index}
               title={bucket.label}
               value={formatCurrency(bucket.totalAmount)}
-              description={`${bucket.count} ${bucket.count === 1 ? 'invoice' : 'invoices'} · ${bucket.days}`}
+              description={t('aging.invoiceCount', { count: bucket.count, item: bucket.count === 1 ? t('aging.invoice') : t('aging.invoices'), days: bucket.days })}
               icon={icon}
               iconClassName={iconClassName}
               iconBgClassName={iconBgClassName}
@@ -158,29 +138,28 @@ export function InvoiceAgingReport({ invoices }: InvoiceAgingReportProps) {
       {/* Aging Report Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Invoice Aging Details</CardTitle>
+          <CardTitle>{t('aging.detailTitle')}</CardTitle>
           <CardDescription>
-            Breakdown of all unpaid invoices by aging bucket ({totalInvoices} invoices,{' '}
-            {formatCurrency(totalOutstanding)} total outstanding)
+            {t('aging.detailDescription', { count: totalInvoices, total: formatCurrency(totalOutstanding) })}
           </CardDescription>
         </CardHeader>
         <CardContent>
           {totalInvoices === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <AlertCircle className="h-12 w-12 mx-auto mb-2 opacity-50" />
-              <p>No unpaid invoices found</p>
+              <p>{t('aging.noUnpaid')}</p>
             </div>
           ) : (
             <div className="rounded-md border">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Invoice #</TableHead>
-                    <TableHead>Customer</TableHead>
-                    <TableHead>Due Date</TableHead>
-                    <TableHead>Days Overdue</TableHead>
-                    <TableHead>Balance</TableHead>
-                    <TableHead>Aging Category</TableHead>
+                    <TableHead>{t('aging.tableHeaders.invoiceNumber')}</TableHead>
+                    <TableHead>{t('aging.tableHeaders.customer')}</TableHead>
+                    <TableHead>{t('aging.tableHeaders.dueDate')}</TableHead>
+                    <TableHead>{t('aging.tableHeaders.daysOverdue')}</TableHead>
+                    <TableHead>{t('aging.tableHeaders.balance')}</TableHead>
+                    <TableHead>{t('aging.tableHeaders.agingCategory')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -206,7 +185,7 @@ export function InvoiceAgingReport({ invoices }: InvoiceAgingReportProps) {
                                     : 'text-muted-foreground'
                               }
                             >
-                              {daysOverdue > 0 ? `${daysOverdue} days` : 'Not due'}
+                              {daysOverdue > 0 ? t('aging.daysOverdue', { days: daysOverdue }) : t('aging.notDue')}
                             </span>
                           </TableCell>
                           <TableCell className="font-semibold">
@@ -229,8 +208,8 @@ export function InvoiceAgingReport({ invoices }: InvoiceAgingReportProps) {
       {/* Aging Distribution Chart */}
       <Card>
         <CardHeader>
-          <CardTitle>Aging Distribution</CardTitle>
-          <CardDescription>Visual breakdown of outstanding amounts by aging period</CardDescription>
+          <CardTitle>{t('aging.distributionTitle')}</CardTitle>
+          <CardDescription>{t('aging.distributionDescription')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">

@@ -12,6 +12,7 @@ import { CancelInvoiceButton } from '@/features/invoices/components/cancel-invoi
 import { InvoiceStateCode } from '@/core/contracts/enums'
 import { DetailPageHeader } from '@/components/layout/detail-page-header'
 import { MobileDetailHeader } from '@/components/layout/mobile-detail-header'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 // ✅ PERFORMANCE: Dynamic import for tabs
 const InvoiceDetailTabs = dynamic(
@@ -48,6 +49,8 @@ interface InvoiceDetailPageProps {
 export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
   const { id } = use(params)
   const router = useRouter()
+  const { t } = useTranslation('invoices')
+  const { t: tc } = useTranslation('common')
 
   const { data: invoice, isLoading: loading, error } = useInvoice(id)
   const { data: invoiceDetails, isLoading: loadingDetails } = useInvoiceDetails(id)
@@ -59,13 +62,13 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
   const getInvoiceStatusBadge = (statecode: number) => {
     switch (statecode) {
       case InvoiceStateCode.Active:
-        return <Badge variant="default">Active</Badge>
+        return <Badge variant="default">{tc('states.active')}</Badge>
       case InvoiceStateCode.Paid:
-        return <Badge className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">Paid</Badge>
+        return <Badge className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">{tc('states.paid')}</Badge>
       case InvoiceStateCode.Canceled:
-        return <Badge variant="destructive">Canceled</Badge>
+        return <Badge variant="destructive">{tc('states.canceled')}</Badge>
       default:
-        return <Badge variant="secondary">Unknown</Badge>
+        return <Badge variant="secondary">{tc('states.unknown')}</Badge>
     }
   }
 
@@ -74,10 +77,10 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
       <div className="flex h-full items-center justify-center">
         <div className="text-center">
           <p className="text-lg font-semibold text-destructive mb-4">
-            Error loading invoice: {error.message}
+            {tc('errors.loadFailed', { entity: tc('entities.invoice') })}: {error.message}
           </p>
           <Button asChild>
-            <Link href="/invoices">Back to Invoices</Link>
+            <Link href="/invoices">{tc('actions.backTo', { entity: tc('breadcrumbs.invoices') })}</Link>
           </Button>
         </div>
       </div>
@@ -103,7 +106,7 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
       <DropdownMenuContent align="end" className="w-48">
         <DropdownMenuItem onClick={() => exportToPdf(id)} disabled={isExporting}>
           <FileText className="mr-2 h-4 w-4" />
-          {isExporting ? 'Exporting...' : 'Export PDF'}
+          {isExporting ? tc('actions.exporting') : tc('actions.exportPdf')}
         </DropdownMenuItem>
         {canMarkAsPaid && invoice && (
           <>
@@ -148,16 +151,16 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
       {/* Desktop Header */}
       <DetailPageHeader
         breadcrumbs={[
-          { label: 'Sales', href: '/dashboard' },
-          { label: 'Invoices', href: '/invoices' },
+          { label: tc('breadcrumbs.sales'), href: '/dashboard' },
+          { label: tc('breadcrumbs.invoices'), href: '/invoices' },
           { label: invoice.name },
         ]}
       />
 
       {/* Content - Fondo gris igual que contacts/accounts/leads */}
-      <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100">
+      <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100 dark:bg-gray-900">
         {/* STICKY SECTION - Invoice Info Header + Actions + Tabs */}
-        <div className="md:sticky md:top-0 z-40 bg-gray-100/98 backdrop-blur-sm">
+        <div className="md:sticky md:top-0 z-40 bg-gray-100/98 dark:bg-gray-900/98 backdrop-blur-sm">
           {/* Invoice Info Header & Actions */}
           <div className="px-4 pt-4 pb-4">
             {/* Desktop Layout: Side by side */}
@@ -190,7 +193,7 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
                   disabled={isExporting}
                 >
                   <FileText className="mr-2 h-4 w-4" />
-                  {isExporting ? 'Exporting...' : 'Export PDF'}
+                  {isExporting ? tc('actions.exporting') : tc('actions.exportPdf')}
                 </Button>
                 {canMarkAsPaid && invoice && (
                   <div data-mark-paid-button>

@@ -16,6 +16,7 @@ import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import type { QuoteDetail } from '../types'
 import { formatCurrency } from '../utils/quote-calculations'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface BulkDiscountDialogProps {
   open: boolean
@@ -37,6 +38,8 @@ export function BulkDiscountDialog({
   selectedLines,
   onApply,
 }: BulkDiscountDialogProps) {
+  const { t } = useTranslation('quotes')
+  const { t: tc } = useTranslation('common')
   const [discountType, setDiscountType] = useState<'percentage' | 'amount'>('percentage')
   const [discountValue, setDiscountValue] = useState<number>(0)
 
@@ -58,12 +61,12 @@ export function BulkDiscountDialog({
 
   const handleApply = () => {
     if (discountValue <= 0) {
-      toast.warning('Discount must be greater than 0')
+      toast.warning(t('dialog.discount.mustBeGreaterThanZero'))
       return
     }
 
     if (discountType === 'percentage' && discountValue > 100) {
-      toast.warning('Percentage cannot exceed 100%')
+      toast.warning(t('dialog.discount.cannotExceed100'))
       return
     }
 
@@ -76,16 +79,19 @@ export function BulkDiscountDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Apply Bulk Discount</DialogTitle>
+          <DialogTitle>{t('dialog.discount.title')}</DialogTitle>
           <DialogDescription>
-            Apply discount to {selectedLines.length} selected {selectedLines.length === 1 ? 'item' : 'items'}
+            {t('dialog.discount.description', {
+              count: selectedLines.length,
+              item: selectedLines.length === 1 ? t('dialog.discount.item') : t('dialog.discount.items'),
+            })}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
           {/* Discount Type Selection */}
           <div className="space-y-2">
-            <Label>Discount Type</Label>
+            <Label>{t('dialog.discount.discountType')}</Label>
             <RadioGroup
               value={discountType}
               onValueChange={(value) => setDiscountType(value as 'percentage' | 'amount')}
@@ -93,13 +99,13 @@ export function BulkDiscountDialog({
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="percentage" id="percentage" />
                 <Label htmlFor="percentage" className="font-normal cursor-pointer">
-                  Percentage (applies % to each line's base amount)
+                  {t('dialog.discount.percentage')}
                 </Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="amount" id="amount" />
                 <Label htmlFor="amount" className="font-normal cursor-pointer">
-                  Fixed Amount (applies same $ to each line)
+                  {t('dialog.discount.fixedAmount')}
                 </Label>
               </div>
             </RadioGroup>
@@ -108,7 +114,7 @@ export function BulkDiscountDialog({
           {/* Discount Value Input */}
           <div className="space-y-2">
             <Label htmlFor="discount-value">
-              {discountType === 'percentage' ? 'Discount Percentage' : 'Discount Amount'}
+              {discountType === 'percentage' ? t('dialog.discount.discountPercentage') : t('dialog.discount.discountAmount')}
             </Label>
             <div className="relative">
               <Input
@@ -120,7 +126,7 @@ export function BulkDiscountDialog({
                 value={discountValue}
                 onChange={(e) => setDiscountValue(parseFloat(e.target.value) || 0)}
                 className="pr-8"
-                placeholder={discountType === 'percentage' ? 'e.g., 10' : 'e.g., 50.00'}
+                placeholder={discountType === 'percentage' ? t('dialog.discount.percentPlaceholder') : t('dialog.discount.fixedPlaceholder')}
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                 {discountType === 'percentage' ? '%' : '$'}
@@ -130,24 +136,24 @@ export function BulkDiscountDialog({
 
           {/* Preview */}
           <div className="rounded-lg border bg-muted/50 p-4 space-y-2">
-            <div className="text-sm font-medium">Preview</div>
+            <div className="text-sm font-medium">{t('dialog.discount.preview')}</div>
             <div className="space-y-1 text-sm">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Total Base Amount:</span>
+                <span className="text-muted-foreground">{t('dialog.discount.totalBaseAmount')}</span>
                 <span className="font-medium">{formatCurrency(totalBaseAmount)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Current Discount:</span>
+                <span className="text-muted-foreground">{t('dialog.discount.currentDiscount')}</span>
                 <span className="text-destructive">-{formatCurrency(currentTotalDiscount)}</span>
               </div>
               <div className="flex justify-between border-t pt-1">
-                <span className="text-muted-foreground">New Discount:</span>
+                <span className="text-muted-foreground">{t('dialog.discount.newDiscount')}</span>
                 <span className="font-semibold text-destructive">
                   -{formatCurrency(newTotalDiscount)}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Difference:</span>
+                <span className="text-muted-foreground">{t('dialog.discount.difference')}</span>
                 <span className={newTotalDiscount > currentTotalDiscount ? 'text-orange-600' : 'text-green-600'}>
                   {newTotalDiscount > currentTotalDiscount ? '+' : ''}
                   {formatCurrency(newTotalDiscount - currentTotalDiscount)}
@@ -159,18 +165,21 @@ export function BulkDiscountDialog({
           {/* Warning */}
           {discountType === 'amount' && (
             <div className="text-xs text-muted-foreground bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-900 rounded p-2">
-              <strong>Note:</strong> Fixed amount will be applied to each line individually.
-              Total discount = ${discountValue.toFixed(2)} × {selectedLines.length} = {formatCurrency(discountValue * selectedLines.length)}
+              {t('dialog.discount.fixedNote', {
+                amount: discountValue.toFixed(2),
+                count: selectedLines.length,
+                total: formatCurrency(discountValue * selectedLines.length),
+              })}
             </div>
           )}
         </div>
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
+            {tc('buttons.cancel')}
           </Button>
           <Button onClick={handleApply} disabled={discountValue <= 0}>
-            Apply Discount
+            {t('dialog.discount.applyDiscount')}
           </Button>
         </DialogFooter>
       </DialogContent>

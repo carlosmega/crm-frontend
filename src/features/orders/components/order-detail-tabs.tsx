@@ -8,15 +8,19 @@ import type { Order } from '@/core/contracts'
 import { OrderStateCode } from '@/core/contracts/enums'
 import { useAccount } from '@/features/accounts/hooks/use-accounts'
 import { useContact } from '@/features/contacts/hooks/use-contacts'
+import { useUpdateOrder } from '@/features/orders/hooks/use-orders'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { OrderLineItemsTable } from '@/features/orders/components/order-line-items-table'
+import { PaymentInfoCard } from '@/features/orders/components/payment-info-card'
 import { ActivityTimeline } from '@/features/activities/components'
 import { cn } from '@/lib/utils'
 import { formatCurrency } from '@/shared/utils/formatters'
+import { useTranslation } from '@/shared/hooks/use-translation'
+import { toast } from 'sonner'
 import {
   FileText,
   Package,
@@ -35,6 +39,7 @@ import {
   ExternalLink,
   Pencil,
   Plus,
+  Copy,
 } from 'lucide-react'
 
 // Dynamic import for edit dialog
@@ -42,6 +47,8 @@ const EditShippingDialog = dynamic(
   () => import('./edit-shipping-dialog').then(mod => ({ default: mod.EditShippingDialog })),
   { ssr: false }
 )
+
+import type { ShippingDialogSection } from './edit-shipping-dialog'
 
 export type OrderTabId = 'general' | 'products' | 'shipping' | 'related' | 'activities'
 
@@ -67,9 +74,14 @@ interface OrderDetailTabsProps {
  * - Organized content without sidebar spacing issues
  */
 export function OrderDetailTabs({ order, orderLines = [] }: OrderDetailTabsProps) {
+  const { t } = useTranslation('orders')
+  const { t: tc } = useTranslation('common')
   const [activeTab, setActiveTab] = useState<OrderTabId>('general')
   const [tabsContainer, setTabsContainer] = useState<HTMLElement | null>(null)
-  const [showEditShipping, setShowEditShipping] = useState(false)
+  const [shippingDialogSection, setShippingDialogSection] = useState<ShippingDialogSection | null>(null)
+
+  // Mutation for updating order
+  const updateMutation = useUpdateOrder()
 
   // Fetch customer data (Account or Contact)
   const isAccountCustomer = order.customeridtype === 'account'
@@ -102,6 +114,34 @@ export function OrderDetailTabs({ order, orderLines = [] }: OrderDetailTabsProps
     })
   }
 
+  // Copy shipping address to billing address
+  const handleCopyShippingToBilling = async () => {
+    if (!hasShippingAddress) {
+      toast.error(t('detail.noShippingAddressToCopy'))
+      return
+    }
+
+    try {
+      await updateMutation.mutateAsync({
+        id: order.salesorderid,
+        dto: {
+          billto_name: order.shipto_name,
+          billto_line1: order.shipto_line1,
+          billto_line2: order.shipto_line2,
+          billto_city: order.shipto_city,
+          billto_stateorprovince: order.shipto_stateorprovince,
+          billto_postalcode: order.shipto_postalcode,
+          billto_country: order.shipto_country,
+        },
+      })
+
+      toast.success(t('detail.billingAddressCopied'))
+    } catch (error) {
+      console.error('Error copying shipping to billing:', error)
+      toast.error(t('detail.errorCopyingAddress'))
+    }
+  }
+
   // Tabs navigation component
   const tabsNavigation = (
     <div className="overflow-x-auto">
@@ -116,7 +156,7 @@ export function OrderDetailTabs({ order, orderLines = [] }: OrderDetailTabsProps
           )}
         >
           <FileText className="w-4 h-4 mr-2" />
-          General
+          {t('tabs.general')}
         </TabsTrigger>
 
         <TabsTrigger
@@ -129,7 +169,7 @@ export function OrderDetailTabs({ order, orderLines = [] }: OrderDetailTabsProps
           )}
         >
           <Package className="w-4 h-4 mr-2" />
-          Products ({orderLines.length})
+          {t('tabs.productsCount', { count: orderLines.length })}
         </TabsTrigger>
 
         <TabsTrigger
@@ -142,7 +182,7 @@ export function OrderDetailTabs({ order, orderLines = [] }: OrderDetailTabsProps
           )}
         >
           <Truck className="w-4 h-4 mr-2" />
-          Shipping
+          {t('tabs.shipping')}
         </TabsTrigger>
 
         <TabsTrigger
@@ -155,7 +195,7 @@ export function OrderDetailTabs({ order, orderLines = [] }: OrderDetailTabsProps
           )}
         >
           <Link2 className="w-4 h-4 mr-2" />
-          Related
+          {t('tabs.related')}
         </TabsTrigger>
 
         <TabsTrigger
@@ -168,7 +208,7 @@ export function OrderDetailTabs({ order, orderLines = [] }: OrderDetailTabsProps
           )}
         >
           <History className="w-4 h-4 mr-2" />
-          Activities
+          {t('tabs.activities')}
         </TabsTrigger>
       </TabsList>
     </div>
@@ -443,28 +483,26 @@ export function OrderDetailTabs({ order, orderLines = [] }: OrderDetailTabsProps
 
       {/* SHIPPING TAB */}
       <TabsContent value="shipping" className="mt-0 space-y-4">
-        {/* Edit Button - Only in Active state */}
-        {canEditShipping && (
-          <div className="flex justify-end">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowEditShipping(true)}
-            >
-              <Pencil className="h-4 w-4 mr-2" />
-              Edit Shipping Info
-            </Button>
-          </div>
-        )}
-
         {/* Shipping Address Card */}
         {hasShippingAddress ? (
           <Card>
             <CardHeader>
-              <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <MapPin className="h-5 w-5" />
-                Shipping Address
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base font-semibold flex items-center gap-2">
+                  <MapPin className="h-5 w-5" />
+                  Shipping Address
+                </CardTitle>
+                {canEditShipping && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShippingDialogSection('shipping-address')}
+                  >
+                    <Pencil className="h-4 w-4 mr-2" />
+                    Edit Shipping Address
+                  </Button>
+                )}
+              </div>
             </CardHeader>
             <CardContent>
               <div className="flex items-start gap-2.5">
@@ -499,7 +537,7 @@ export function OrderDetailTabs({ order, orderLines = [] }: OrderDetailTabsProps
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setShowEditShipping(true)}
+                    onClick={() => setShippingDialogSection('shipping-address')}
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     Add Shipping Address
@@ -514,10 +552,22 @@ export function OrderDetailTabs({ order, orderLines = [] }: OrderDetailTabsProps
         {hasBillingAddress ? (
           <Card>
             <CardHeader>
-              <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <MapPin className="h-5 w-5" />
-                Billing Address
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base font-semibold flex items-center gap-2">
+                  <MapPin className="h-5 w-5" />
+                  Billing Address
+                </CardTitle>
+                {canEditShipping && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShippingDialogSection('billing-address')}
+                  >
+                    <Pencil className="h-4 w-4 mr-2" />
+                    Edit Billing Address
+                  </Button>
+                )}
+              </div>
             </CardHeader>
             <CardContent>
               <div className="flex items-start gap-2.5">
@@ -539,10 +589,23 @@ export function OrderDetailTabs({ order, orderLines = [] }: OrderDetailTabsProps
         ) : (
           <Card>
             <CardHeader>
-              <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <MapPin className="h-5 w-5" />
-                Billing Address
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base font-semibold flex items-center gap-2">
+                  <MapPin className="h-5 w-5" />
+                  Billing Address
+                </CardTitle>
+                {canEditShipping && hasShippingAddress && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleCopyShippingToBilling}
+                    disabled={updateMutation.isPending}
+                  >
+                    <Copy className="h-4 w-4 mr-2" />
+                    Same as Shipping
+                  </Button>
+                )}
+              </div>
             </CardHeader>
             <CardContent>
               <div className="py-6 text-center">
@@ -552,7 +615,7 @@ export function OrderDetailTabs({ order, orderLines = [] }: OrderDetailTabsProps
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setShowEditShipping(true)}
+                    onClick={() => setShippingDialogSection('billing-address')}
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     Add Billing Address
@@ -566,10 +629,22 @@ export function OrderDetailTabs({ order, orderLines = [] }: OrderDetailTabsProps
         {/* Shipping Details */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <Truck className="h-5 w-5" />
-              Shipping Details
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base font-semibold flex items-center gap-2">
+                <Truck className="h-5 w-5" />
+                Shipping Details
+              </CardTitle>
+              {canEditShipping && hasShippingDetails && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShippingDialogSection('shipping-details')}
+                >
+                  <Pencil className="h-4 w-4 mr-2" />
+                  Edit Shipping Details
+                </Button>
+              )}
+            </div>
           </CardHeader>
           <CardContent>
             {hasShippingDetails ? (
@@ -596,6 +671,12 @@ export function OrderDetailTabs({ order, orderLines = [] }: OrderDetailTabsProps
                     </p>
                   </div>
                 )}
+                {order.freightamount !== undefined && order.freightamount > 0 && (
+                  <div>
+                    <p className="text-sm text-muted-foreground">Freight Amount</p>
+                    <p className="font-medium">{formatCurrency(order.freightamount)}</p>
+                  </div>
+                )}
                 {order.requestdeliveryby && (
                   <div>
                     <p className="text-sm text-muted-foreground">Requested Delivery By</p>
@@ -611,7 +692,7 @@ export function OrderDetailTabs({ order, orderLines = [] }: OrderDetailTabsProps
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setShowEditShipping(true)}
+                    onClick={() => setShippingDialogSection('shipping-details')}
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     Add Shipping Details
@@ -622,11 +703,15 @@ export function OrderDetailTabs({ order, orderLines = [] }: OrderDetailTabsProps
           </CardContent>
         </Card>
 
+        {/* Payment Info Card */}
+        <PaymentInfoCard order={order} />
+
         {/* Edit Shipping Dialog */}
         <EditShippingDialog
           order={order}
-          open={showEditShipping}
-          onOpenChange={setShowEditShipping}
+          open={shippingDialogSection !== null}
+          onOpenChange={(open) => { if (!open) setShippingDialogSection(null) }}
+          section={shippingDialogSection || 'all'}
         />
       </TabsContent>
 

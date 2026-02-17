@@ -151,7 +151,13 @@
     "count": "Count:",
     "total": "Total:",
     "weighted": "Weighted:",
-    "noOpportunities": "No opportunities"
+    "noOpportunities": "No opportunities",
+    "pipelineValue": "Pipeline Value",
+    "weightedValue": "Weighted Value",
+    "avgDealSize": "Avg Deal Size",
+    "deals": "Deals",
+    "dropHere": "Drop here",
+    "emptyHint": "Drag opportunities here or create a new one"
   },
   "originating": {
     "title": "Originated from Lead",

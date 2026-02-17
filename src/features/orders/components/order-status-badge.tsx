@@ -31,31 +31,31 @@ export function OrderStatusBadge({ statecode, className }: OrderStatusBadgeProps
         return {
           label: t('statusBadge.active'),
           variant: 'default' as const,
-          className: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300',
+          className: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 dark:bg-blue-900 dark:text-blue-300',
         }
       case OrderStateCode.Submitted:
         return {
           label: t('statusBadge.submitted'),
           variant: 'default' as const,
-          className: 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300',
+          className: 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 dark:bg-purple-900 dark:text-purple-300',
         }
       case OrderStateCode.Canceled:
         return {
           label: t('statusBadge.canceled'),
           variant: 'destructive' as const,
-          className: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300',
+          className: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 dark:bg-red-900 dark:text-red-300',
         }
       case OrderStateCode.Fulfilled:
         return {
           label: t('statusBadge.fulfilled'),
           variant: 'default' as const,
-          className: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
+          className: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 dark:bg-green-900 dark:text-green-300',
         }
       case OrderStateCode.Invoiced:
         return {
           label: t('statusBadge.invoiced'),
           variant: 'default' as const,
-          className: 'bg-teal-100 text-teal-700 dark:bg-teal-900 dark:text-teal-300',
+          className: 'bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 dark:bg-teal-900 dark:text-teal-300',
         }
       default:
         return {

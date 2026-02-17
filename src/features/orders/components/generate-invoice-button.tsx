@@ -18,6 +18,7 @@ import type { Order } from '@/core/contracts/entities/order'
 import type { OrderDetail } from '@/core/contracts/entities/order-detail'
 import { OrderStateCode } from '@/core/contracts/enums'
 import { formatCurrency } from '@/features/invoices/utils/invoice-calculations'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface GenerateInvoiceButtonProps {
   order: Order
@@ -28,6 +29,7 @@ export function GenerateInvoiceButton({
   order,
   orderLines,
 }: GenerateInvoiceButtonProps) {
+  const { t } = useTranslation('orders')
   const router = useRouter()
   const { toast } = useToast()
   const [isOpen, setIsOpen] = useState(false)
@@ -47,8 +49,8 @@ export function GenerateInvoiceButton({
       const invoice = await createInvoiceMutation.mutateAsync(order.salesorderid)
 
       toast({
-        title: 'Invoice created',
-        description: `Invoice ${invoice.invoicenumber} has been successfully created`,
+        title: t('generateInvoice.successToast'),
+        description: t('generateInvoice.invoiceCreated', { number: invoice.invoicenumber }),
       })
 
       setIsOpen(false)
@@ -57,11 +59,11 @@ export function GenerateInvoiceButton({
       router.push(`/invoices/${invoice.invoiceid}`)
     } catch (error) {
       toast({
-        title: 'Error',
+        title: t('generateInvoice.errorTitle'),
         description:
           error instanceof Error
             ? error.message
-            : 'Failed to create invoice',
+            : t('generateInvoice.errorToast'),
         variant: 'destructive',
       })
     }
@@ -71,40 +73,39 @@ export function GenerateInvoiceButton({
     <>
       <Button onClick={() => setIsOpen(true)}>
         <FileText className="h-4 w-4 mr-2" />
-        Generate Invoice
+        {t('generateInvoice.button')}
       </Button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Generate Invoice</DialogTitle>
+            <DialogTitle>{t('generateInvoice.dialogTitle')}</DialogTitle>
             <DialogDescription>
-              Create an invoice from this fulfilled order
+              {t('generateInvoice.description')}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <p className="text-sm text-gray-500">Order</p>
+              <p className="text-sm text-gray-500">{t('generateInvoice.orderLabel')}</p>
               <p className="font-medium">{order.name}</p>
             </div>
 
             <div className="space-y-2">
-              <p className="text-sm text-gray-500">Total Amount</p>
+              <p className="text-sm text-gray-500">{t('generateInvoice.totalAmount')}</p>
               <p className="text-2xl font-bold">
                 {formatCurrency(order.totalamount)}
               </p>
             </div>
 
             <div className="space-y-2">
-              <p className="text-sm text-gray-500">Line Items</p>
-              <p className="font-medium">{orderLines.length} items</p>
+              <p className="text-sm text-gray-500">{t('generateInvoice.lineItemsLabel')}</p>
+              <p className="font-medium">{orderLines.length} {t('generateInvoice.items')}</p>
             </div>
 
-            <div className="rounded-lg bg-blue-50 border border-blue-200 p-3">
+            <div className="rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 p-3">
               <p className="text-sm text-blue-800">
-                The invoice will be created in <strong>Active</strong> state
-                (pending payment). Order lines will be copied to invoice lines.
+                {t('generateInvoice.notice', { status: t('generateInvoice.activeStatus') })}
               </p>
             </div>
           </div>
@@ -125,7 +126,7 @@ export function GenerateInvoiceButton({
               {createInvoiceMutation.isPending && (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
               )}
-              Generate Invoice
+              {t('generateInvoice.generate')}
             </Button>
           </DialogFooter>
         </DialogContent>

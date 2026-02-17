@@ -2,6 +2,7 @@
 
 import { memo, useMemo } from 'react'
 import Link from 'next/link'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import type { Invoice } from '@/core/contracts/entities/invoice'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -22,6 +23,7 @@ interface InvoiceCardProps {
 }
 
 export const InvoiceCard = memo(function InvoiceCard({ invoice }: InvoiceCardProps) {
+  const { t } = useTranslation('invoices')
   const { status, paymentProgress, daysUntilDue, overdue } = useMemo(() => ({
     status: getInvoiceStatusColor(invoice),
     paymentProgress: getPaymentProgress(invoice),
@@ -52,7 +54,7 @@ export const InvoiceCard = memo(function InvoiceCard({ invoice }: InvoiceCardPro
         {/* Amount info */}
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-500">Total Amount</span>
+            <span className="text-gray-500">{t('card.totalAmount')}</span>
             <span className="font-semibold">
               {formatCurrency(invoice.totalamount)}
             </span>
@@ -61,7 +63,7 @@ export const InvoiceCard = memo(function InvoiceCard({ invoice }: InvoiceCardPro
           {invoice.totalpaid > 0 && (
             <>
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-500">Paid</span>
+                <span className="text-gray-500">{t('card.paid')}</span>
                 <span className="text-green-600">
                   {formatCurrency(invoice.totalpaid)}
                 </span>
@@ -71,7 +73,7 @@ export const InvoiceCard = memo(function InvoiceCard({ invoice }: InvoiceCardPro
           )}
 
           <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-500">Balance</span>
+            <span className="text-gray-500">{t('card.balance')}</span>
             <span className="font-semibold">
               {formatCurrency(invoice.totalbalance ?? invoice.totalamount)}
             </span>
@@ -81,7 +83,7 @@ export const InvoiceCard = memo(function InvoiceCard({ invoice }: InvoiceCardPro
         {/* Due date */}
         <div className="flex items-center gap-2 text-sm">
           <Calendar className="h-4 w-4 text-gray-400" />
-          <span className="text-gray-500">Due:</span>
+          <span className="text-gray-500">{t('card.due')}</span>
           <span className={overdue ? 'text-red-600 font-medium' : ''}>
             {new Date(invoice.duedate).toLocaleDateString()}
           </span>
@@ -89,7 +91,7 @@ export const InvoiceCard = memo(function InvoiceCard({ invoice }: InvoiceCardPro
             <span className="text-gray-400">({daysUntilDue}d)</span>
           )}
           {overdue && (
-            <Badge className="text-red-700 bg-red-100 ml-auto">Overdue</Badge>
+            <Badge className="text-red-700 dark:text-red-300 bg-red-100 dark:bg-red-900/30 ml-auto">{t('card.overdue')}</Badge>
           )}
         </div>
 
@@ -98,7 +100,7 @@ export const InvoiceCard = memo(function InvoiceCard({ invoice }: InvoiceCardPro
           <Button variant="outline" size="sm" asChild className="flex-1">
             <Link href={`/invoices/${invoice.invoiceid}`}>
               <Eye className="h-4 w-4 mr-2" />
-              View Details
+              {t('card.viewDetails')}
             </Link>
           </Button>
         </div>

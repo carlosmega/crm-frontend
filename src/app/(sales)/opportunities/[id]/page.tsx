@@ -14,6 +14,7 @@ import { OpportunityStateCode, SalesStageCode } from '@/core/contracts'
 import { SalesBusinessProcessFlow } from '@/shared/components'
 import { DetailPageHeader } from '@/components/layout/detail-page-header'
 import { MobileDetailHeader } from '@/components/layout/mobile-detail-header'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -43,6 +44,8 @@ export default function OpportunityDetailPageFinal() {
   const params = useParams()
   const router = useRouter()
   const id = params?.id as string
+  const { t } = useTranslation('opportunities')
+  const { t: tc } = useTranslation('common')
 
   const { opportunity, loading, refetch } = useOpportunity(id)
   const { moveToNextStage, moveToPreviousStage, loading: stageLoading } = useSalesStage()
@@ -82,9 +85,9 @@ export default function OpportunityDetailPageFinal() {
   if (!opportunity) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-4">
-        <p className="text-lg font-semibold text-muted-foreground">Opportunity not found</p>
+        <p className="text-lg font-semibold text-muted-foreground">{tc('errors.notFound', { entity: tc('entities.opportunity') })}</p>
         <Button asChild>
-          <Link href="/opportunities">Back to Opportunities</Link>
+          <Link href="/opportunities">{tc('actions.backTo', { entity: tc('breadcrumbs.opportunities') })}</Link>
         </Button>
       </div>
     )
@@ -110,13 +113,13 @@ export default function OpportunityDetailPageFinal() {
           <DropdownMenuItem asChild>
             <Link href={`/opportunities/${id}/edit`} className="flex items-center cursor-pointer">
               <Edit className="mr-2 h-4 w-4" />
-              Edit
+              {tc('buttons.edit')}
             </Link>
           </DropdownMenuItem>
         )}
         <DropdownMenuItem>
           <FileText className="mr-2 h-4 w-4" />
-          Log Activity
+          {tc('buttons.logActivity')}
         </DropdownMenuItem>
         {isOpen && (
           <>
@@ -124,13 +127,13 @@ export default function OpportunityDetailPageFinal() {
             <DropdownMenuItem asChild>
               <Link href={`/opportunities/${id}/close`} className="flex items-center cursor-pointer">
                 <CheckCircle2 className="mr-2 h-4 w-4" />
-                Win Opportunity
+                {tc('actions.winOpportunity')}
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link href={`/opportunities/${id}/close`} className="flex items-center cursor-pointer">
                 <XCircle className="mr-2 h-4 w-4" />
-                Lose Opportunity
+                {tc('actions.loseOpportunity')}
               </Link>
             </DropdownMenuItem>
           </>
@@ -152,16 +155,16 @@ export default function OpportunityDetailPageFinal() {
       {/* Desktop Header */}
       <DetailPageHeader
         breadcrumbs={[
-          { label: 'Sales', href: '/dashboard' },
-          { label: 'Opportunities', href: '/opportunities' },
+          { label: tc('breadcrumbs.sales'), href: '/dashboard' },
+          { label: tc('breadcrumbs.opportunities'), href: '/opportunities' },
           { label: opportunity.name },
         ]}
       />
 
       {/* Content */}
-      <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100">
+      <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100 dark:bg-gray-900">
         {/* STICKY HEADER COMPLETO - Info Header + BPF + Tabs */}
-        <div className="md:sticky md:top-0 z-40 bg-gray-100/98 backdrop-blur-sm">
+        <div className="md:sticky md:top-0 z-40 bg-gray-100/98 dark:bg-gray-900/98 backdrop-blur-sm">
           {/* Info Header & Actions */}
           <div className="px-4 pt-4 pb-4">
             {/* Desktop Layout: Side by side */}
@@ -184,7 +187,7 @@ export default function OpportunityDetailPageFinal() {
                 )}
 
                 {isOpen && (
-                  <Button asChild variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
+                  <Button asChild variant="outline" className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800">
                     <Link href={`/opportunities/${id}/close`}>
                       <XCircle className="mr-2 h-4 w-4" />
                       Lose Opportunity
@@ -202,10 +205,10 @@ export default function OpportunityDetailPageFinal() {
 
                 {/* Edit */}
                 {canEdit && (
-                  <Button asChild variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
+                  <Button asChild variant="outline" className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800">
                     <Link href={`/opportunities/${id}/edit`}>
                       <Edit className="mr-2 h-4 w-4" />
-                      Edit
+                      {tc('buttons.edit')}
                     </Link>
                   </Button>
                 )}
@@ -223,13 +226,13 @@ export default function OpportunityDetailPageFinal() {
                   <Button asChild size="default" className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium">
                     <Link href={`/opportunities/${id}/close`}>
                       <CheckCircle2 className="mr-2 h-4 w-4" />
-                      Win Opportunity
+                      {tc('actions.winOpportunity')}
                     </Link>
                   </Button>
-                  <Button asChild variant="outline" className="w-full border-gray-300 text-gray-700 hover:bg-gray-50">
+                  <Button asChild variant="outline" className="w-full border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800">
                     <Link href={`/opportunities/${id}/close`}>
                       <XCircle className="mr-2 h-4 w-4" />
-                      Lose Opportunity
+                      {tc('actions.loseOpportunity')}
                     </Link>
                   </Button>
                 </div>

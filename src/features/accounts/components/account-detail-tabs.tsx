@@ -230,12 +230,12 @@ export function AccountDetailTabs({ account }: AccountDetailTabsProps) {
         </div>
 
         {/* Address Card */}
-        {(account.address1_line1 || account.address1_city) && (
-          <Card className="gap-3">
-            <CardHeader>
-              <CardTitle className="text-base font-semibold">{t('detail.primaryAddress')}</CardTitle>
-            </CardHeader>
-            <CardContent>
+        <Card className="gap-3">
+          <CardHeader>
+            <CardTitle className="text-base font-semibold">{t('detail.primaryAddress')}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {(account.address1_line1 || account.address1_city) ? (
               <div className="flex items-start gap-2.5">
                 <MapPin className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
                 <div className="text-sm leading-relaxed">
@@ -250,9 +250,14 @@ export function AccountDetailTabs({ account }: AccountDetailTabsProps) {
                   {account.address1_country && <div>{account.address1_country}</div>}
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        )}
+            ) : (
+              <div className="flex items-start gap-2.5">
+                <MapPin className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
+                <p className="text-sm text-muted-foreground">{t('detail.noAddress')}</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Description Card */}
         {account.description && (

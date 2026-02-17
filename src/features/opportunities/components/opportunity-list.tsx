@@ -259,7 +259,7 @@ export function OpportunityList({
         </div>
       ),
     },
-  ], [formatCurrency, formatDate]) // Stable dependencies (memoized callbacks)
+  ], [formatCurrency, formatDate, tOpp, tCommon])
 
   // Determine if filters are active
   const hasActiveFilters = filters && Object.keys(filters).length > 0

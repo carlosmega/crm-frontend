@@ -55,21 +55,21 @@ export function FulfillLineItemsVerification({
     switch (status) {
       case 'complete':
         return (
-          <Badge className="bg-green-100 text-green-700 border-green-300">
+          <Badge className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-300 dark:border-green-700">
             <CheckCircle2 className="h-3 w-3 mr-1" />
             Complete
           </Badge>
         )
       case 'partial':
         return (
-          <Badge className="bg-orange-100 text-orange-700 border-orange-300">
+          <Badge className="bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 border-orange-300 dark:border-orange-700">
             <AlertTriangle className="h-3 w-3 mr-1" />
             Partial
           </Badge>
         )
       case 'pending':
         return (
-          <Badge variant="outline" className="bg-gray-50 text-gray-600 border-gray-300">
+          <Badge variant="outline" className="bg-gray-50 dark:bg-gray-800 text-gray-600 border-gray-300">
             <Package className="h-3 w-3 mr-1" />
             Pending
           </Badge>
@@ -326,7 +326,7 @@ export function FulfillLineItemsVerification({
               <div className="flex items-start gap-2">
                 <AlertTriangle className="h-5 w-5 text-orange-600 mt-0.5" />
                 <div>
-                  <p className="font-semibold text-orange-700">
+                  <p className="font-semibold text-orange-700 dark:text-orange-300">
                     Partial Fulfillment Warning
                   </p>
                   <p className="text-sm text-orange-600">

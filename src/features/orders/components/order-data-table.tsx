@@ -14,6 +14,8 @@ import { Button } from '@/components/ui/button'
 import { OrderStatusBadge } from './order-status-badge'
 import { Eye, Package, FileText, CheckCircle2, XCircle, Truck } from 'lucide-react'
 import { formatCurrency } from '@/features/quotes/utils/quote-calculations'
+import { useTranslation } from '@/shared/hooks/use-translation'
+import { useCustomerNames } from '@/shared/hooks/use-customer-names'
 
 // ✅ OPTIMIZACIÓN: Date formatter creado una sola vez (module-level)
 const DATE_FORMATTER = new Intl.DateTimeFormat('en-US', {
@@ -51,6 +53,9 @@ export function OrderDataTable({
   loading = false,
   bulkActions = []
 }: OrderDataTableProps) {
+  const { t } = useTranslation('orders')
+  const { getCustomerName: fetchCustomerName } = useCustomerNames()
+
   // ✅ OPTIMIZACIÓN: Helpers memoizados con useCallback
   const formatDate = useCallback((dateString?: string) => {
     if (!dateString) return '-'
@@ -58,23 +63,22 @@ export function OrderDataTable({
   }, [])
 
   const getCustomerName = useCallback((order: Order) => {
-    // TODO: Fetch actual customer name from Account/Contact
-    if (!order.customerid) return 'No Customer'
-    return `Customer ${order.customerid.substring(0, 8)}`
-  }, [])
+    if (!order.customerid) return t('dataTable.noCustomer')
+    return fetchCustomerName(order.customerid, order.customeridtype)
+  }, [t, fetchCustomerName])
 
   // ✅ OPTIMIZACIÓN: Columns definition memoizada
   const columns: DataTableColumn<Order>[] = useMemo(() => [
     {
       id: 'name',
-      header: 'Order Name',
+      header: t('dataTable.orderName'),
       accessorFn: (order) => order.name,
       sortable: true,
       filterable: true,
       filter: {
         type: 'text',
         operators: ['contains', 'equals', 'startsWith', 'endsWith'],
-        placeholder: 'Search order names...',
+        placeholder: t('dataTable.searchOrderNames'),
       },
       cell: (order) => (
         <div className="flex flex-col">
@@ -95,14 +99,14 @@ export function OrderDataTable({
     },
     {
       id: 'ordernumber',
-      header: 'Order #',
+      header: t('dataTable.orderNumber'),
       accessorFn: (order) => order.ordernumber || '-',
       sortable: true,
       filterable: true,
       filter: {
         type: 'text',
         operators: ['contains', 'equals', 'startsWith'],
-        placeholder: 'Search order numbers...',
+        placeholder: t('dataTable.searchOrderNumbers'),
       },
       cell: (order) => (
         <span className="font-mono text-sm">
@@ -112,14 +116,14 @@ export function OrderDataTable({
     },
     {
       id: 'customer',
-      header: 'Customer',
+      header: t('dataTable.customer'),
       accessorFn: (order) => getCustomerName(order),
       sortable: true,
       filterable: true,
       filter: {
         type: 'text',
         operators: ['contains', 'equals'],
-        placeholder: 'Search customers...',
+        placeholder: t('dataTable.searchCustomers'),
       },
       cell: (order) => (
         <div className="flex flex-col">
@@ -132,32 +136,32 @@ export function OrderDataTable({
     },
     {
       id: 'state',
-      header: 'Status',
+      header: t('dataTable.status'),
       accessorFn: (order) => order.statecode,
       sortable: true,
       filterable: true,
       filter: {
         type: 'multiselect',
         options: [
-          { label: 'Active', value: OrderStateCode.Active, icon: FileText },
-          { label: 'Submitted', value: OrderStateCode.Submitted, icon: Truck },
-          { label: 'Fulfilled', value: OrderStateCode.Fulfilled, icon: CheckCircle2 },
-          { label: 'Invoiced', value: OrderStateCode.Invoiced, icon: CheckCircle2 },
-          { label: 'Canceled', value: OrderStateCode.Canceled, icon: XCircle },
+          { label: t('status.active'), value: OrderStateCode.Active, icon: FileText },
+          { label: t('status.submitted'), value: OrderStateCode.Submitted, icon: Truck },
+          { label: t('status.fulfilled'), value: OrderStateCode.Fulfilled, icon: CheckCircle2 },
+          { label: t('status.invoiced'), value: OrderStateCode.Invoiced, icon: CheckCircle2 },
+          { label: t('status.canceled'), value: OrderStateCode.Canceled, icon: XCircle },
         ],
       },
       cell: (order) => <OrderStatusBadge statecode={order.statecode} />,
     },
     {
       id: 'totalamount',
-      header: 'Total Amount',
+      header: t('dataTable.totalAmount'),
       accessorFn: (order) => order.totalamount || 0,
       sortable: true,
       filterable: true,
       filter: {
         type: 'number',
         operators: ['equals', 'greaterThan', 'lessThan', 'between'],
-        placeholder: 'Enter amount...',
+        placeholder: t('dataTable.enterAmount'),
         min: 0,
       },
       className: 'text-center',
@@ -170,7 +174,7 @@ export function OrderDataTable({
     },
     {
       id: 'requestdeliveryby',
-      header: 'Delivery Date',
+      header: t('dataTable.deliveryDate'),
       accessorFn: (order) => order.requestdeliveryby ? new Date(order.requestdeliveryby) : null,
       sortable: true,
       filterable: true,
@@ -187,7 +191,7 @@ export function OrderDataTable({
               {formatDate(order.requestdeliveryby)}
             </span>
             {isPast && !isFulfilled && (
-              <span className="text-xs text-destructive">Overdue</span>
+              <span className="text-xs text-destructive">{t('dataTable.overdue')}</span>
             )}
           </div>
         )
@@ -195,7 +199,7 @@ export function OrderDataTable({
     },
     {
       id: 'createdon',
-      header: 'Created',
+      header: t('dataTable.created'),
       accessorFn: (order) => order.createdon ? new Date(order.createdon) : null,
       sortable: true,
       filterable: true,
@@ -211,18 +215,18 @@ export function OrderDataTable({
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: t('dataTable.actions'),
       className: 'text-right',
       headerClassName: 'text-right',
       cell: (order) => (
         <div className="flex justify-end gap-1" onClick={(e) => e.stopPropagation()}>
-          <Button asChild variant="ghost" size="icon-sm" title="View details">
+          <Button asChild variant="ghost" size="icon-sm" title={t('dataTable.viewDetails')}>
             <Link href={`/orders/${order.salesorderid}`}>
               <Eye className="size-4" />
             </Link>
           </Button>
           {order.statecode === OrderStateCode.Submitted && (
-            <Button asChild variant="ghost" size="icon-sm" title="Fulfill order">
+            <Button asChild variant="ghost" size="icon-sm" title={t('dataTable.fulfillOrder')}>
               <Link href={`/orders/${order.salesorderid}/fulfill`}>
                 <Package className="size-4" />
               </Link>
@@ -231,7 +235,7 @@ export function OrderDataTable({
         </div>
       ),
     },
-  ], [formatDate, getCustomerName]) // Memoize with stable dependencies
+  ], [t, formatDate, getCustomerName]) // Memoize with stable dependencies
 
   // Empty state
   const emptyState = (
@@ -251,9 +255,9 @@ export function OrderDataTable({
           />
         </svg>
       </div>
-      <p className="text-lg font-semibold text-foreground mb-1">No orders found</p>
+      <p className="text-lg font-semibold text-foreground mb-1">{t('dataTable.noOrdersFound')}</p>
       <p className="text-sm text-muted-foreground max-w-sm">
-        No orders match your current filters. Try adjusting your search criteria.
+        {t('dataTable.noOrdersDescription')}
       </p>
     </div>
   )

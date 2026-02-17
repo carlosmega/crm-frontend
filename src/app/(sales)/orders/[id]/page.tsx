@@ -250,9 +250,9 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
       />
 
       {/* Content - Fondo gris igual que contacts/accounts/leads */}
-      <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100">
+      <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100 dark:bg-gray-900">
         {/* STICKY SECTION - Order Info Header + Actions + Tabs */}
-        <div className="md:sticky md:top-0 z-40 bg-gray-100/98 backdrop-blur-sm">
+        <div className="md:sticky md:top-0 z-40 bg-gray-100/98 dark:bg-gray-900/98 backdrop-blur-sm">
           {/* Order Info Header & Actions */}
           <div className="px-4 pt-4 pb-4">
             {/* Desktop Layout: Side by side */}
@@ -321,7 +321,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                   <Button
                     variant="outline"
                     onClick={() => setShowCancelDialog(true)}
-                    className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                    className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                   >
                     <XCircle className="mr-2 h-4 w-4" />
                     Cancel Order

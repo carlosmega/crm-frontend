@@ -88,7 +88,7 @@ export const OpportunityKanbanCard = memo(function OpportunityKanbanCard({
     <div ref={setNodeRef} style={style}>
       <Card
         className={cn(
-          "group mb-3 cursor-default transition-all duration-200 bg-white shadow-sm hover:shadow-md relative",
+          "group mb-3 cursor-default transition-all duration-200 bg-white dark:bg-gray-800 shadow-sm hover:shadow-md relative",
           "border-l-[3px]",
           borderColor,
           isDragging && "opacity-50 shadow-xl ring-2 ring-purple-400 scale-105"
@@ -96,7 +96,7 @@ export const OpportunityKanbanCard = memo(function OpportunityKanbanCard({
       >
         {/* Pending overlay */}
         {isPending && (
-          <div className="absolute inset-0 bg-white/60 z-10 flex items-center justify-center rounded-lg">
+          <div className="absolute inset-0 bg-white/60 dark:bg-gray-800/60 z-10 flex items-center justify-center rounded-lg">
             <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
           </div>
         )}
@@ -141,8 +141,8 @@ export const OpportunityKanbanCard = memo(function OpportunityKanbanCard({
               <div className={cn(
                 "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-medium",
                 opportunity.customeridtype === 'account'
-                  ? "bg-blue-50 text-blue-700"
-                  : "bg-pink-50 text-pink-700"
+                  ? "bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300"
+                  : "bg-pink-50 dark:bg-pink-950 text-pink-700 dark:text-pink-300"
               )}>
                 {opportunity.customeridtype === 'account' ? (
                   <Building2 className="h-3 w-3" />

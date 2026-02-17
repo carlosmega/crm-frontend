@@ -17,6 +17,8 @@ import { Button } from '@/components/ui/button'
 import { QuoteStatusBadge } from './quote-status-badge'
 import { Eye, Edit, FileText, CheckCircle2, XCircle } from 'lucide-react'
 import { formatCurrency } from '../utils/quote-calculations'
+import { useTranslation } from '@/shared/hooks/use-translation'
+import { useCustomerNames } from '@/shared/hooks/use-customer-names'
 
 // ✅ OPTIMIZACIÓN: Date formatter creado una sola vez (module-level)
 const DATE_FORMATTER = new Intl.DateTimeFormat('en-US', {
@@ -37,24 +39,6 @@ interface QuoteDataTableProps {
 
 /**
  * Quote data table component using DataTable
- *
- * Displays quotes with:
- * - Row selection for bulk actions
- * - Column sorting (name, number, amount, date)
- * - Column filtering (text, select, multiselect, number, date)
- * - Rich cell rendering with badges and links
- * - Quick action buttons
- *
- * @example
- * ```tsx
- * <QuoteDataTable
- *   quotes={quotes}
- *   selectedQuotes={selected}
- *   onSelectionChange={setSelected}
- *   filters={filters}
- *   onFiltersChange={setFilters}
- * />
- * ```
  */
 export function QuoteDataTable({
   quotes,
@@ -65,6 +49,9 @@ export function QuoteDataTable({
   loading = false,
   bulkActions = []
 }: QuoteDataTableProps) {
+  const { t } = useTranslation('quotes')
+  const { getCustomerName: fetchCustomerName } = useCustomerNames()
+
   // ✅ OPTIMIZACIÓN: Helpers memoizados con useCallback
   const formatDate = useCallback((dateString?: string) => {
     if (!dateString) return '-'
@@ -72,23 +59,22 @@ export function QuoteDataTable({
   }, [])
 
   const getCustomerName = useCallback((quote: Quote) => {
-    // TODO: Fetch actual customer name from Account/Contact
-    if (!quote.customerid) return 'No Customer'
-    return `Customer ${quote.customerid.substring(0, 8)}`
-  }, [])
+    if (!quote.customerid) return t('dataTable.noCustomer') || 'No Customer'
+    return fetchCustomerName(quote.customerid, quote.customeridtype)
+  }, [t, fetchCustomerName])
 
   // ✅ OPTIMIZACIÓN: Columns definition memoizada
   const columns: DataTableColumn<Quote>[] = useMemo(() => [
     {
       id: 'name',
-      header: 'Quote Name',
+      header: t('dataTable.quoteName'),
       accessorFn: (quote) => quote.name,
       sortable: true,
       filterable: true,
       filter: {
         type: 'text',
         operators: ['contains', 'equals', 'startsWith', 'endsWith'],
-        placeholder: 'Search quote names...',
+        placeholder: t('dataTable.searchQuoteNames'),
       },
       cell: (quote) => (
         <div className="flex flex-col">
@@ -109,14 +95,14 @@ export function QuoteDataTable({
     },
     {
       id: 'quotenumber',
-      header: 'Quote #',
+      header: t('dataTable.quoteNumber'),
       accessorFn: (quote) => quote.quotenumber || '-',
       sortable: true,
       filterable: true,
       filter: {
         type: 'text',
         operators: ['contains', 'equals', 'startsWith'],
-        placeholder: 'Search quote numbers...',
+        placeholder: t('dataTable.searchQuoteNumbers'),
       },
       cell: (quote) => (
         <span className="font-mono text-sm">
@@ -126,14 +112,14 @@ export function QuoteDataTable({
     },
     {
       id: 'customer',
-      header: 'Customer',
+      header: t('dataTable.customer'),
       accessorFn: (quote) => getCustomerName(quote),
       sortable: true,
       filterable: true,
       filter: {
         type: 'text',
         operators: ['contains', 'equals'],
-        placeholder: 'Search customers...',
+        placeholder: t('dataTable.searchCustomers'),
       },
       cell: (quote) => (
         <div className="flex flex-col">
@@ -146,31 +132,25 @@ export function QuoteDataTable({
     },
     {
       id: 'state',
-      header: 'State',
+      header: t('dataTable.state'),
       accessorFn: (quote) => quote.statecode,
       sortable: true,
       filterable: true,
       filter: {
         type: 'multiselect',
         options: [
-          { label: 'Draft', value: QuoteStateCode.Draft, icon: FileText },
-          { label: 'Active', value: QuoteStateCode.Active, icon: CheckCircle2 },
-          { label: 'Won', value: QuoteStateCode.Won, icon: CheckCircle2 },
-          { label: 'Closed', value: QuoteStateCode.Closed, icon: XCircle },
+          { label: t('dataTable.stateDraft'), value: QuoteStateCode.Draft, icon: FileText },
+          { label: t('dataTable.stateActive'), value: QuoteStateCode.Active, icon: CheckCircle2 },
+          { label: t('dataTable.stateWon'), value: QuoteStateCode.Won, icon: CheckCircle2 },
+          { label: t('dataTable.stateClosed'), value: QuoteStateCode.Closed, icon: XCircle },
         ],
       },
       cell: (quote) => {
-        const stateLabels = {
-          [QuoteStateCode.Draft]: 'Draft',
-          [QuoteStateCode.Active]: 'Active',
-          [QuoteStateCode.Won]: 'Won',
-          [QuoteStateCode.Closed]: 'Closed',
-        }
-        const stateColors = {
-          [QuoteStateCode.Draft]: 'secondary',
-          [QuoteStateCode.Active]: 'default',
-          [QuoteStateCode.Won]: 'success',
-          [QuoteStateCode.Closed]: 'destructive',
+        const stateLabels: Record<number, string> = {
+          [QuoteStateCode.Draft]: t('dataTable.stateDraft'),
+          [QuoteStateCode.Active]: t('dataTable.stateActive'),
+          [QuoteStateCode.Won]: t('dataTable.stateWon'),
+          [QuoteStateCode.Closed]: t('dataTable.stateClosed'),
         }
         return (
           <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
@@ -186,34 +166,34 @@ export function QuoteDataTable({
     },
     {
       id: 'status',
-      header: 'Status',
+      header: t('dataTable.status'),
       accessorFn: (quote) => quote.statuscode,
       sortable: true,
       filterable: true,
       filter: {
         type: 'multiselect',
         options: [
-          { label: 'In Progress', value: QuoteStatusCode.In_Progress },
-          { label: 'In Review', value: QuoteStatusCode.In_Review },
-          { label: 'Open', value: QuoteStatusCode.Open },
-          { label: 'Won', value: QuoteStatusCode.Won },
-          { label: 'Lost', value: QuoteStatusCode.Lost },
-          { label: 'Canceled', value: QuoteStatusCode.Canceled },
-          { label: 'Revised', value: QuoteStatusCode.Revised },
+          { label: t('dataTable.statusInProgress'), value: QuoteStatusCode.In_Progress },
+          { label: t('dataTable.statusInReview'), value: QuoteStatusCode.In_Review },
+          { label: t('dataTable.statusOpen'), value: QuoteStatusCode.Open },
+          { label: t('dataTable.statusWon'), value: QuoteStatusCode.Won },
+          { label: t('dataTable.statusLost'), value: QuoteStatusCode.Lost },
+          { label: t('dataTable.statusCanceled'), value: QuoteStatusCode.Canceled },
+          { label: t('dataTable.statusRevised'), value: QuoteStatusCode.Revised },
         ],
       },
       cell: (quote) => <QuoteStatusBadge statuscode={quote.statuscode} />,
     },
     {
       id: 'totalamount',
-      header: 'Total Amount',
+      header: t('dataTable.totalAmount'),
       accessorFn: (quote) => quote.totalamount || 0,
       sortable: true,
       filterable: true,
       filter: {
         type: 'number',
         operators: ['equals', 'greaterThan', 'lessThan', 'between'],
-        placeholder: 'Enter amount...',
+        placeholder: t('dataTable.enterAmount'),
         min: 0,
       },
       className: 'text-center',
@@ -226,7 +206,7 @@ export function QuoteDataTable({
     },
     {
       id: 'effectiveto',
-      header: 'Valid Until',
+      header: t('dataTable.validUntil'),
       accessorFn: (quote) => quote.effectiveto ? new Date(quote.effectiveto) : null,
       sortable: true,
       filterable: true,
@@ -242,7 +222,7 @@ export function QuoteDataTable({
               {formatDate(quote.effectiveto)}
             </span>
             {isExpired && (
-              <span className="text-xs text-destructive">Expired</span>
+              <span className="text-xs text-destructive">{t('dataTable.expired') || 'Expired'}</span>
             )}
           </div>
         )
@@ -250,7 +230,7 @@ export function QuoteDataTable({
     },
     {
       id: 'createdon',
-      header: 'Created',
+      header: t('dataTable.created'),
       accessorFn: (quote) => quote.createdon ? new Date(quote.createdon) : null,
       sortable: true,
       filterable: true,
@@ -266,18 +246,18 @@ export function QuoteDataTable({
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: t('dataTable.actions'),
       className: 'text-right',
       headerClassName: 'text-right',
       cell: (quote) => (
         <div className="flex justify-end gap-1" onClick={(e) => e.stopPropagation()}>
-          <Button asChild variant="ghost" size="icon-sm" title="View details">
+          <Button asChild variant="ghost" size="icon-sm" title={t('dataTable.viewDetails')}>
             <Link href={`/quotes/${quote.quoteid}`}>
               <Eye className="size-4" />
             </Link>
           </Button>
           {quote.statecode === QuoteStateCode.Draft && (
-            <Button asChild variant="ghost" size="icon-sm" title="Edit quote">
+            <Button asChild variant="ghost" size="icon-sm" title={t('dataTable.editQuote')}>
               <Link href={`/quotes/${quote.quoteid}/edit`}>
                 <Edit className="size-4" />
               </Link>
@@ -286,7 +266,7 @@ export function QuoteDataTable({
         </div>
       ),
     },
-  ], [formatDate, getCustomerName]) // Memoize with stable dependencies
+  ], [formatDate, getCustomerName, t]) // Memoize with stable dependencies
 
   // Empty state
   const emptyState = (
@@ -306,9 +286,9 @@ export function QuoteDataTable({
           />
         </svg>
       </div>
-      <p className="text-lg font-semibold text-foreground mb-1">No quotes found</p>
+      <p className="text-lg font-semibold text-foreground mb-1">{t('dataTable.noQuotesFound')}</p>
       <p className="text-sm text-muted-foreground max-w-sm">
-        No quotes match your current filters. Try adjusting your search criteria or create a new quote to get started.
+        {t('dataTable.noQuotesDescription')}
       </p>
     </div>
   )

@@ -182,7 +182,7 @@ export default function DebugPage() {
       </header>
 
       {/* Content */}
-      <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100">
+      <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100 dark:bg-gray-900">
         <div className="container max-w-4xl py-8">
           <DebugContent />
         </div>

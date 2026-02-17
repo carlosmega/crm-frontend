@@ -119,7 +119,7 @@ export default function EditCasePage({
                 <Button
                   variant="outline"
                   onClick={handleCancel}
-                  className="border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+                  className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
                 >
                   <X className="mr-2 h-4 w-4" />
                   Cancel

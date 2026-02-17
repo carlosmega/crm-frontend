@@ -7,6 +7,7 @@ import { QuoteStatusBadge } from './quote-status-badge'
 import type { Quote } from '../types'
 import { formatCurrency } from '../utils/quote-calculations'
 import { getExpirationStatusMessage } from '../utils/quote-helpers'
+import { useTranslation } from '@/shared/hooks/use-translation'
 import {
   Calendar,
   DollarSign,
@@ -26,6 +27,7 @@ interface QuoteCardProps {
  * ✅ Memoizado con React.memo para evitar re-renders innecesarios en listas
  */
 export const QuoteCard = memo(function QuoteCard({ quote }: QuoteCardProps) {
+  const { t } = useTranslation('quotes')
   const expirationMessage = getExpirationStatusMessage(quote.effectiveto)
   const isExpired =
     quote.effectiveto && new Date(quote.effectiveto) < new Date()
@@ -66,7 +68,7 @@ export const QuoteCard = memo(function QuoteCard({ quote }: QuoteCardProps) {
         <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
           <div className="flex items-center gap-2 text-muted-foreground">
             <DollarSign className="h-4 w-4" />
-            <span className="text-sm font-medium">Total Amount</span>
+            <span className="text-sm font-medium">{t('card.totalAmount')}</span>
           </div>
           <span className="text-lg font-bold">
             {formatCurrency(quote.totalamount)}
@@ -79,7 +81,7 @@ export const QuoteCard = memo(function QuoteCard({ quote }: QuoteCardProps) {
           {quote.effectivefrom && quote.effectiveto ? (
             <div className="flex flex-col">
               <span className="text-muted-foreground">
-                Valid: {new Date(quote.effectivefrom).toLocaleDateString()} -{' '}
+                {t('card.valid')} {new Date(quote.effectivefrom).toLocaleDateString()} -{' '}
                 {new Date(quote.effectiveto).toLocaleDateString()}
               </span>
               {expirationMessage && (
@@ -96,21 +98,21 @@ export const QuoteCard = memo(function QuoteCard({ quote }: QuoteCardProps) {
               )}
             </div>
           ) : (
-            <span className="text-muted-foreground">Dates not set</span>
+            <span className="text-muted-foreground">{t('card.datesNotSet')}</span>
           )}
         </div>
 
         {/* Created Date */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <FileText className="h-4 w-4" />
-          <span>Created {new Date(quote.createdon).toLocaleDateString()}</span>
+          <span>{t('card.created')} {new Date(quote.createdon).toLocaleDateString()}</span>
         </div>
 
         {/* Actions */}
         <div className="flex gap-2 pt-2">
           <Button asChild variant="outline" size="sm" className="flex-1">
             <Link href={`/quotes/${quote.quoteid}`}>
-              View Details
+              {t('card.viewDetails')}
               <ExternalLink className="ml-2 h-4 w-4" />
             </Link>
           </Button>

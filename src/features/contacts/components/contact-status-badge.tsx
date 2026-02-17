@@ -17,14 +17,14 @@ export function ContactStatusBadge({ statecode }: ContactStatusBadgeProps) {
           label: t('status.active'),
           variant: 'default' as const,
           icon: CheckCircle2,
-          className: 'bg-green-100 text-green-800 hover:bg-green-100'
+          className: 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 hover:bg-green-100'
         }
       case ContactStateCode.Inactive:
         return {
           label: t('status.inactive'),
           variant: 'secondary' as const,
           icon: XCircle,
-          className: 'bg-gray-100 text-gray-800 hover:bg-gray-100'
+          className: 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-300 hover:bg-gray-100'
         }
       default:
         return {

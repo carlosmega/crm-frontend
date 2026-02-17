@@ -18,12 +18,14 @@ import { XCircle, Loader2 } from 'lucide-react'
 import { useCancelInvoice } from '../hooks'
 import type { Invoice } from '@/core/contracts/entities/invoice'
 import { canCancelInvoice } from '../utils'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface CancelInvoiceButtonProps {
   invoice: Invoice
 }
 
 export function CancelInvoiceButton({ invoice }: CancelInvoiceButtonProps) {
+  const { t } = useTranslation('invoices')
   const router = useRouter()
   const { toast } = useToast()
   const [isOpen, setIsOpen] = useState(false)
@@ -42,8 +44,8 @@ export function CancelInvoiceButton({ invoice }: CancelInvoiceButtonProps) {
 
     if (!reason.trim()) {
       toast({
-        title: 'Reason required',
-        description: 'Please provide a reason for canceling the invoice',
+        title: t('cancelButton.reasonRequired'),
+        description: t('cancelButton.reasonError'),
         variant: 'destructive',
       })
       return
@@ -56,17 +58,17 @@ export function CancelInvoiceButton({ invoice }: CancelInvoiceButtonProps) {
       })
 
       toast({
-        title: 'Invoice canceled',
-        description: 'The invoice has been successfully canceled',
+        title: t('cancelButton.successToast'),
+        description: t('cancelButton.successDescription'),
       })
 
       setIsOpen(false)
       router.refresh()
     } catch (error) {
       toast({
-        title: 'Error',
+        title: t('cancelButton.errorTitle'),
         description:
-          error instanceof Error ? error.message : 'Failed to cancel invoice',
+          error instanceof Error ? error.message : t('cancelButton.errorToast'),
         variant: 'destructive',
       })
     }
@@ -76,27 +78,27 @@ export function CancelInvoiceButton({ invoice }: CancelInvoiceButtonProps) {
     <>
       <Button variant="destructive" onClick={() => setIsOpen(true)}>
         <XCircle className="h-4 w-4 mr-2" />
-        Cancel Invoice
+        {t('cancelButton.button')}
       </Button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent>
           <form onSubmit={handleSubmit}>
             <DialogHeader>
-              <DialogTitle>Cancel Invoice</DialogTitle>
+              <DialogTitle>{t('cancelButton.dialogTitle')}</DialogTitle>
               <DialogDescription>
-                This action will cancel the invoice. Please provide a reason.
+                {t('cancelButton.description')}
               </DialogDescription>
             </DialogHeader>
 
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="reason">Cancellation Reason</Label>
+                <Label htmlFor="reason">{t('cancelButton.reasonLabel')}</Label>
                 <Textarea
                   id="reason"
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
-                  placeholder="Enter the reason for canceling this invoice..."
+                  placeholder={t('cancelButton.reasonPlaceholder')}
                   rows={4}
                   required
                 />
@@ -120,7 +122,7 @@ export function CancelInvoiceButton({ invoice }: CancelInvoiceButtonProps) {
                 {cancelMutation.isPending && (
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                 )}
-                Cancel Invoice
+                {t('cancelButton.button')}
               </Button>
             </DialogFooter>
           </form>

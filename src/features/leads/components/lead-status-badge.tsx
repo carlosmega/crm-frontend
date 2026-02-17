@@ -18,21 +18,21 @@ export function LeadStatusBadge({ statecode, statuscode }: LeadStatusBadgeProps)
           label: statuscode === LeadStatusCode.Contacted ? t('status.contacted') : t('status.new'),
           variant: 'default' as const,
           icon: Circle,
-          className: 'bg-blue-100 text-blue-800 hover:bg-blue-100'
+          className: 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 hover:bg-blue-100'
         }
       case LeadStateCode.Qualified:
         return {
           label: t('status.qualified'),
           variant: 'default' as const,
           icon: CheckCircle2,
-          className: 'bg-green-100 text-green-800 hover:bg-green-100'
+          className: 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 hover:bg-green-100'
         }
       case LeadStateCode.Disqualified:
         return {
           label: t('status.disqualified'),
           variant: 'destructive' as const,
           icon: XCircle,
-          className: 'bg-red-100 text-red-800 hover:bg-red-100'
+          className: 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 hover:bg-red-100'
         }
       default:
         return {

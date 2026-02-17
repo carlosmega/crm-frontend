@@ -245,7 +245,7 @@ export function InvoiceList({
         </div>
       ),
     },
-  ], [])
+  ], [tInv, tCommon])
 
   const emptyState = (
     <EmptyState

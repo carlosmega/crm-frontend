@@ -128,13 +128,13 @@ export function TaskManagerDialog({
     dueDateStart.setHours(0, 0, 0, 0)
 
     if (isBefore(dueDateStart, today)) {
-      return { label: 'Overdue', color: 'text-red-600 bg-red-100' }
+      return { label: 'Overdue', color: 'text-red-600 bg-red-100 dark:bg-red-900/30 dark:text-red-400' }
     } else if (dueDateStart.getTime() === today.getTime()) {
-      return { label: 'Due Today', color: 'text-orange-600 bg-orange-100' }
+      return { label: 'Due Today', color: 'text-orange-600 bg-orange-100 dark:bg-orange-900/30 dark:text-orange-400' }
     } else if (isBefore(dueDateStart, addDays(today, 7))) {
-      return { label: 'Due Soon', color: 'text-yellow-600 bg-yellow-100' }
+      return { label: 'Due Soon', color: 'text-yellow-600 bg-yellow-100 dark:bg-yellow-900/30 dark:text-yellow-400' }
     } else {
-      return { label: 'Upcoming', color: 'text-green-600 bg-green-100' }
+      return { label: 'Upcoming', color: 'text-green-600 bg-green-100 dark:bg-green-900/30 dark:text-green-400' }
     }
   }
 

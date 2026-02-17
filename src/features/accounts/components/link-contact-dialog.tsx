@@ -228,7 +228,7 @@ export function LinkContactDialog({
                         {contact.firstname} {contact.lastname}
                       </p>
                       {contact.parentcustomerid && (
-                        <span className="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded shrink-0">
+                        <span className="text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 px-2 py-0.5 rounded shrink-0">
                           {t('linkContact.hasPrimaryAccount')}
                         </span>
                       )}

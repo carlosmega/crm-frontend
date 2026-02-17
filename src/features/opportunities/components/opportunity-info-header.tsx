@@ -42,13 +42,13 @@ export function OpportunityInfoHeader({
           </h1>
           <Badge
             variant="secondary"
-            className="text-xs font-semibold uppercase bg-purple-100 text-purple-700 border-0 px-3 py-1"
+            className="text-xs font-semibold uppercase bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border-0 px-3 py-1"
           >
             {t('header.salesOpportunity')}
           </Badge>
           <Badge
             variant="secondary"
-            className="text-xs font-semibold uppercase bg-gray-100 text-gray-700 border-0 px-3 py-1"
+            className="text-xs font-semibold uppercase bg-gray-100 dark:bg-gray-900/30 text-gray-700 dark:text-gray-300 border-0 px-3 py-1"
           >
             {t('header.opportunity')}
           </Badge>
@@ -75,9 +75,9 @@ export function OpportunityInfoHeader({
             variant="outline"
             className={cn(
               "text-xs font-semibold uppercase border-0 px-3 py-1",
-              opportunity.statecode === OpportunityStateCode.Open && "bg-green-100 text-green-700",
+              opportunity.statecode === OpportunityStateCode.Open && "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300",
               opportunity.statecode === OpportunityStateCode.Won && "bg-emerald-100 text-emerald-700",
-              opportunity.statecode === OpportunityStateCode.Lost && "bg-red-100 text-red-700"
+              opportunity.statecode === OpportunityStateCode.Lost && "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300"
             )}
           >
             {opportunity.statecode === OpportunityStateCode.Open && t('status.open').toUpperCase()}
@@ -119,13 +119,13 @@ export function OpportunityInfoHeader({
           <div className="flex items-center gap-2 flex-wrap">
             <Badge
               variant="secondary"
-              className="text-xs font-semibold uppercase bg-purple-100 text-purple-700 border-0 px-3 py-1"
+              className="text-xs font-semibold uppercase bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border-0 px-3 py-1"
             >
               {t('header.salesOpportunity')}
             </Badge>
             <Badge
               variant="secondary"
-              className="text-xs font-semibold uppercase bg-gray-100 text-gray-700 border-0 px-3 py-1"
+              className="text-xs font-semibold uppercase bg-gray-100 dark:bg-gray-900/30 text-gray-700 dark:text-gray-300 border-0 px-3 py-1"
             >
               {t('header.opportunity')}
             </Badge>
@@ -157,9 +157,9 @@ export function OpportunityInfoHeader({
               variant="outline"
               className={cn(
                 "text-xs font-semibold uppercase border-0 px-3 py-1",
-                opportunity.statecode === OpportunityStateCode.Open && "bg-green-100 text-green-700",
+                opportunity.statecode === OpportunityStateCode.Open && "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300",
                 opportunity.statecode === OpportunityStateCode.Won && "bg-emerald-100 text-emerald-700",
-                opportunity.statecode === OpportunityStateCode.Lost && "bg-red-100 text-red-700"
+                opportunity.statecode === OpportunityStateCode.Lost && "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300"
               )}
             >
               {opportunity.statecode === OpportunityStateCode.Open && t('status.open').toUpperCase()}

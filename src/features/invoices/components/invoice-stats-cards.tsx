@@ -3,6 +3,7 @@
 import { MetricCard } from '@/shared/components/metric-card'
 import { DollarSign, FileText, AlertCircle, CheckCircle } from 'lucide-react'
 import { formatCurrency } from '../utils/invoice-calculations'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface InvoiceStatsCardsProps {
   statistics: {
@@ -18,37 +19,39 @@ interface InvoiceStatsCardsProps {
 }
 
 export function InvoiceStatsCards({ statistics }: InvoiceStatsCardsProps) {
+  const { t } = useTranslation('invoices')
+
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <MetricCard
-        title="Total Revenue"
+        title={t('stats.totalRevenue')}
         value={formatCurrency(statistics.totalRevenue)}
-        description={`${statistics.paid} paid invoices`}
+        description={t('stats.paidInvoices', { count: statistics.paid })}
         icon={DollarSign}
         iconClassName="text-green-600"
       />
 
       <MetricCard
-        title="Outstanding"
+        title={t('stats.outstanding')}
         value={formatCurrency(statistics.totalOutstanding)}
-        description={`${statistics.active} active invoices`}
+        description={t('stats.activeInvoices', { count: statistics.active })}
         icon={FileText}
         iconClassName="text-yellow-600"
       />
 
       <MetricCard
-        title="Overdue"
+        title={t('stats.overdue')}
         value={statistics.overdue}
-        description="Require attention"
+        description={t('stats.requireAttention')}
         icon={AlertCircle}
         iconClassName="text-red-600"
         valueClassName="text-red-600"
       />
 
       <MetricCard
-        title="Avg Invoice"
+        title={t('stats.avgInvoice')}
         value={formatCurrency(statistics.averageInvoiceValue)}
-        description="Per invoice"
+        description={t('stats.perInvoice')}
         icon={CheckCircle}
         iconClassName="text-blue-600"
       />

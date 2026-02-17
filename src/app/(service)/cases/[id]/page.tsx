@@ -254,9 +254,9 @@ export default function CaseDetailPage({
       />
 
       {/* Content */}
-      <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100">
+      <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100 dark:bg-gray-900">
         {/* Sticky Header */}
-        <div className="md:sticky md:top-0 z-40 bg-gray-100/98 backdrop-blur-sm">
+        <div className="md:sticky md:top-0 z-40 bg-gray-100/98 dark:bg-gray-900/98 backdrop-blur-sm">
           {/* Case Info Header & Actions */}
           <div className="px-4 pt-4 pb-4">
             {/* Desktop Layout */}
@@ -308,7 +308,7 @@ export default function CaseDetailPage({
                       variant="outline"
                       onClick={handleCancel}
                       disabled={mutating}
-                      className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                      className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                     >
                       <XCircle className="mr-2 h-4 w-4" />
                       Cancel
@@ -320,7 +320,7 @@ export default function CaseDetailPage({
                     variant="outline"
                     onClick={handleReopen}
                     disabled={mutating}
-                    className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                    className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                   >
                     <RefreshCcw className="mr-2 h-4 w-4" />
                     Reopen
@@ -335,7 +335,7 @@ export default function CaseDetailPage({
                 <Button
                   asChild
                   variant="outline"
-                  className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                  className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                 >
                   <Link href={`/cases/${caseData.incidentid}/edit`}>
                     <Edit className="mr-2 h-4 w-4" />
@@ -346,7 +346,7 @@ export default function CaseDetailPage({
                   variant="outline"
                   onClick={handleDelete}
                   disabled={mutating}
-                  className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                  className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
                   Delete

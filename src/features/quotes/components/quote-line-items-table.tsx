@@ -15,6 +15,7 @@ import { useSortableData, type SortableColumn } from '@/shared/hooks/use-sortabl
 import type { QuoteDetail } from '../types'
 import { formatCurrency } from '../utils/quote-calculations'
 import { Trash2, Edit } from 'lucide-react'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface QuoteLineItemsTableProps {
   quoteLines: QuoteDetail[]
@@ -136,6 +137,7 @@ export const QuoteLineItemsTable = memo(function QuoteLineItemsTable({
   onEdit,
   onDelete,
 }: QuoteLineItemsTableProps) {
+  const { t } = useTranslation('quotes')
   const { sortedData, sortConfig, handleSort } = useSortableData(
     quoteLines,
     SORT_COLUMNS
@@ -145,11 +147,11 @@ export const QuoteLineItemsTable = memo(function QuoteLineItemsTable({
     return (
       <div className="border rounded-lg p-12 text-center">
         <p className="text-muted-foreground">
-          No products added to this quote yet
+          {t('lineItemsTable.emptyMessage')}
         </p>
         {canEdit && (
           <p className="text-sm text-muted-foreground mt-2">
-            Click &quot;Add Product&quot; to add items to this quote
+            {t('lineItemsTable.addHint')}
           </p>
         )}
       </div>
@@ -161,11 +163,11 @@ export const QuoteLineItemsTable = memo(function QuoteLineItemsTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[50px]">#</TableHead>
+            <TableHead className="w-[50px]">{t('lineItemsTable.hash')}</TableHead>
             <TableHead>
               <SortableColumnHeader
                 columnId="product"
-                label="Product"
+                label={t('lineItemsTable.product')}
                 sortConfig={sortConfig}
                 onSort={handleSort}
               />
@@ -173,7 +175,7 @@ export const QuoteLineItemsTable = memo(function QuoteLineItemsTable({
             <TableHead className="text-center w-[100px]">
               <SortableColumnHeader
                 columnId="quantity"
-                label="Qty"
+                label={t('lineItemsTable.qty')}
                 sortConfig={sortConfig}
                 onSort={handleSort}
                 className="justify-center"
@@ -182,7 +184,7 @@ export const QuoteLineItemsTable = memo(function QuoteLineItemsTable({
             <TableHead className="text-center w-[120px]">
               <SortableColumnHeader
                 columnId="priceperunit"
-                label="Price/Unit"
+                label={t('lineItemsTable.pricePerUnit')}
                 sortConfig={sortConfig}
                 onSort={handleSort}
                 className="justify-center"
@@ -191,7 +193,7 @@ export const QuoteLineItemsTable = memo(function QuoteLineItemsTable({
             <TableHead className="text-center w-[120px]">
               <SortableColumnHeader
                 columnId="baseamount"
-                label="Base Amt"
+                label={t('lineItemsTable.baseAmt')}
                 sortConfig={sortConfig}
                 onSort={handleSort}
                 className="justify-center"
@@ -200,7 +202,7 @@ export const QuoteLineItemsTable = memo(function QuoteLineItemsTable({
             <TableHead className="text-center w-[120px]">
               <SortableColumnHeader
                 columnId="discount"
-                label="Discount"
+                label={t('lineItemsTable.discount')}
                 sortConfig={sortConfig}
                 onSort={handleSort}
                 className="justify-center"
@@ -209,7 +211,7 @@ export const QuoteLineItemsTable = memo(function QuoteLineItemsTable({
             <TableHead className="text-center w-[100px]">
               <SortableColumnHeader
                 columnId="tax"
-                label="Tax"
+                label={t('lineItemsTable.tax')}
                 sortConfig={sortConfig}
                 onSort={handleSort}
                 className="justify-center"
@@ -218,13 +220,13 @@ export const QuoteLineItemsTable = memo(function QuoteLineItemsTable({
             <TableHead className="text-center w-[140px]">
               <SortableColumnHeader
                 columnId="extendedamount"
-                label="Extended"
+                label={t('lineItemsTable.extended')}
                 sortConfig={sortConfig}
                 onSort={handleSort}
                 className="justify-center"
               />
             </TableHead>
-            {canEdit && <TableHead className="w-[100px]">Actions</TableHead>}
+            {canEdit && <TableHead className="w-[100px]">{t('lineItemsTable.actions')}</TableHead>}
           </TableRow>
         </TableHeader>
         <TableBody>

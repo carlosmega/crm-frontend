@@ -67,7 +67,8 @@
     "primaryAddress": "Primary Address",
     "description": "Description",
     "noContactInfo": "No contact information available",
-    "noBusinessInfo": "No business information available"
+    "noBusinessInfo": "No business information available",
+    "noAddress": "No address available"
   },
   "form": {
     "sections": {

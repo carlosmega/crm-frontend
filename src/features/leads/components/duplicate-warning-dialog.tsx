@@ -80,7 +80,7 @@ export function DuplicateWarningDialog({
         )
       case 'medium':
         return (
-          <Badge variant="secondary" className="gap-1 bg-orange-100 text-orange-800">
+          <Badge variant="secondary" className="gap-1 bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300">
             <AlertTriangle className="h-3 w-3" />
             {tc('confidence.medium')}
           </Badge>

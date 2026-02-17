@@ -22,6 +22,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Loader2, Plus, Save, Package } from 'lucide-react'
 import { toast } from 'sonner'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface AddOrderLineDialogProps {
   orderId: string
@@ -56,6 +57,8 @@ export function AddOrderLineDialog({
   onOpenChange,
   editItem,
 }: AddOrderLineDialogProps) {
+  const { t } = useTranslation('orders')
+  const { t: tc } = useTranslation('common')
   const isEdit = !!editItem
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [inputMode, setInputMode] = useState<'product' | 'manual'>('product')
@@ -116,7 +119,7 @@ export function AddOrderLineDialog({
             // Note: price and description updates could be added if needed
           },
         })
-        toast.success('Order line item updated successfully')
+        toast.success(t('addLine.updateSuccess'))
       } else {
         // Create new line
         await createMutation.mutateAsync({
@@ -128,7 +131,7 @@ export function AddOrderLineDialog({
           manualdiscountamount: data.manualdiscountamount,
           tax: data.tax,
         })
-        toast.success('Order line item added successfully')
+        toast.success(t('addLine.addSuccess'))
       }
 
       reset()
@@ -157,12 +160,12 @@ export function AddOrderLineDialog({
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>
-            {isEdit ? 'Edit Order Line Item' : 'Add Order Line Item'}
+            {isEdit ? t('addLine.editTitle') : t('addLine.addTitle')}
           </DialogTitle>
           <DialogDescription>
             {isEdit
-              ? 'Update the line item details below'
-              : 'Select a product from catalog or enter custom details'}
+              ? t('addLine.editDescription')
+              : t('addLine.addDescription')}
           </DialogDescription>
         </DialogHeader>
 
@@ -172,9 +175,9 @@ export function AddOrderLineDialog({
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="product">
                   <Package className="h-4 w-4 mr-2" />
-                  Select Product
+                  {t('addLine.selectProduct')}
                 </TabsTrigger>
-                <TabsTrigger value="manual">Manual Entry</TabsTrigger>
+                <TabsTrigger value="manual">{t('addLine.manualEntry')}</TabsTrigger>
               </TabsList>
 
               <TabsContent value="product" className="space-y-4 mt-4">
@@ -182,9 +185,9 @@ export function AddOrderLineDialog({
                 {!selectedProduct ? (
                   <div className="border-2 border-dashed rounded-lg p-6 text-center">
                     <Package className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
-                    <p className="text-sm font-medium mb-2">No product selected</p>
+                    <p className="text-sm font-medium mb-2">{t('addLine.noProduct')}</p>
                     <p className="text-xs text-muted-foreground mb-4">
-                      Select a product from your catalog
+                      {t('addLine.selectFromCatalog')}
                     </p>
                     <ProductSelector onSelect={handleProductSelect} />
                   </div>
@@ -213,7 +216,7 @@ export function AddOrderLineDialog({
                         size="sm"
                         onClick={() => setSelectedProduct(null)}
                       >
-                        Change
+                        {t('addLine.change')}
                       </Button>
                     </div>
                   </div>
@@ -224,13 +227,13 @@ export function AddOrderLineDialog({
                 {/* Product Description */}
                 <div className="space-y-2">
                   <Label htmlFor="productdescription">
-                    Product/Service Description *
+                    {t('addLine.productDescription')}
                   </Label>
                   <Textarea
                     id="productdescription"
-                    placeholder="Enter product or service description"
+                    placeholder={t('addLine.productDescriptionPlaceholder')}
                     {...register('productdescription', {
-                      required: inputMode === 'manual' ? 'Product description is required' : false,
+                      required: inputMode === 'manual' ? t('addLine.productDescriptionRequired') : false,
                     })}
                     rows={2}
                   />
@@ -246,7 +249,7 @@ export function AddOrderLineDialog({
 
           {isEdit && (
             <div className="space-y-2">
-              <Label htmlFor="productdescription">Product/Service Description</Label>
+              <Label htmlFor="productdescription">{t('addLine.productDescription')}</Label>
               <Textarea
                 id="productdescription"
                 {...register('productdescription')}
@@ -259,7 +262,7 @@ export function AddOrderLineDialog({
           {/* Quantity and Unit Price */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="quantity">Quantity *</Label>
+              <Label htmlFor="quantity">{t('addLine.quantity')}</Label>
               <Input
                 id="quantity"
                 type="number"
@@ -267,8 +270,8 @@ export function AddOrderLineDialog({
                 min="1"
                 placeholder="0"
                 {...register('quantity', {
-                  required: 'Quantity is required',
-                  min: { value: 1, message: 'Quantity must be at least 1' },
+                  required: t('addLine.quantityRequired'),
+                  min: { value: 1, message: t('addLine.quantityMin') },
                   valueAsNumber: true,
                 })}
               />
@@ -278,7 +281,7 @@ export function AddOrderLineDialog({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="priceperunit">Unit Price *</Label>
+              <Label htmlFor="priceperunit">{t('addLine.unitPrice')}</Label>
               <Input
                 id="priceperunit"
                 type="number"
@@ -286,8 +289,8 @@ export function AddOrderLineDialog({
                 min="0"
                 placeholder="0.00"
                 {...register('priceperunit', {
-                  required: 'Unit price is required',
-                  min: { value: 0, message: 'Price cannot be negative' },
+                  required: t('addLine.unitPriceRequired'),
+                  min: { value: 0, message: t('addLine.priceNegative') },
                   valueAsNumber: true,
                 })}
                 disabled={isEdit} // Can't change price in edit mode
@@ -304,8 +307,8 @@ export function AddOrderLineDialog({
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="manualdiscountamount">
-                Discount Amount
-                <span className="text-xs text-muted-foreground ml-1">(optional)</span>
+                {t('addLine.discountAmount')}
+                <span className="text-xs text-muted-foreground ml-1">{tc('form.optional')}</span>
               </Label>
               <Input
                 id="manualdiscountamount"
@@ -322,8 +325,8 @@ export function AddOrderLineDialog({
 
             <div className="space-y-2">
               <Label htmlFor="tax">
-                Tax Amount
-                <span className="text-xs text-muted-foreground ml-1">(optional)</span>
+                {t('addLine.taxAmount')}
+                <span className="text-xs text-muted-foreground ml-1">{tc('form.optional')}</span>
               </Label>
               <Input
                 id="tax"
@@ -341,16 +344,16 @@ export function AddOrderLineDialog({
 
           {/* Preview Totals */}
           <div className="border rounded-lg p-4 bg-muted/30 space-y-2">
-            <p className="text-sm font-medium mb-2">Preview</p>
+            <p className="text-sm font-medium mb-2">{t('addLine.preview')}</p>
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Base Amount:</span>
+              <span className="text-muted-foreground">{t('addLine.baseAmount')}</span>
               <span className="font-mono">
                 ${baseAmount.toFixed(2)}
               </span>
             </div>
             {manualdiscountamount > 0 && (
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Discount:</span>
+                <span className="text-muted-foreground">{t('addLine.discountPreview')}</span>
                 <span className="font-mono text-red-600">
                   -${manualdiscountamount.toFixed(2)}
                 </span>
@@ -358,13 +361,13 @@ export function AddOrderLineDialog({
             )}
             {tax > 0 && (
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Tax:</span>
+                <span className="text-muted-foreground">{t('addLine.taxPreview')}</span>
                 <span className="font-mono">+${tax.toFixed(2)}</span>
               </div>
             )}
             <div className="border-t pt-2">
               <div className="flex justify-between font-semibold">
-                <span>Line Total:</span>
+                <span>{t('addLine.lineTotal')}</span>
                 <span className="text-lg font-mono">
                   ${totalAmount.toFixed(2)}
                 </span>
@@ -380,25 +383,25 @@ export function AddOrderLineDialog({
               onClick={handleClose}
               disabled={isPending}
             >
-              Cancel
+              {tc('buttons.cancel')}
             </Button>
             <Button type="submit" disabled={isPending}>
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {isEdit ? 'Updating...' : 'Adding...'}
+                  {isEdit ? t('addLine.updating') : t('addLine.adding')}
                 </>
               ) : (
                 <>
                   {isEdit ? (
                     <>
                       <Save className="mr-2 h-4 w-4" />
-                      Update
+                      {t('addLine.updateButton')}
                     </>
                   ) : (
                     <>
                       <Plus className="mr-2 h-4 w-4" />
-                      Add Line Item
+                      {t('addLine.addButton')}
                     </>
                   )}
                 </>

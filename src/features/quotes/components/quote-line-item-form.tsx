@@ -20,6 +20,7 @@ import { useLineTotalsWithIVA } from '../hooks/use-quote-calculations'
 import { formatCurrency } from '../utils/quote-calculations'
 import { AlertCircle, Package, Info } from 'lucide-react'
 import { ProductSelector } from '@/features/products/components/product-selector'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface QuoteLineItemFormProps {
   quoteId: string
@@ -46,6 +47,8 @@ export function QuoteLineItemForm({
   onSubmit,
   isSubmitting = false,
 }: QuoteLineItemFormProps) {
+  const { t } = useTranslation('quotes')
+  const { t: tc } = useTranslation('common')
   const isEdit = !!quoteLine
   const [selectedProduct, setSelectedProduct] = useState<Product | undefined>(preselectedProduct)
   const [applyIVA, setApplyIVA] = useState(true) // IVA activado por defecto
@@ -180,12 +183,12 @@ export function QuoteLineItemForm({
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {isEdit ? 'Edit Quote Line' : 'Add Product to Quote'}
+            {isEdit ? t('lineItemForm.editTitle') : t('lineItemForm.addTitle')}
           </DialogTitle>
           <DialogDescription>
             {isEdit
-              ? 'Update the quantity, price, or discount for this product'
-              : 'Enter the product details and pricing information'}
+              ? t('lineItemForm.editDescription')
+              : t('lineItemForm.addDescription')}
           </DialogDescription>
         </DialogHeader>
 
@@ -193,7 +196,7 @@ export function QuoteLineItemForm({
           <div className="space-y-4 py-4">
             {/* Product Selector or Display */}
             <div className="space-y-2">
-              <Label>Product *</Label>
+              <Label>{t('lineItemForm.product')} *</Label>
               {isEdit || selectedProduct ? (
                 // Show selected product (read-only)
                 <div className="rounded-lg border bg-muted/50 p-3">
@@ -218,14 +221,14 @@ export function QuoteLineItemForm({
                   trigger={
                     <Button type="button" variant="outline" className="w-full justify-start h-auto py-3">
                       <Package className="size-4 mr-2" />
-                      Select product from catalog...
+                      {t('lineItemForm.selectProduct')}
                     </Button>
                   }
                 />
               )}
               {!selectedProduct && !isEdit && (
                 <p className="text-sm text-destructive">
-                  Please select a product from the catalog
+                  {t('lineItemForm.selectProductError')}
                 </p>
               )}
             </div>
@@ -236,7 +239,7 @@ export function QuoteLineItemForm({
             <input
               type="hidden"
               {...register('productdescription', {
-                required: 'Product is required',
+                required: t('lineItemForm.selectProductError'),
               })}
             />
             <input type="hidden" {...register('tax', { valueAsNumber: true })} />
@@ -244,17 +247,17 @@ export function QuoteLineItemForm({
             {/* Quantity and Price */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="quantity">Quantity *</Label>
+                <Label htmlFor="quantity">{t('lineItemForm.quantity')} *</Label>
                 <Input
                   id="quantity"
                   type="number"
                   step="1"
                   min="1"
                   {...register('quantity', {
-                    required: 'Quantity is required',
+                    required: t('lineItemForm.quantityRequired'),
                     min: {
                       value: 1,
-                      message: 'Quantity must be at least 1',
+                      message: t('lineItemForm.quantityMin'),
                     },
                     valueAsNumber: true,
                   })}
@@ -267,17 +270,17 @@ export function QuoteLineItemForm({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="priceperunit">Price per Unit *</Label>
+                <Label htmlFor="priceperunit">{t('lineItemForm.pricePerUnit')} *</Label>
                 <Input
                   id="priceperunit"
                   type="number"
                   step="0.01"
                   min="0"
                   {...register('priceperunit', {
-                    required: 'Price is required',
+                    required: t('lineItemForm.priceRequired'),
                     min: {
                       value: 0,
-                      message: 'Price must be 0 or greater',
+                      message: t('lineItemForm.priceMin'),
                     },
                     valueAsNumber: true,
                   })}
@@ -293,14 +296,14 @@ export function QuoteLineItemForm({
             {/* Base Amount (Calculated) */}
             <div className="rounded-lg bg-muted p-3">
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Base Amount:</span>
+                <span className="text-muted-foreground">{t('lineItemForm.baseAmount')}</span>
                 <span className="font-semibold">{formatCurrency(baseAmount)}</span>
               </div>
             </div>
 
             {/* Discount */}
             <div className="space-y-2">
-              <Label htmlFor="manualdiscountamount">Discount</Label>
+              <Label htmlFor="manualdiscountamount">{t('lineItemForm.discount')}</Label>
               <Input
                 id="manualdiscountamount"
                 type="number"
@@ -312,7 +315,7 @@ export function QuoteLineItemForm({
               />
               {discountPercentage > 0 && (
                 <p className="text-xs text-muted-foreground">
-                  {discountPercentage.toFixed(2)}% discount
+                  {t('lineItemForm.discountPercent', { percent: discountPercentage.toFixed(2) })}
                 </p>
               )}
             </div>
@@ -320,7 +323,7 @@ export function QuoteLineItemForm({
             {/* Subtotal after Discount */}
             <div className="rounded-lg bg-muted p-3">
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Subtotal (after discount):</span>
+                <span className="text-muted-foreground">{t('lineItemForm.afterDiscount')}</span>
                 <span className="font-semibold">{formatCurrency(subtotalAfterDiscount)}</span>
               </div>
             </div>
@@ -336,10 +339,10 @@ export function QuoteLineItemForm({
                   />
                   <div>
                     <Label htmlFor="apply-iva" className="cursor-pointer font-medium">
-                      Apply IVA 16%
+                      {t('lineItemForm.applyIva')}
                     </Label>
                     <p className="text-xs text-muted-foreground">
-                      Mexican Value Added Tax
+                      {t('lineItemForm.ivaDescription')}
                     </p>
                   </div>
                 </div>
@@ -354,7 +357,7 @@ export function QuoteLineItemForm({
                 <div className="flex items-start gap-2 rounded-md bg-muted/50 p-2">
                   <Info className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                   <p className="text-xs text-muted-foreground">
-                    IVA disabled. Use only for tax-exempt customers or international sales.
+                    {t('lineItemForm.ivaDisabledHint')}
                   </p>
                 </div>
               )}
@@ -363,7 +366,7 @@ export function QuoteLineItemForm({
             {/* Total Amount (Calculated) */}
             <div className="rounded-lg bg-primary/10 border border-primary p-4">
               <div className="flex justify-between items-center">
-                <span className="font-medium">Total Amount:</span>
+                <span className="font-medium">{t('lineItemForm.totalAmount')}</span>
                 <span className="font-bold text-2xl">
                   {formatCurrency(extendedAmount)}
                 </span>
@@ -371,7 +374,7 @@ export function QuoteLineItemForm({
               <div className="text-xs text-muted-foreground mt-2 space-y-0.5">
                 <p>Base: {formatCurrency(baseAmount)}</p>
                 {discount > 0 && (
-                  <p>- Discount: {formatCurrency(discount)}</p>
+                  <p>- {t('lineItemForm.discount')}: {formatCurrency(discount)}</p>
                 )}
                 <p>= Subtotal: {formatCurrency(subtotalAfterDiscount)}</p>
                 {applyIVA && (
@@ -386,7 +389,7 @@ export function QuoteLineItemForm({
                 <div className="flex gap-2">
                   <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0" />
                   <p className="text-sm text-destructive">
-                    Discount cannot exceed base amount
+                    {t('lineItemForm.discountExceedsBase')}
                   </p>
                 </div>
               </div>
@@ -400,7 +403,7 @@ export function QuoteLineItemForm({
               onClick={() => handleDialogOpenChange(false)}
               disabled={isSubmitting}
             >
-              Cancel
+              {tc('buttons.cancel')}
             </Button>
             <Button
               type="submit"
@@ -408,11 +411,11 @@ export function QuoteLineItemForm({
             >
               {isSubmitting
                 ? isEdit
-                  ? 'Updating...'
-                  : 'Adding...'
+                  ? t('lineItemForm.updating')
+                  : t('lineItemForm.adding')
                 : isEdit
-                ? 'Update Line'
-                : 'Add to Quote'}
+                ? t('lineItemForm.updateLine')
+                : t('lineItemForm.addToQuote')}
             </Button>
           </DialogFooter>
         </form>

@@ -42,6 +42,7 @@ import {
   Briefcase,
   ExternalLink,
 } from 'lucide-react'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 // Dynamic imports for version features
 const QuoteVersionTimeline = dynamic(
@@ -74,6 +75,8 @@ interface QuoteDetailTabsProps {
 export function QuoteDetailTabs({ quote, quoteLines = [], onCompareVersions }: QuoteDetailTabsProps) {
   const [activeTab, setActiveTab] = useState<QuoteTabId>('general')
   const [tabsContainer, setTabsContainer] = useState<HTMLElement | null>(null)
+  const { t } = useTranslation('quotes')
+  const { t: tc } = useTranslation('common')
 
   // Fetch customer data (Account or Contact)
   const isAccountCustomer = quote.customeridtype === 'account'
@@ -110,7 +113,7 @@ export function QuoteDetailTabs({ quote, quoteLines = [], onCompareVersions }: Q
   }, [])
 
   const handleDeleteProduct = useCallback((lineId: string) => {
-    if (confirm('Are you sure you want to remove this product from the quote?')) {
+    if (confirm(t('detailTabs.confirmRemoveProduct'))) {
       deleteQuoteDetail({ id: lineId, quoteId: quote.quoteid })
     }
   }, [deleteQuoteDetail, quote.quoteid])
@@ -152,7 +155,7 @@ export function QuoteDetailTabs({ quote, quoteLines = [], onCompareVersions }: Q
           )}
         >
           <FileText className="w-4 h-4 mr-2" />
-          General
+          {tc('tabs.general')}
         </TabsTrigger>
 
         <TabsTrigger
@@ -165,7 +168,7 @@ export function QuoteDetailTabs({ quote, quoteLines = [], onCompareVersions }: Q
           )}
         >
           <Calendar className="w-4 h-4 mr-2" />
-          Details
+          {t('detailTabs.details')}
         </TabsTrigger>
 
         <TabsTrigger
@@ -178,7 +181,7 @@ export function QuoteDetailTabs({ quote, quoteLines = [], onCompareVersions }: Q
           )}
         >
           <Clock className="w-4 h-4 mr-2" />
-          Versions
+          {tc('tabs.versions')}
         </TabsTrigger>
 
         <TabsTrigger
@@ -191,7 +194,7 @@ export function QuoteDetailTabs({ quote, quoteLines = [], onCompareVersions }: Q
           )}
         >
           <Link2 className="w-4 h-4 mr-2" />
-          Related
+          {tc('tabs.related')}
         </TabsTrigger>
 
         <TabsTrigger
@@ -204,7 +207,7 @@ export function QuoteDetailTabs({ quote, quoteLines = [], onCompareVersions }: Q
           )}
         >
           <History className="w-4 h-4 mr-2" />
-          Activities
+          {tc('tabs.activities')}
         </TabsTrigger>
       </TabsList>
     </div>
@@ -229,7 +232,7 @@ export function QuoteDetailTabs({ quote, quoteLines = [], onCompareVersions }: Q
                   ) : (
                     <User className="h-5 w-5" />
                   )}
-                  Customer Information
+                  {tc('sections.customerInfo')}
                 </span>
                 <Badge variant="outline" className="capitalize font-normal">
                   {quote.customeridtype}
@@ -257,7 +260,7 @@ export function QuoteDetailTabs({ quote, quoteLines = [], onCompareVersions }: Q
                     <Link
                       href={`/accounts/${account.accountid}`}
                       className="text-muted-foreground hover:text-foreground transition-colors"
-                      title="View Account"
+                      title={t('detailTabs.viewAccount')}
                     >
                       <ExternalLink className="h-4 w-4" />
                     </Link>
@@ -297,7 +300,7 @@ export function QuoteDetailTabs({ quote, quoteLines = [], onCompareVersions }: Q
                       href={`/accounts/${account.accountid}`}
                       className="text-sm text-primary hover:underline font-medium inline-flex items-center gap-1"
                     >
-                      View Account Details
+                      {t('detailTabs.viewAccountDetails')}
                       <ExternalLink className="h-3.5 w-3.5" />
                     </Link>
                   </div>
@@ -319,7 +322,7 @@ export function QuoteDetailTabs({ quote, quoteLines = [], onCompareVersions }: Q
                     <Link
                       href={`/contacts/${contact.contactid}`}
                       className="text-muted-foreground hover:text-foreground transition-colors"
-                      title="View Contact"
+                      title={t('detailTabs.viewContact')}
                     >
                       <ExternalLink className="h-4 w-4" />
                     </Link>
@@ -353,14 +356,14 @@ export function QuoteDetailTabs({ quote, quoteLines = [], onCompareVersions }: Q
                       href={`/contacts/${contact.contactid}`}
                       className="text-sm text-primary hover:underline font-medium inline-flex items-center gap-1"
                     >
-                      View Contact Details
+                      {t('detailTabs.viewContactDetails')}
                       <ExternalLink className="h-3.5 w-3.5" />
                     </Link>
                   </div>
                 </div>
               ) : (
                 <div className="text-sm text-muted-foreground">
-                  <p>Customer data not available</p>
+                  <p>{t('detailTabs.customerDataNotAvailable')}</p>
                   <p className="font-mono text-xs mt-1">{quote.customerid}</p>
                 </div>
               )}
@@ -377,13 +380,14 @@ export function QuoteDetailTabs({ quote, quoteLines = [], onCompareVersions }: Q
             <CardHeader>
               <CardTitle className="text-sm flex items-center gap-2">
                 <Package className="h-4 w-4" />
-                Next Step: Create Order
+                {t('detailTabs.nextStepTitle')}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <p className="text-sm text-muted-foreground">
-                This quote has been won{quote.opportunityid && ' and the opportunity has been closed'}.
-                Create a sales order to proceed with fulfillment.
+                {quote.opportunityid
+                  ? t('detailTabs.nextStepDescriptionWithOpp')
+                  : t('detailTabs.nextStepDescription')}
               </p>
               <CreateOrderFromQuoteButton
                 quote={quote}
@@ -405,7 +409,7 @@ export function QuoteDetailTabs({ quote, quoteLines = [], onCompareVersions }: Q
         {quote.description && (
           <Card>
             <CardHeader>
-              <CardTitle className="text-base font-semibold">Description</CardTitle>
+              <CardTitle className="text-base font-semibold">{t('detailTabs.description')}</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm">{quote.description}</p>
@@ -419,12 +423,12 @@ export function QuoteDetailTabs({ quote, quoteLines = [], onCompareVersions }: Q
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2">
                 <Package className="h-5 w-5" />
-                Products ({quoteLines.length})
+                {tc('tabs.products')} ({quoteLines.length})
               </CardTitle>
               {canEdit && (
                 <Button onClick={handleAddProduct} className="bg-purple-600 hover:bg-purple-700">
                   <Plus className="h-4 w-4 mr-2" />
-                  Add Product
+                  {t('detailTabs.addProduct')}
                 </Button>
               )}
             </div>
@@ -458,16 +462,16 @@ export function QuoteDetailTabs({ quote, quoteLines = [], onCompareVersions }: Q
             <CardHeader>
               <CardTitle className="text-base font-semibold flex items-center gap-2">
                 <Calendar className="h-5 w-5" />
-                Validity Period
+                {t('form.validityPeriod')}
               </CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4 md:grid-cols-2">
               <div>
-                <p className="text-sm text-muted-foreground">Effective From</p>
+                <p className="text-sm text-muted-foreground">{t('detailTabs.effectiveFrom')}</p>
                 <p className="font-medium">{formatDate(quote.effectivefrom)}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Effective To</p>
+                <p className="text-sm text-muted-foreground">{t('detailTabs.effectiveTo')}</p>
                 <p className="font-medium">{formatDate(quote.effectiveto)}</p>
               </div>
             </CardContent>
@@ -476,17 +480,17 @@ export function QuoteDetailTabs({ quote, quoteLines = [], onCompareVersions }: Q
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base font-semibold">Metadata</CardTitle>
+            <CardTitle className="text-base font-semibold">{t('detailTabs.metadata')}</CardTitle>
           </CardHeader>
           <CardContent className="text-sm space-y-2">
             <div>
-              <p className="text-muted-foreground">Created</p>
+              <p className="text-muted-foreground">{tc('labels.created')}</p>
               <p className="font-medium">
                 {new Date(quote.createdon).toLocaleString()}
               </p>
             </div>
             <div>
-              <p className="text-muted-foreground">Last Modified</p>
+              <p className="text-muted-foreground">{tc('labels.lastModified')}</p>
               <p className="font-medium">
                 {new Date(quote.modifiedon).toLocaleString()}
               </p>
@@ -507,22 +511,22 @@ export function QuoteDetailTabs({ quote, quoteLines = [], onCompareVersions }: Q
       <TabsContent value="related" className="mt-0 space-y-4">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base font-semibold">Related Records</CardTitle>
+            <CardTitle className="text-base font-semibold">{tc('sections.relatedRecords')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             {quote.opportunityid && (
               <div>
-                <p className="text-sm text-muted-foreground">Opportunity</p>
+                <p className="text-sm text-muted-foreground">{tc('entities.opportunity')}</p>
                 <Link
                   href={`/opportunities/${quote.opportunityid}`}
                   className="text-sm hover:underline text-primary font-medium"
                 >
-                  View Opportunity
+                  {t('detailTabs.viewOpportunity')}
                 </Link>
               </div>
             )}
             {!quote.opportunityid && (
-              <p className="text-sm text-muted-foreground">No related records available</p>
+              <p className="text-sm text-muted-foreground">{t('detailTabs.noRelated')}</p>
             )}
           </CardContent>
         </Card>

@@ -44,6 +44,7 @@ import {
   BarChart3,
   Eye,
 } from 'lucide-react'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface QuoteTemplateDetailSheetProps {
   template: QuoteTemplate | null
@@ -103,21 +104,14 @@ function calculateTemplateTotals(template: QuoteTemplate) {
   )
 }
 
-const CATEGORY_LABELS: Record<string, string> = {
-  standard: 'Standard',
-  custom: 'Custom',
-  industry: 'Industry',
-  service: 'Service',
-  product: 'Product',
-  bundle: 'Bundle',
-}
-
 export function QuoteTemplateDetailSheet({
   template,
   open,
   onOpenChange,
 }: QuoteTemplateDetailSheetProps) {
   const router = useRouter()
+  const { t } = useTranslation('quotes')
+  const { t: tc } = useTranslation('common')
   const [isEditMode, setIsEditMode] = useState(false)
 
   // Edit form state
@@ -181,7 +175,7 @@ export function QuoteTemplateDetailSheet({
   // Delete
   const handleDelete = useCallback(() => {
     if (!template) return
-    if (confirm(`Are you sure you want to delete "${template.name}"?`)) {
+    if (confirm(t('dialog.template.confirmDelete', { name: template.name }))) {
       deleteTemplate.mutate(template.quotetemplateid, {
         onSuccess: () => {
           onOpenChange(false)
@@ -353,12 +347,12 @@ export function QuoteTemplateDetailSheet({
             <div className="flex items-start justify-between pr-8">
               <div className="space-y-1">
                 <SheetTitle className="text-xl">
-                  {isEditMode ? 'Edit Template' : template.name}
+                  {isEditMode ? t('dialog.template.editTitle') : template.name}
                 </SheetTitle>
                 <SheetDescription>
                   {isEditMode
-                    ? 'Update template details and line items'
-                    : template.description || 'No description'}
+                    ? t('dialog.template.editDescription')
+                    : template.description || t('dialog.template.noDescription')}
                 </SheetDescription>
               </div>
               {!isEditMode && (
@@ -368,7 +362,7 @@ export function QuoteTemplateDetailSheet({
                   onClick={handleEnterEdit}
                 >
                   <Pencil className="h-4 w-4 mr-1" />
-                  Edit
+                  {tc('buttons.edit')}
                 </Button>
               )}
             </div>
@@ -381,40 +375,40 @@ export function QuoteTemplateDetailSheet({
                 {/* Editable Fields */}
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="tpl-name">Template Name *</Label>
+                    <Label htmlFor="tpl-name">{t('dialog.template.templateName')} *</Label>
                     <Input
                       id="tpl-name"
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
-                      placeholder="Template name"
+                      placeholder={t('dialog.template.templateNamePlaceholder')}
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="tpl-desc">Description</Label>
+                    <Label htmlFor="tpl-desc">{t('dialog.template.description')}</Label>
                     <Textarea
                       id="tpl-desc"
                       value={editDescription}
                       onChange={(e) => setEditDescription(e.target.value)}
-                      placeholder="Optional description"
+                      placeholder={t('dialog.template.descriptionPlaceholder')}
                       rows={3}
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="tpl-category">Category</Label>
+                      <Label htmlFor="tpl-category">{t('dialog.template.category')}</Label>
                       <Select
                         value={editCategory}
                         onValueChange={setEditCategory}
                       >
                         <SelectTrigger id="tpl-category">
-                          <SelectValue placeholder="Select category" />
+                          <SelectValue placeholder={t('dialog.template.selectCategory')} />
                         </SelectTrigger>
                         <SelectContent>
-                          {Object.entries(CATEGORY_LABELS).map(([value, label]) => (
+                          {['standard', 'custom', 'industry', 'service', 'product', 'bundle'].map((value) => (
                             <SelectItem key={value} value={value}>
-                              {label}
+                              {t(`dialog.saveTemplate.categories.${value}`)}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -422,7 +416,7 @@ export function QuoteTemplateDetailSheet({
                     </div>
 
                     <div className="space-y-2">
-                      <Label>Sharing</Label>
+                      <Label>{t('dialog.template.sharing')}</Label>
                       <div className="flex items-center gap-3 pt-2">
                         <Switch
                           id="tpl-shared"
@@ -430,7 +424,7 @@ export function QuoteTemplateDetailSheet({
                           onCheckedChange={setEditIsShared}
                         />
                         <Label htmlFor="tpl-shared" className="cursor-pointer text-sm">
-                          {editIsShared ? 'Shared with team' : 'Private'}
+                          {editIsShared ? t('dialog.template.sharedWithTeam') : t('dialog.template.private')}
                         </Label>
                       </div>
                     </div>
@@ -444,7 +438,7 @@ export function QuoteTemplateDetailSheet({
                   <div className="flex items-center justify-between">
                     <h3 className="text-sm font-semibold flex items-center gap-2">
                       <Package className="h-4 w-4" />
-                      Line Items ({editLines.length})
+                      {t('dialog.template.lineItems')} ({editLines.length})
                     </h3>
                     <Button
                       size="sm"
@@ -452,7 +446,7 @@ export function QuoteTemplateDetailSheet({
                       className="bg-purple-600 hover:bg-purple-700"
                     >
                       <Plus className="h-4 w-4 mr-1" />
-                      Add Product
+                      {t('detailTabs.addProduct')}
                     </Button>
                   </div>
 
@@ -466,24 +460,24 @@ export function QuoteTemplateDetailSheet({
                   {/* Edit Totals */}
                   <div className="rounded-lg bg-muted p-4 space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Subtotal</span>
+                      <span className="text-muted-foreground">{tc('labels.subtotal')}</span>
                       <span className="tabular-nums">{formatCurrency(editTotals.subtotal)}</span>
                     </div>
                     {editTotals.totalDiscount > 0 && (
                       <div className="flex justify-between text-green-600">
-                        <span>Discount</span>
+                        <span>{tc('labels.discount')}</span>
                         <span className="tabular-nums">-{formatCurrency(editTotals.totalDiscount)}</span>
                       </div>
                     )}
                     {editTotals.totalTax > 0 && (
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Tax</span>
+                        <span className="text-muted-foreground">{tc('labels.tax')}</span>
                         <span className="tabular-nums">{formatCurrency(editTotals.totalTax)}</span>
                       </div>
                     )}
                     <Separator />
                     <div className="flex justify-between font-semibold text-base">
-                      <span>Total</span>
+                      <span>{tc('labels.total')}</span>
                       <span className="tabular-nums">{formatCurrency(editTotals.total)}</span>
                     </div>
                   </div>
@@ -496,38 +490,38 @@ export function QuoteTemplateDetailSheet({
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   {template.category && (
                     <div className="space-y-1">
-                      <p className="text-muted-foreground">Category</p>
+                      <p className="text-muted-foreground">{t('dialog.template.category')}</p>
                       <Badge variant="secondary" className="capitalize">
-                        {CATEGORY_LABELS[template.category] || template.category}
+                        {t(`dialog.saveTemplate.categories.${template.category}`)}
                       </Badge>
                     </div>
                   )}
                   <div className="space-y-1">
-                    <p className="text-muted-foreground">Visibility</p>
+                    <p className="text-muted-foreground">{t('dialog.template.visibility')}</p>
                     <div className="flex items-center gap-1.5 font-medium">
                       {template.isshared ? (
                         <>
                           <Users className="h-3.5 w-3.5" />
-                          <span>Shared</span>
+                          <span>{t('dialog.template.shared')}</span>
                         </>
                       ) : (
                         <>
                           <User className="h-3.5 w-3.5" />
-                          <span>Private</span>
+                          <span>{t('dialog.template.private')}</span>
                         </>
                       )}
                     </div>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-muted-foreground">Usage Count</p>
+                    <p className="text-muted-foreground">{t('dialog.template.usageCount')}</p>
                     <div className="flex items-center gap-1.5 font-medium">
                       <BarChart3 className="h-3.5 w-3.5" />
-                      <span>{template.usagecount} times</span>
+                      <span>{template.usagecount} {t('dialog.template.times')}</span>
                     </div>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-muted-foreground">Items</p>
-                    <p className="font-medium">{template.templatedata.lines.length} products</p>
+                    <p className="text-muted-foreground">{t('dialog.template.items')}</p>
+                    <p className="font-medium">{template.templatedata.lines.length} {t('dialog.template.products')}</p>
                   </div>
                 </div>
 
@@ -537,7 +531,7 @@ export function QuoteTemplateDetailSheet({
                 <div className="space-y-3">
                   <h3 className="text-sm font-semibold flex items-center gap-2">
                     <Package className="h-4 w-4" />
-                    Line Items
+                    {t('dialog.template.lineItems')}
                   </h3>
 
                   <QuoteLineItemsTable
@@ -551,7 +545,7 @@ export function QuoteTemplateDetailSheet({
                 {/* Totals */}
                 <div className="rounded-lg bg-muted p-4 space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Subtotal</span>
+                    <span className="text-muted-foreground">{tc('labels.subtotal')}</span>
                     <span className="tabular-nums">{formatCurrency(totals.subtotal)}</span>
                   </div>
                   {totals.totalDiscount > 0 && (
@@ -586,14 +580,14 @@ export function QuoteTemplateDetailSheet({
                   onClick={handleCancelEdit}
                   disabled={updateTemplate.isPending}
                 >
-                  Cancel
+                  {tc('buttons.cancel')}
                 </Button>
                 <Button
                   className="flex-1 bg-purple-600 hover:bg-purple-700"
                   onClick={handleSave}
                   disabled={!editName.trim() || updateTemplate.isPending}
                 >
-                  {updateTemplate.isPending ? 'Saving...' : 'Save Changes'}
+                  {updateTemplate.isPending ? t('dialog.template.saving') : tc('buttons.saveChanges')}
                 </Button>
               </div>
             ) : (
@@ -605,14 +599,14 @@ export function QuoteTemplateDetailSheet({
                   disabled={deleteTemplate.isPending}
                 >
                   <Trash2 className="h-4 w-4 mr-1" />
-                  Delete
+                  {tc('buttons.delete')}
                 </Button>
                 <Button
                   className="flex-1 bg-purple-600 hover:bg-purple-700"
                   onClick={handleUseTemplate}
                 >
                   <Plus className="h-4 w-4 mr-1" />
-                  Use Template
+                  {t('dialog.template.useTemplate')}
                 </Button>
               </div>
             )}

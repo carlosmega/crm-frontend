@@ -216,7 +216,7 @@ export function SalesBusinessProcessFlow({
           />
         </div>
         {/* BPF Container - White card */}
-        <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-x-auto">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-x-auto">
           <BusinessProcessFlow
             stages={bpfStages}
             onStageClick={onStageClick}
@@ -241,7 +241,7 @@ export function SalesBusinessProcessFlow({
           />
         </div>
         {/* BPF Container - White card */}
-        <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-x-auto">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-x-auto">
           <BusinessProcessFlow
             stages={bpfStages}
             onStageClick={onStageClick}
@@ -256,7 +256,7 @@ export function SalesBusinessProcessFlow({
   return (
     <div className="px-4 pb-2">
       {/* BPF Container - White card */}
-      <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-x-auto">
+      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm overflow-x-auto">
         <BusinessProcessFlow
           stages={bpfStages}
           onStageClick={onStageClick}

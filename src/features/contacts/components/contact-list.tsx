@@ -207,7 +207,7 @@ export const ContactList = memo(function ContactList({
         </div>
       ),
     },
-  ], [getInitials]) // getInitials is stable (memoized)
+  ], [getInitials, tCon, tCommon])
 
   const emptyState = (
     <EmptyState

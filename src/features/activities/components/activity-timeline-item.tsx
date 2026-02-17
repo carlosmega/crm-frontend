@@ -76,7 +76,7 @@ export const ActivityTimelineItem = memo(function ActivityTimelineItem({ activit
 
       {/* Icon */}
       <div
-        className={`relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-white bg-white shadow-sm ${iconColor}`}
+        className={`relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-white dark:border-gray-900 bg-white dark:bg-gray-800 shadow-sm ${iconColor}`}
       >
         <Icon className="h-5 w-5" />
       </div>

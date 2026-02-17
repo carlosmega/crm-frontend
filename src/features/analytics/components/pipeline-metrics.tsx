@@ -60,7 +60,7 @@ export function PipelineMetrics() {
         description={`${metrics.openOpportunities} open ${metrics.openOpportunities === 1 ? 'opportunity' : 'opportunities'}`}
         icon={DollarSign}
         iconClassName="text-blue-600"
-        iconBgClassName="bg-blue-100"
+        iconBgClassName="bg-blue-100 dark:bg-blue-900/30"
       />
 
       <MetricCard
@@ -69,7 +69,7 @@ export function PipelineMetrics() {
         description="Based on close probability"
         icon={TrendingUp}
         iconClassName="text-purple-600"
-        iconBgClassName="bg-purple-100"
+        iconBgClassName="bg-purple-100 dark:bg-purple-900/30"
       />
 
       <MetricCard
@@ -78,7 +78,7 @@ export function PipelineMetrics() {
         description={`${metrics.wonOpportunities} won / ${metrics.wonOpportunities + metrics.lostOpportunities} closed`}
         icon={Target}
         iconClassName="text-orange-600"
-        iconBgClassName="bg-orange-100"
+        iconBgClassName="bg-orange-100 dark:bg-orange-900/30"
       />
 
       <MetricCard
@@ -96,7 +96,7 @@ export function PipelineMetrics() {
         description="From creation to close"
         icon={Clock}
         iconClassName="text-blue-600"
-        iconBgClassName="bg-blue-100"
+        iconBgClassName="bg-blue-100 dark:bg-blue-900/30"
       />
 
       <MetricCard
@@ -114,7 +114,7 @@ export function PipelineMetrics() {
         description="Successfully closed"
         icon={CheckCircle2}
         iconClassName="text-green-600"
-        iconBgClassName="bg-green-100"
+        iconBgClassName="bg-green-100 dark:bg-green-900/30"
       />
 
       <MetricCard
@@ -123,7 +123,7 @@ export function PipelineMetrics() {
         description="Closed as lost"
         icon={XCircle}
         iconClassName="text-red-600"
-        iconBgClassName="bg-red-100"
+        iconBgClassName="bg-red-100 dark:bg-red-900/30"
       />
     </div>
   )

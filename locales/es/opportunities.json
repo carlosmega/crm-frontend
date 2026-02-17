@@ -151,7 +151,13 @@
     "count": "Cantidad:",
     "total": "Total:",
     "weighted": "Ponderado:",
-    "noOpportunities": "Sin oportunidades"
+    "noOpportunities": "Sin oportunidades",
+    "pipelineValue": "Valor del Pipeline",
+    "weightedValue": "Valor Ponderado",
+    "avgDealSize": "Promedio por Acuerdo",
+    "deals": "Acuerdos",
+    "dropHere": "Soltar aquí",
+    "emptyHint": "Arrastra oportunidades aquí o crea una nueva"
   },
   "originating": {
     "title": "Originado desde Lead",

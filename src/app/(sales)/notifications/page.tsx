@@ -117,7 +117,7 @@ export default function NotificationsPage() {
   return (
     <>
       {/* Mobile Header */}
-      <header className="md:hidden sticky top-0 z-50 bg-white border-b">
+      <header className="md:hidden sticky top-0 z-50 bg-white dark:bg-gray-900 border-b dark:border-gray-800">
         <div className="flex items-center justify-between px-4 py-3">
           {/* LEFT: Hamburger + Title */}
           <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -170,7 +170,7 @@ export default function NotificationsPage() {
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100">
+      <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100 dark:bg-gray-900">
         {/* Page Header with Actions */}
         <div className="p-4 md:p-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

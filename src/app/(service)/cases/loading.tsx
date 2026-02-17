@@ -16,7 +16,7 @@ export default function CasesLoading() {
 
       {/* Search/Filter Skeleton */}
       <div className="px-4 pb-4">
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-4">
           <div className="flex flex-col gap-4 sm:flex-row">
             <Skeleton className="h-10 flex-1" />
             <Skeleton className="h-10 w-[180px]" />

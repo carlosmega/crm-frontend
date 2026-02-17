@@ -21,28 +21,28 @@ export function CaseStatusBadge({ statecode, statuscode }: CaseStatusBadgeProps)
             label: 'In Progress',
             variant: 'default' as const,
             icon: Circle,
-            className: 'bg-blue-100 text-blue-800 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400',
+            className: 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400',
           }
         case CaseStatusCode.OnHold:
           return {
             label: 'On Hold',
             variant: 'default' as const,
             icon: Pause,
-            className: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-100 dark:bg-yellow-900/30 dark:text-yellow-400',
+            className: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 hover:bg-yellow-100 dark:bg-yellow-900/30 dark:text-yellow-400',
           }
         case CaseStatusCode.WaitingForDetails:
           return {
             label: 'Waiting for Details',
             variant: 'default' as const,
             icon: Clock,
-            className: 'bg-orange-100 text-orange-800 hover:bg-orange-100 dark:bg-orange-900/30 dark:text-orange-400',
+            className: 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 hover:bg-orange-100 dark:bg-orange-900/30 dark:text-orange-400',
           }
         case CaseStatusCode.Researching:
           return {
             label: 'Researching',
             variant: 'default' as const,
             icon: Search,
-            className: 'bg-purple-100 text-purple-800 hover:bg-purple-100 dark:bg-purple-900/30 dark:text-purple-400',
+            className: 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 hover:bg-purple-100 dark:bg-purple-900/30 dark:text-purple-400',
           }
         case CaseStatusCode.ProblemSolved:
         case CaseStatusCode.InformationProvided:
@@ -50,7 +50,7 @@ export function CaseStatusBadge({ statecode, statuscode }: CaseStatusBadgeProps)
             label: getCaseStatusLabel(statuscode),
             variant: 'default' as const,
             icon: CheckCircle2,
-            className: 'bg-green-100 text-green-800 hover:bg-green-100 dark:bg-green-900/30 dark:text-green-400',
+            className: 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 hover:bg-green-100 dark:bg-green-900/30 dark:text-green-400',
           }
         case CaseStatusCode.Cancelled:
         case CaseStatusCode.Merged:
@@ -58,7 +58,7 @@ export function CaseStatusBadge({ statecode, statuscode }: CaseStatusBadgeProps)
             label: getCaseStatusLabel(statuscode),
             variant: 'default' as const,
             icon: XCircle,
-            className: 'bg-gray-100 text-gray-800 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400',
+            className: 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400',
           }
       }
     }
@@ -70,21 +70,21 @@ export function CaseStatusBadge({ statecode, statuscode }: CaseStatusBadgeProps)
           label: 'Active',
           variant: 'default' as const,
           icon: Circle,
-          className: 'bg-blue-100 text-blue-800 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400',
+          className: 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400',
         }
       case CaseStateCode.Resolved:
         return {
           label: 'Resolved',
           variant: 'default' as const,
           icon: CheckCircle2,
-          className: 'bg-green-100 text-green-800 hover:bg-green-100 dark:bg-green-900/30 dark:text-green-400',
+          className: 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 hover:bg-green-100 dark:bg-green-900/30 dark:text-green-400',
         }
       case CaseStateCode.Cancelled:
         return {
           label: 'Cancelled',
           variant: 'default' as const,
           icon: XCircle,
-          className: 'bg-gray-100 text-gray-800 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400',
+          className: 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400',
         }
       default:
         return {

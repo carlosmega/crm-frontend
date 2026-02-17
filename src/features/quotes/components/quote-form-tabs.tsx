@@ -24,6 +24,9 @@ import type { SelectedCustomer } from '@/shared/types/selected-customer'
 import { CustomerType } from '@/core/contracts/enums'
 import { cn } from '@/lib/utils'
 import { FileText, Calendar } from 'lucide-react'
+import { useTranslation } from '@/shared/hooks/use-translation'
+import { useAccount } from '@/features/accounts/hooks/use-accounts'
+import { useContact } from '@/features/contacts/hooks/use-contacts'
 
 export type QuoteFormTabId = 'general' | 'validity'
 
@@ -48,18 +51,11 @@ interface QuoteFormTabsProps {
  *
  * Form with tabbed interface for quote editing.
  * Uses a SINGLE form instance to preserve state across tab changes.
- *
- * Tabs:
- * - General: Basic information (name, description) + Customer information
- * - Validity: Validity period (effective from/to dates)
- *
- * Features:
- * - Tabs navigation rendered in sticky header via portal
- * - Single form preserves data when switching tabs
- * - Each tab shows only relevant fields (via CSS visibility)
  */
 export function QuoteFormTabs({ quote, defaultData, onSubmit, onCancel, isSubmitting, hideActions }: QuoteFormTabsProps) {
   const { data: session } = useSession()
+  const { t } = useTranslation('quotes')
+  const { t: tc } = useTranslation('common')
   const [activeTab, setActiveTab] = useState<QuoteFormTabId>('general')
   const [tabsContainer, setTabsContainer] = useState<HTMLElement | null>(null)
   const isEdit = !!quote
@@ -71,6 +67,8 @@ export function QuoteFormTabs({ quote, defaultData, onSubmit, onCancel, isSubmit
     setValue,
     watch,
     control,
+    setError,
+    clearErrors,
     formState: { errors },
   } = useForm<CreateQuoteDto>({
     defaultValues: quote
@@ -89,6 +87,7 @@ export function QuoteFormTabs({ quote, defaultData, onSubmit, onCancel, isSubmit
           description: defaultData?.description || '',
           effectivefrom: defaultData?.effectivefrom,
           effectiveto: defaultData?.effectiveto,
+          customerid: '', // ✅ Initialize empty for validation
           customeridtype: CustomerType.Account,
           ownerid: session?.user?.id || 'anonymous',
         },
@@ -99,6 +98,36 @@ export function QuoteFormTabs({ quote, defaultData, onSubmit, onCancel, isSubmit
   // Customer selector state
   const [selectedCustomer, setSelectedCustomer] = useState<SelectedCustomer | undefined>()
 
+  // ✅ Fetch customer data when editing to populate the selector
+  const shouldFetchAccount = quote?.customeridtype === 'account'
+  const shouldFetchContact = quote?.customeridtype === 'contact'
+
+  const { account: accountData } = useAccount(shouldFetchAccount ? quote!.customerid : '')
+  const { contact: contactData } = useContact(shouldFetchContact ? quote!.customerid : '')
+
+  // ✅ Initialize selected customer when editing (after data is fetched)
+  useEffect(() => {
+    if (quote?.customerid && quote?.customeridtype) {
+      if (quote.customeridtype === 'account' && accountData) {
+        setSelectedCustomer({
+          id: accountData.accountid,
+          type: 'account',
+          name: accountData.name,
+          email: accountData.emailaddress1,
+          phone: accountData.telephone1,
+        })
+      } else if (quote.customeridtype === 'contact' && contactData) {
+        setSelectedCustomer({
+          id: contactData.contactid,
+          type: 'contact',
+          name: contactData.fullname || `${contactData.firstname} ${contactData.lastname}`,
+          email: contactData.emailaddress1,
+          phone: contactData.telephone1 || contactData.mobilephone,
+        })
+      }
+    }
+  }, [quote?.customerid, quote?.customeridtype, accountData, contactData])
+
   // Find the tabs container in sticky header on mount
   useEffect(() => {
     const container = document.getElementById('quote-tabs-nav-container')
@@ -106,6 +135,22 @@ export function QuoteFormTabs({ quote, defaultData, onSubmit, onCancel, isSubmit
   }, [])
 
   const handleFormSubmit = (data: CreateQuoteDto) => {
+    // ✅ VALIDATION: Customer is REQUIRED
+    if (!data.customerid || data.customerid.trim() === '') {
+      setError('customerid', {
+        type: 'manual',
+        message: t('form.customerRequired'),
+      })
+      // Scroll to General tab to show error
+      setActiveTab('general')
+      // Focus customer selector
+      setTimeout(() => {
+        const customerButton = document.querySelector('[data-customer-selector]') as HTMLElement
+        customerButton?.focus()
+      }, 100)
+      return
+    }
+
     onSubmit(data)
   }
 
@@ -115,6 +160,8 @@ export function QuoteFormTabs({ quote, defaultData, onSubmit, onCancel, isSubmit
     if (customer) {
       setValue('customerid', customer.id)
       setValue('customeridtype', customer.type === 'account' ? CustomerType.Account : CustomerType.Contact)
+      // Clear error when customer is selected
+      clearErrors('customerid')
     } else {
       setValue('customerid', '')
     }
@@ -136,7 +183,7 @@ export function QuoteFormTabs({ quote, defaultData, onSubmit, onCancel, isSubmit
           data-state={activeTab === 'general' ? 'active' : 'inactive'}
         >
           <FileText className="w-4 h-4 mr-2" />
-          General
+          {t('formTabs.general')}
         </TabsTrigger>
 
         <TabsTrigger
@@ -151,7 +198,7 @@ export function QuoteFormTabs({ quote, defaultData, onSubmit, onCancel, isSubmit
           data-state={activeTab === 'validity' ? 'active' : 'inactive'}
         >
           <Calendar className="w-4 h-4 mr-2" />
-          Validity
+          {t('formTabs.validity')}
         </TabsTrigger>
       </TabsList>
     </div>
@@ -169,22 +216,22 @@ export function QuoteFormTabs({ quote, defaultData, onSubmit, onCancel, isSubmit
           {/* Basic Information */}
           <Card className="mb-4">
             <CardHeader>
-              <CardTitle>Basic Information</CardTitle>
+              <CardTitle>{t('form.basicInfo')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Quote Name */}
               <div className="space-y-2">
-                <Label htmlFor="name">Quote Name *</Label>
+                <Label htmlFor="name">{t('form.quoteName')} *</Label>
                 <Input
                   id="name"
                   {...register('name', {
-                    required: 'Quote name is required',
+                    required: t('form.quoteNameRequired'),
                     minLength: {
                       value: 3,
-                      message: 'Quote name must be at least 3 characters',
+                      message: t('form.quoteNameMinLength'),
                     },
                   })}
-                  placeholder="e.g., CRM Enterprise Implementation - Acme Corp"
+                  placeholder={t('form.quoteNamePlaceholder')}
                 />
                 {errors.name && (
                   <p className="text-sm text-destructive">{errors.name.message}</p>
@@ -193,11 +240,11 @@ export function QuoteFormTabs({ quote, defaultData, onSubmit, onCancel, isSubmit
 
               {/* Description */}
               <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">{t('form.description')}</Label>
                 <Textarea
                   id="description"
                   {...register('description')}
-                  placeholder="Brief description of what this quote covers..."
+                  placeholder={t('form.descriptionPlaceholder')}
                   rows={3}
                 />
               </div>
@@ -207,12 +254,12 @@ export function QuoteFormTabs({ quote, defaultData, onSubmit, onCancel, isSubmit
           {/* Customer Information */}
           <Card>
             <CardHeader>
-              <CardTitle>Customer Information</CardTitle>
+              <CardTitle>{t('form.customerInfo')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Customer Type */}
               <div className="space-y-2">
-                <Label>Customer Type *</Label>
+                <Label>{t('form.customerType')} *</Label>
                 <Select
                   value={customerType}
                   onValueChange={(value) =>
@@ -220,14 +267,14 @@ export function QuoteFormTabs({ quote, defaultData, onSubmit, onCancel, isSubmit
                   }
                 >
                   <SelectTrigger id="customeridtype">
-                    <SelectValue placeholder="Select customer type" />
+                    <SelectValue placeholder={t('form.selectCustomerType')} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value={CustomerType.Account}>
-                      Account (Business)
+                      {t('form.accountBusiness')}
                     </SelectItem>
                     <SelectItem value={CustomerType.Contact}>
-                      Contact (Individual)
+                      {t('form.contactIndividual')}
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -259,14 +306,14 @@ export function QuoteFormTabs({ quote, defaultData, onSubmit, onCancel, isSubmit
 
               {/* Opportunity ID (Optional) */}
               <div className="space-y-2">
-                <Label htmlFor="opportunityid">Linked Opportunity (Optional)</Label>
+                <Label htmlFor="opportunityid">{t('form.linkedOpportunity')}</Label>
                 <Input
                   id="opportunityid"
                   {...register('opportunityid')}
-                  placeholder="Select opportunity if this quote is linked to one"
+                  placeholder={t('form.selectOpportunity')}
                 />
                 <p className="text-xs text-muted-foreground">
-                  TODO: Replace with opportunity selector
+                  {t('form.opportunityPlaceholder')}
                 </p>
               </div>
             </CardContent>
@@ -277,18 +324,18 @@ export function QuoteFormTabs({ quote, defaultData, onSubmit, onCancel, isSubmit
         <div className={cn(activeTab !== 'validity' && 'hidden')}>
           <Card>
             <CardHeader>
-              <CardTitle>Validity Period</CardTitle>
+              <CardTitle>{t('form.validityPeriod')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Quick Select Presets */}
               <div className="space-y-3">
-                <Label className="text-sm font-medium">Quick Select</Label>
+                <Label className="text-sm font-medium">{t('formTabs.quickSelect')}</Label>
                 <div className="flex flex-wrap gap-2">
                   {[
-                    { days: 15, label: '15 Days' },
-                    { days: 30, label: '30 Days' },
-                    { days: 60, label: '60 Days' },
-                    { days: 90, label: '90 Days' },
+                    { days: 15, label: t('formTabs.days15') },
+                    { days: 30, label: t('formTabs.days30') },
+                    { days: 60, label: t('formTabs.days60') },
+                    { days: 90, label: t('formTabs.days90') },
                   ].map((preset) => (
                     <Button
                       key={preset.days}
@@ -325,18 +372,18 @@ export function QuoteFormTabs({ quote, defaultData, onSubmit, onCancel, isSubmit
                   ))}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Select a preset to set validity period starting today
+                  {t('formTabs.presetHint')}
                 </p>
               </div>
 
               {/* Manual Date Selection */}
               <div className="space-y-3">
-                <Label className="text-sm font-medium">Or set custom dates</Label>
+                <Label className="text-sm font-medium">{t('formTabs.orCustomDates')}</Label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Effective From */}
                   <div className="space-y-2">
                     <Label htmlFor="effectivefrom" className="text-sm font-normal">
-                      Effective From
+                      {t('form.effectiveFrom')}
                     </Label>
                     <Controller
                       name="effectivefrom"
@@ -345,7 +392,7 @@ export function QuoteFormTabs({ quote, defaultData, onSubmit, onCancel, isSubmit
                         <DatePicker
                           value={field.value}
                           onChange={(date) => field.onChange(date?.toISOString())}
-                          placeholder="Select start date"
+                          placeholder={tc('form.pickDate')}
                         />
                       )}
                     />
@@ -354,7 +401,7 @@ export function QuoteFormTabs({ quote, defaultData, onSubmit, onCancel, isSubmit
                   {/* Effective To */}
                   <div className="space-y-2">
                     <Label htmlFor="effectiveto" className="text-sm font-normal">
-                      Effective To
+                      {t('form.effectiveTo')}
                     </Label>
                     <Controller
                       name="effectiveto"
@@ -363,14 +410,14 @@ export function QuoteFormTabs({ quote, defaultData, onSubmit, onCancel, isSubmit
                         validate: (value) => {
                           const from = watch('effectivefrom')
                           if (!from || !value) return true
-                          return new Date(value) > new Date(from) || 'End date must be after start date'
+                          return new Date(value) > new Date(from) || t('formTabs.endDateError')
                         }
                       }}
                       render={({ field }) => (
                         <DatePicker
                           value={field.value}
                           onChange={(date) => field.onChange(date?.toISOString())}
-                          placeholder="Select end date"
+                          placeholder={tc('form.pickDate')}
                         />
                       )}
                     />
@@ -385,7 +432,7 @@ export function QuoteFormTabs({ quote, defaultData, onSubmit, onCancel, isSubmit
               {watch('effectivefrom') && watch('effectiveto') && (
                 <div className="rounded-lg bg-muted/50 p-4 border border-border">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Validity Duration:</span>
+                    <span className="text-muted-foreground">{t('formTabs.validityDuration')}</span>
                     <span className="font-medium">
                       {(() => {
                         const from = new Date(watch('effectivefrom'))
@@ -393,10 +440,10 @@ export function QuoteFormTabs({ quote, defaultData, onSubmit, onCancel, isSubmit
                         const diffTime = to.getTime() - from.getTime()
                         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
 
-                        if (diffDays < 0) return 'Invalid dates'
-                        if (diffDays === 0) return 'Same day'
-                        if (diffDays === 1) return '1 day'
-                        return `${diffDays} days`
+                        if (diffDays < 0) return t('formTabs.invalidDates')
+                        if (diffDays === 0) return t('formTabs.sameDay')
+                        if (diffDays === 1) return t('formTabs.oneDay')
+                        return `${diffDays} ${t('formTabs.days')}`
                       })()}
                     </span>
                   </div>
@@ -410,16 +457,16 @@ export function QuoteFormTabs({ quote, defaultData, onSubmit, onCancel, isSubmit
         {!hideActions && (
           <div className="flex justify-end gap-3">
             <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
-              Cancel
+              {tc('buttons.cancel')}
             </Button>
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting
                 ? isEdit
-                  ? 'Updating...'
-                  : 'Creating...'
+                  ? tc('form.updating')
+                  : tc('form.creating')
                 : isEdit
-                ? 'Update Quote'
-                : 'Create Quote'}
+                ? t('form.updateQuote')
+                : t('form.createQuote')}
             </Button>
           </div>
         )}

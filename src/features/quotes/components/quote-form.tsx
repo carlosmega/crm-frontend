@@ -20,6 +20,7 @@ import { CustomerSelectorButton } from '@/shared/components/selectors'
 import type { SelectedCustomer } from '@/shared/types/selected-customer'
 import type { Quote, CreateQuoteDto, UpdateQuoteDto } from '../types'
 import { CustomerType } from '@/core/contracts/enums'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 export type QuoteFormSection = 'general' | 'validity' | 'all'
 
@@ -46,6 +47,8 @@ export function QuoteForm({
   section = 'all',
 }: QuoteFormProps) {
   const { data: session } = useSession()
+  const { t } = useTranslation('quotes')
+  const { t: tc } = useTranslation('common')
   const isEdit = !!quote
 
   const showGeneral = section === 'all' || section === 'general'
@@ -104,22 +107,22 @@ export function QuoteForm({
       {/* Basic Information */}
       <Card>
         <CardHeader>
-          <CardTitle>Basic Information</CardTitle>
+          <CardTitle>{t('form.basicInfo')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Quote Name */}
           <div className="space-y-2">
-            <Label htmlFor="name">Quote Name *</Label>
+            <Label htmlFor="name">{t('form.quoteName')} *</Label>
             <Input
               id="name"
               {...register('name', {
-                required: 'Quote name is required',
+                required: t('form.quoteNameRequired'),
                 minLength: {
                   value: 3,
-                  message: 'Quote name must be at least 3 characters',
+                  message: t('form.quoteNameMinLength'),
                 },
               })}
-              placeholder="e.g., CRM Enterprise Implementation - Acme Corp"
+              placeholder={t('form.quoteNamePlaceholder')}
             />
             {errors.name && (
               <p className="text-sm text-destructive">{errors.name.message}</p>
@@ -128,11 +131,11 @@ export function QuoteForm({
 
           {/* Description */}
           <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">{t('form.description')}</Label>
             <Textarea
               id="description"
               {...register('description')}
-              placeholder="Brief description of what this quote covers..."
+              placeholder={t('form.descriptionPlaceholder')}
               rows={3}
             />
           </div>
@@ -142,12 +145,12 @@ export function QuoteForm({
       {/* Customer Information */}
       <Card>
         <CardHeader>
-          <CardTitle>Customer Information</CardTitle>
+          <CardTitle>{t('form.customerInfo')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Customer Type */}
           <div className="space-y-2">
-            <Label>Customer Type *</Label>
+            <Label>{t('form.customerType')} *</Label>
             <Select
               value={customerType}
               onValueChange={(value) =>
@@ -155,14 +158,14 @@ export function QuoteForm({
               }
             >
               <SelectTrigger id="customeridtype">
-                <SelectValue placeholder="Select customer type" />
+                <SelectValue placeholder={t('form.selectCustomerType')} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value={CustomerType.Account}>
-                  Account (Business)
+                  {t('form.accountBusiness')}
                 </SelectItem>
                 <SelectItem value={CustomerType.Contact}>
-                  Contact (Individual)
+                  {t('form.contactIndividual')}
                 </SelectItem>
               </SelectContent>
             </Select>
@@ -194,14 +197,14 @@ export function QuoteForm({
 
           {/* Opportunity ID (Optional) */}
           <div className="space-y-2">
-            <Label htmlFor="opportunityid">Linked Opportunity (Optional)</Label>
+            <Label htmlFor="opportunityid">{t('form.linkedOpportunity')}</Label>
             <Input
               id="opportunityid"
               {...register('opportunityid')}
-              placeholder="Select opportunity if this quote is linked to one"
+              placeholder={t('form.selectOpportunity')}
             />
             <p className="text-xs text-muted-foreground">
-              TODO: Replace with opportunity selector
+              {t('form.opportunityPlaceholder')}
             </p>
           </div>
         </CardContent>
@@ -213,13 +216,13 @@ export function QuoteForm({
       {showValidity && (
       <Card>
         <CardHeader>
-          <CardTitle>Validity Period</CardTitle>
+          <CardTitle>{t('form.validityPeriod')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Effective From */}
             <div className="space-y-2">
-              <Label htmlFor="effectivefrom">Effective From</Label>
+              <Label htmlFor="effectivefrom">{t('form.effectiveFrom')}</Label>
               <Controller
                 name="effectivefrom"
                 control={control}
@@ -227,18 +230,18 @@ export function QuoteForm({
                   <DatePicker
                     value={field.value}
                     onChange={(date) => field.onChange(date?.toISOString())}
-                    placeholder="Select start date"
+                    placeholder={tc('form.pickDate')}
                   />
                 )}
               />
               <p className="text-xs text-muted-foreground">
-                Quote becomes valid from this date
+                {t('form.effectiveFromHint')}
               </p>
             </div>
 
             {/* Effective To */}
             <div className="space-y-2">
-              <Label htmlFor="effectiveto">Effective To</Label>
+              <Label htmlFor="effectiveto">{t('form.effectiveTo')}</Label>
               <Controller
                 name="effectiveto"
                 control={control}
@@ -246,12 +249,12 @@ export function QuoteForm({
                   <DatePicker
                     value={field.value}
                     onChange={(date) => field.onChange(date?.toISOString())}
-                    placeholder="Select end date"
+                    placeholder={tc('form.pickDate')}
                   />
                 )}
               />
               <p className="text-xs text-muted-foreground">
-                Quote expires on this date
+                {t('form.effectiveToHint')}
               </p>
             </div>
           </div>
@@ -263,16 +266,16 @@ export function QuoteForm({
       {!hideActions && (
         <div className="flex justify-end gap-3">
           <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
-            Cancel
+            {tc('buttons.cancel')}
           </Button>
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting
               ? isEdit
-                ? 'Updating...'
-                : 'Creating...'
+                ? tc('form.updating')
+                : tc('form.creating')
               : isEdit
-              ? 'Update Quote'
-              : 'Create Quote'}
+              ? t('form.updateQuote')
+              : t('form.createQuote')}
           </Button>
         </div>
       )}

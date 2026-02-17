@@ -1,3 +1,5 @@
+'use client'
+
 import { memo } from 'react'
 import Link from 'next/link'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
@@ -14,6 +16,7 @@ import {
   Package,
   Truck,
 } from 'lucide-react'
+import { useTranslation } from '@/shared/hooks/use-translation'
 
 interface OrderCardProps {
   order: Order
@@ -26,6 +29,7 @@ interface OrderCardProps {
  * ✅ Memoizado con React.memo para evitar re-renders innecesarios en listas
  */
 export const OrderCard = memo(function OrderCard({ order }: OrderCardProps) {
+  const { t } = useTranslation('orders')
   const canFulfill = order.statecode === OrderStateCode.Submitted
   const isCanceled = order.statecode === OrderStateCode.Canceled
 
@@ -62,7 +66,7 @@ export const OrderCard = memo(function OrderCard({ order }: OrderCardProps) {
         <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
           <div className="flex items-center gap-2 text-muted-foreground">
             <DollarSign className="h-4 w-4" />
-            <span className="text-sm font-medium">Total Amount</span>
+            <span className="text-sm font-medium">{t('card.totalAmount')}</span>
           </div>
           <span className="text-lg font-bold">
             {formatCurrency(order.totalamount)}
@@ -75,7 +79,7 @@ export const OrderCard = memo(function OrderCard({ order }: OrderCardProps) {
             <Truck className="h-4 w-4 text-muted-foreground" />
             <div className="flex flex-col">
               <span className="text-muted-foreground">
-                Delivery by: {new Date(order.requestdeliveryby).toLocaleDateString()}
+                {t('card.deliveryBy')} {new Date(order.requestdeliveryby).toLocaleDateString()}
               </span>
             </div>
           </div>
@@ -86,7 +90,7 @@ export const OrderCard = memo(function OrderCard({ order }: OrderCardProps) {
           <div className="flex items-center gap-2 text-sm">
             <Package className="h-4 w-4 text-muted-foreground" />
             <span className="text-muted-foreground">
-              Fulfilled: {new Date(order.datefulfilled).toLocaleDateString()}
+              {t('card.fulfilled')} {new Date(order.datefulfilled).toLocaleDateString()}
             </span>
           </div>
         )}
@@ -94,14 +98,14 @@ export const OrderCard = memo(function OrderCard({ order }: OrderCardProps) {
         {/* Created Date */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <FileText className="h-4 w-4" />
-          <span>Created {new Date(order.createdon).toLocaleDateString()}</span>
+          <span>{t('card.created')} {new Date(order.createdon).toLocaleDateString()}</span>
         </div>
 
         {/* Actions */}
         <div className="flex gap-2 pt-2">
           <Button asChild variant="outline" size="sm" className="flex-1">
             <Link href={`/orders/${order.salesorderid}`}>
-              View Details
+              {t('card.viewDetails')}
               <ExternalLink className="ml-2 h-4 w-4" />
             </Link>
           </Button>
@@ -109,7 +113,7 @@ export const OrderCard = memo(function OrderCard({ order }: OrderCardProps) {
             <Button asChild size="sm" className="flex-1">
               <Link href={`/orders/${order.salesorderid}/fulfill`}>
                 <Package className="mr-2 h-4 w-4" />
-                Fulfill
+                {t('card.fulfill')}
               </Link>
             </Button>
           )}

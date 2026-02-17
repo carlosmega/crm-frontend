@@ -160,7 +160,7 @@ export default function EditActivityPage({ params }: { params: Promise<{ id: str
       />
 
       {/* Sticky Section with Activity Info and Actions + Tabs (Desktop Only) */}
-      <div className="hidden md:block sticky top-16 z-40 bg-gray-100/98 backdrop-blur-sm">
+      <div className="hidden md:block sticky top-16 z-40 bg-gray-100/98 dark:bg-gray-900/98 backdrop-blur-sm">
         <div className="px-4 pt-4 pb-4">
           <div className="flex items-center justify-between">
             <div>
@@ -203,7 +203,7 @@ export default function EditActivityPage({ params }: { params: Promise<{ id: str
       </div>
 
       {/* Content */}
-      <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100">
+      <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100 dark:bg-gray-900">
         <div className="px-4 pb-4 pt-1">
           <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as ActivityEditTabId)} className="w-full">
             {/* Render tabs navigation in sticky header container via portal */}

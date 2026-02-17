@@ -10,6 +10,9 @@ import {
   getPriorityLabel,
   PaymentTermsCode,
   getPaymentTermsLabel,
+  PaymentMethodCode,
+  getPaymentMethodLabel,
+  getPaymentMethodDescription,
   ShippingMethodCode,
   getShippingMethodLabel,
   FreightTermsCode,
@@ -29,7 +32,14 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
-import { FileText, Truck, CreditCard, MapPin } from 'lucide-react'
+import { FileText, Truck, CreditCard, MapPin, DollarSign } from 'lucide-react'
+import { useTranslation } from '@/shared/hooks/use-translation'
+import { UseCustomerAddressDialog } from './use-customer-address-dialog'
+import type { CustomerAddress } from '../hooks/use-customer-addresses'
+import { toast } from 'sonner'
+import { Badge } from '@/components/ui/badge'
+import { AddressFormFields } from '@/shared/components/form/address-form-fields'
+import { Form } from '@/components/ui/form'
 
 export type OrderFormTabId = 'general' | 'shipping' | 'payment'
 
@@ -38,6 +48,25 @@ interface OrderFormTabsProps {
   onSubmit: (data: UpdateOrderDto) => void
   onCancel: () => void
   isSubmitting?: boolean
+}
+
+/**
+ * Determina quién paga el flete basado en el FreightTermsCode
+ */
+const getFreightPayer = (freightTerms?: FreightTermsCode): 'buyer' | 'seller' | 'none' => {
+  if (!freightTerms) return 'none'
+
+  switch (freightTerms) {
+    case FreightTermsCode.FOB: // Free On Board - Buyer pays
+      return 'buyer'
+    case FreightTermsCode.NoCharge: // No charge
+      return 'none'
+    case FreightTermsCode.CIF: // Cost, Insurance, Freight - Seller pays
+    case FreightTermsCode.Prepaid: // Prepaid by seller
+      return 'seller'
+    default:
+      return 'none'
+  }
 }
 
 /**
@@ -52,16 +81,13 @@ interface OrderFormTabsProps {
  * - Payment: payment terms
  */
 export function OrderFormTabs({ order, onSubmit, onCancel, isSubmitting }: OrderFormTabsProps) {
+  const { t } = useTranslation('orders')
+  const { t: tc } = useTranslation('common')
   const [activeTab, setActiveTab] = useState<OrderFormTabId>('general')
   const [tabsContainer, setTabsContainer] = useState<HTMLElement | null>(null)
+  const [useAddressDialogOpen, setUseAddressDialogOpen] = useState(false)
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm<UpdateOrderDto>({
+  const form = useForm<UpdateOrderDto>({
     defaultValues: {
       name: order.name,
       description: order.description || '',
@@ -77,6 +103,7 @@ export function OrderFormTabs({ order, onSubmit, onCancel, isSubmitting }: Order
       shipto_country: order.shipto_country || '',
       shippingmethodcode: order.shippingmethodcode,
       freighttermscode: order.freighttermscode,
+      freightamount: order.freightamount,
       // Billing
       billto_name: order.billto_name || '',
       billto_line1: order.billto_line1 || '',
@@ -87,8 +114,11 @@ export function OrderFormTabs({ order, onSubmit, onCancel, isSubmitting }: Order
       billto_country: order.billto_country || '',
       // Payment
       paymenttermscode: order.paymenttermscode,
+      paymentmethodcode: order.paymentmethodcode,
     },
   })
+
+  const { register, handleSubmit, setValue, watch, formState } = form
 
   // Find the tabs container in sticky header on mount
   useEffect(() => {
@@ -117,6 +147,17 @@ export function OrderFormTabs({ order, onSubmit, onCancel, isSubmitting }: Order
     setValue('billto_country', watch('shipto_country'))
   }
 
+  const handleAddressSelected = (address: CustomerAddress) => {
+    setValue('shipto_name', address.name || '')
+    setValue('shipto_line1', address.line1 || '')
+    setValue('shipto_line2', address.line2 || '')
+    setValue('shipto_city', address.city || '')
+    setValue('shipto_stateorprovince', address.stateOrProvince || '')
+    setValue('shipto_postalcode', address.postalCode || '')
+    setValue('shipto_country', address.country || '')
+    toast.success(t('editShipping.addressApplied'))
+  }
+
   // Tabs navigation component
   const tabsNavigation = (
     <div className="overflow-x-auto">
@@ -133,7 +174,7 @@ export function OrderFormTabs({ order, onSubmit, onCancel, isSubmitting }: Order
           data-state={activeTab === 'general' ? 'active' : 'inactive'}
         >
           <FileText className="w-4 h-4 mr-2" />
-          General
+          {t('formTabs.general')}
         </TabsTrigger>
 
         <TabsTrigger
@@ -148,7 +189,7 @@ export function OrderFormTabs({ order, onSubmit, onCancel, isSubmitting }: Order
           data-state={activeTab === 'shipping' ? 'active' : 'inactive'}
         >
           <Truck className="w-4 h-4 mr-2" />
-          Shipping
+          {t('formTabs.shipping')}
         </TabsTrigger>
 
         <TabsTrigger
@@ -163,14 +204,15 @@ export function OrderFormTabs({ order, onSubmit, onCancel, isSubmitting }: Order
           data-state={activeTab === 'payment' ? 'active' : 'inactive'}
         >
           <CreditCard className="w-4 h-4 mr-2" />
-          Payment
+          {t('formTabs.payment')}
         </TabsTrigger>
       </TabsList>
     </div>
   )
 
   return (
-    <Tabs value={activeTab} className="w-full">
+    <Form {...form}>
+      <Tabs value={activeTab} className="w-full">
       {/* Render tabs navigation in sticky header container via portal */}
       {tabsContainer && createPortal(tabsNavigation, tabsContainer)}
 
@@ -180,35 +222,35 @@ export function OrderFormTabs({ order, onSubmit, onCancel, isSubmitting }: Order
         <div className={cn(activeTab !== 'general' && 'hidden')}>
           <Card className="mb-4">
             <CardHeader>
-              <CardTitle>Basic Information</CardTitle>
+              <CardTitle>{t('form.basicInfo')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Order Name */}
               <div className="space-y-2">
-                <Label htmlFor="name">Order Name *</Label>
+                <Label htmlFor="name">{t('form.orderName')} *</Label>
                 <Input
                   id="name"
                   {...register('name', {
-                    required: 'Order name is required',
+                    required: t('form.orderNameRequired'),
                     minLength: {
                       value: 3,
-                      message: 'Order name must be at least 3 characters',
+                      message: t('form.orderNameMinLength'),
                     },
                   })}
-                  placeholder="e.g., Enterprise License Order - Acme Corp"
+                  placeholder={t('form.orderNamePlaceholder')}
                 />
-                {errors.name && (
-                  <p className="text-sm text-destructive">{errors.name.message}</p>
+                {formState.errors.name && (
+                  <p className="text-sm text-destructive">{formState.errors.name.message}</p>
                 )}
               </div>
 
               {/* Description */}
               <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">{t('form.description')}</Label>
                 <Textarea
                   id="description"
                   {...register('description')}
-                  placeholder="Brief description of this order..."
+                  placeholder={t('form.descriptionPlaceholder')}
                   rows={3}
                 />
               </div>
@@ -217,7 +259,7 @@ export function OrderFormTabs({ order, onSubmit, onCancel, isSubmitting }: Order
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Priority */}
                 <div className="space-y-2">
-                  <Label>Priority</Label>
+                  <Label>{t('form.priority')}</Label>
                   <Select
                     value={watch('prioritycode')?.toString() || ''}
                     onValueChange={(value) =>
@@ -225,7 +267,7 @@ export function OrderFormTabs({ order, onSubmit, onCancel, isSubmitting }: Order
                     }
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select priority" />
+                      <SelectValue placeholder={t('form.selectPriority')} />
                     </SelectTrigger>
                     <SelectContent>
                       {Object.values(PriorityCode)
@@ -241,7 +283,7 @@ export function OrderFormTabs({ order, onSubmit, onCancel, isSubmitting }: Order
 
                 {/* Requested Delivery Date */}
                 <div className="space-y-2">
-                  <Label htmlFor="requestdeliveryby">Requested Delivery Date</Label>
+                  <Label htmlFor="requestdeliveryby">{t('form.requestedDeliveryDate')}</Label>
                   <Input
                     id="requestdeliveryby"
                     type="date"
@@ -258,69 +300,46 @@ export function OrderFormTabs({ order, onSubmit, onCancel, isSubmitting }: Order
           {/* Shipping Address */}
           <Card className="mb-4">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-muted-foreground" />
-                Shipping Address
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-muted-foreground" />
+                  {t('formTabs.shippingAddress')}
+                </CardTitle>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setUseAddressDialogOpen(true)}
+                >
+                  {t('formTabs.useCustomerAddress')}
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="md:col-span-2">
-                  <Label htmlFor="shipto_name">Recipient Name</Label>
+              <div className="space-y-4">
+                {/* Recipient Name - Not part of AddressFormFields */}
+                <div>
+                  <Label htmlFor="shipto_name">{tc('address.recipientName')}</Label>
                   <Input
                     id="shipto_name"
                     {...register('shipto_name')}
-                    placeholder="Company or person name"
+                    placeholder={tc('placeholders.companyOrPerson')}
                   />
                 </div>
-                <div className="md:col-span-2">
-                  <Label htmlFor="shipto_line1">Address Line 1</Label>
-                  <Input
-                    id="shipto_line1"
-                    {...register('shipto_line1')}
-                    placeholder="Street address"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <Label htmlFor="shipto_line2">Address Line 2</Label>
-                  <Input
-                    id="shipto_line2"
-                    {...register('shipto_line2')}
-                    placeholder="Apt, suite, unit, etc. (optional)"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="shipto_city">City</Label>
-                  <Input
-                    id="shipto_city"
-                    {...register('shipto_city')}
-                    placeholder="City"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="shipto_stateorprovince">State/Province</Label>
-                  <Input
-                    id="shipto_stateorprovince"
-                    {...register('shipto_stateorprovince')}
-                    placeholder="State or province"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="shipto_postalcode">Postal Code</Label>
-                  <Input
-                    id="shipto_postalcode"
-                    {...register('shipto_postalcode')}
-                    placeholder="ZIP / Postal code"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="shipto_country">Country</Label>
-                  <Input
-                    id="shipto_country"
-                    {...register('shipto_country')}
-                    placeholder="Country"
-                  />
-                </div>
+
+                {/* Address Fields with Postal Code Autocomplete */}
+                <AddressFormFields
+                  form={form}
+                  fieldNames={{
+                    line1: 'shipto_line1',
+                    line2: 'shipto_line2',
+                    city: 'shipto_city',
+                    stateOrProvince: 'shipto_stateorprovince',
+                    postalCode: 'shipto_postalcode',
+                    country: 'shipto_country',
+                  }}
+                  enablePostalCodeLookup
+                />
               </div>
             </CardContent>
           </Card>
@@ -331,7 +350,7 @@ export function OrderFormTabs({ order, onSubmit, onCancel, isSubmitting }: Order
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-muted-foreground" />
-                  Billing Address
+                  {t('formTabs.billingAddress')}
                 </CardTitle>
                 <Button
                   type="button"
@@ -339,68 +358,35 @@ export function OrderFormTabs({ order, onSubmit, onCancel, isSubmitting }: Order
                   size="sm"
                   onClick={copyShippingToBilling}
                 >
-                  Same as shipping
+                  {t('formTabs.sameAsShipping')}
                 </Button>
               </div>
             </CardHeader>
             <CardContent>
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="md:col-span-2">
-                  <Label htmlFor="billto_name">Billing Name</Label>
+              <div className="space-y-4">
+                {/* Billing Name - Not part of AddressFormFields */}
+                <div>
+                  <Label htmlFor="billto_name">{tc('address.billingName')}</Label>
                   <Input
                     id="billto_name"
                     {...register('billto_name')}
-                    placeholder="Company or person name"
+                    placeholder={tc('placeholders.companyOrPerson')}
                   />
                 </div>
-                <div className="md:col-span-2">
-                  <Label htmlFor="billto_line1">Address Line 1</Label>
-                  <Input
-                    id="billto_line1"
-                    {...register('billto_line1')}
-                    placeholder="Street address"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <Label htmlFor="billto_line2">Address Line 2</Label>
-                  <Input
-                    id="billto_line2"
-                    {...register('billto_line2')}
-                    placeholder="Apt, suite, unit, etc. (optional)"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="billto_city">City</Label>
-                  <Input
-                    id="billto_city"
-                    {...register('billto_city')}
-                    placeholder="City"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="billto_stateorprovince">State/Province</Label>
-                  <Input
-                    id="billto_stateorprovince"
-                    {...register('billto_stateorprovince')}
-                    placeholder="State or province"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="billto_postalcode">Postal Code</Label>
-                  <Input
-                    id="billto_postalcode"
-                    {...register('billto_postalcode')}
-                    placeholder="ZIP / Postal code"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="billto_country">Country</Label>
-                  <Input
-                    id="billto_country"
-                    {...register('billto_country')}
-                    placeholder="Country"
-                  />
-                </div>
+
+                {/* Address Fields with Postal Code Autocomplete */}
+                <AddressFormFields
+                  form={form}
+                  fieldNames={{
+                    line1: 'billto_line1',
+                    line2: 'billto_line2',
+                    city: 'billto_city',
+                    stateOrProvince: 'billto_stateorprovince',
+                    postalCode: 'billto_postalcode',
+                    country: 'billto_country',
+                  }}
+                  enablePostalCodeLookup
+                />
               </div>
             </CardContent>
           </Card>
@@ -410,13 +396,13 @@ export function OrderFormTabs({ order, onSubmit, onCancel, isSubmitting }: Order
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Truck className="h-4 w-4 text-muted-foreground" />
-                Shipping Details
+                {t('formTabs.shippingDetails')}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <Label>Shipping Method</Label>
+                  <Label>{t('formTabs.shippingMethod')}</Label>
                   <Select
                     value={watch('shippingmethodcode')?.toString() || ''}
                     onValueChange={(value) =>
@@ -424,7 +410,7 @@ export function OrderFormTabs({ order, onSubmit, onCancel, isSubmitting }: Order
                     }
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select method" />
+                      <SelectValue placeholder={t('formTabs.selectMethod')} />
                     </SelectTrigger>
                     <SelectContent>
                       {Object.values(ShippingMethodCode)
@@ -438,7 +424,7 @@ export function OrderFormTabs({ order, onSubmit, onCancel, isSubmitting }: Order
                   </Select>
                 </div>
                 <div>
-                  <Label>Freight Terms</Label>
+                  <Label>{t('formTabs.freightTerms')}</Label>
                   <Select
                     value={watch('freighttermscode')?.toString() || ''}
                     onValueChange={(value) =>
@@ -446,7 +432,7 @@ export function OrderFormTabs({ order, onSubmit, onCancel, isSubmitting }: Order
                     }
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select terms" />
+                      <SelectValue placeholder={t('formTabs.selectTerms')} />
                     </SelectTrigger>
                     <SelectContent>
                       {Object.values(FreightTermsCode)
@@ -458,7 +444,54 @@ export function OrderFormTabs({ order, onSubmit, onCancel, isSubmitting }: Order
                         ))}
                     </SelectContent>
                   </Select>
+                  {watch('freighttermscode') && (() => {
+                    const payer = getFreightPayer(watch('freighttermscode') as FreightTermsCode)
+                    return (
+                      <div className="mt-2">
+                        {payer === 'buyer' && (
+                          <Badge variant="outline" className="font-normal text-blue-600 border-blue-300">
+                            <DollarSign className="h-3 w-3 mr-1" />
+                            {t('detail.buyerPays')}
+                          </Badge>
+                        )}
+                        {payer === 'seller' && (
+                          <Badge variant="outline" className="font-normal text-green-600 border-green-300">
+                            <DollarSign className="h-3 w-3 mr-1" />
+                            {t('detail.sellerPays')}
+                          </Badge>
+                        )}
+                        {payer === 'none' && (
+                          <Badge variant="outline" className="font-normal text-gray-600 border-gray-300">
+                            {t('detail.noCharge')}
+                          </Badge>
+                        )}
+                      </div>
+                    )
+                  })()}
                 </div>
+              </div>
+
+              <div className="mt-4 max-w-md">
+                <Label>{t('formTabs.freightAmountOptional')}</Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                    $
+                  </span>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    placeholder="0.00"
+                    className="pl-6"
+                    {...register('freightamount', {
+                      valueAsNumber: true,
+                      min: 0,
+                    })}
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {t('formTabs.freightAmountHint')}
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -466,16 +499,17 @@ export function OrderFormTabs({ order, onSubmit, onCancel, isSubmitting }: Order
 
         {/* PAYMENT SECTION */}
         <div className={cn(activeTab !== 'payment' && 'hidden')}>
-          <Card>
+          {/* Payment Terms Card */}
+          <Card className="mb-4">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CreditCard className="h-4 w-4 text-muted-foreground" />
-                Payment Terms
+                {t('formTabs.paymentTerms')}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="max-w-md space-y-2">
-                <Label>Payment Terms</Label>
+                <Label>{t('formTabs.paymentTerms')}</Label>
                 <Select
                   value={watch('paymenttermscode')?.toString() || ''}
                   onValueChange={(value) =>
@@ -483,7 +517,7 @@ export function OrderFormTabs({ order, onSubmit, onCancel, isSubmitting }: Order
                   }
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select payment terms" />
+                    <SelectValue placeholder={t('formTabs.selectPaymentTerms')} />
                   </SelectTrigger>
                   <SelectContent>
                     {Object.values(PaymentTermsCode)
@@ -496,13 +530,65 @@ export function OrderFormTabs({ order, onSubmit, onCancel, isSubmitting }: Order
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground">
-                  Defines when payment is expected for this order
+                  {t('formTabs.paymentTermsHint')}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Payment Method Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CreditCard className="h-4 w-4 text-muted-foreground" />
+                {t('formTabs.paymentMethodCard')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="max-w-md space-y-2">
+                <Label>{t('formTabs.paymentMethod')}</Label>
+                <Select
+                  value={watch('paymentmethodcode')?.toString() || ''}
+                  onValueChange={(value) =>
+                    setValue('paymentmethodcode', value ? parseInt(value) as PaymentMethodCode : undefined)
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={t('formTabs.selectPaymentMethod')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.values(PaymentMethodCode)
+                      .filter((v) => typeof v === 'number')
+                      .map((code) => (
+                        <SelectItem key={code} value={code.toString()}>
+                          {getPaymentMethodLabel(code as PaymentMethodCode)}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+                {watch('paymentmethodcode') && (
+                  <p className="text-xs text-muted-foreground">
+                    ℹ️ {getPaymentMethodDescription(watch('paymentmethodcode') as PaymentMethodCode)}
+                  </p>
+                )}
+                <p className="text-xs text-muted-foreground">
+                  {t('formTabs.paymentMethodHint')}
                 </p>
               </div>
             </CardContent>
           </Card>
         </div>
       </form>
-    </Tabs>
+
+      {/* Use Customer Address Dialog */}
+      <UseCustomerAddressDialog
+        customerId={order.customerid}
+        customerType={order.customeridtype}
+        open={useAddressDialogOpen}
+        onOpenChange={setUseAddressDialogOpen}
+        onAddressSelected={handleAddressSelected}
+      />
+      </Tabs>
+    </Form>
   )
 }
