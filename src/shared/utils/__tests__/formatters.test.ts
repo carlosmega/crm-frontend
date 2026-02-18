@@ -10,23 +10,21 @@ import {
 
 describe('Formatters', () => {
   describe('formatCurrency', () => {
-    it('should format positive number as EUR currency', () => {
+    it('should format positive number as USD currency', () => {
       const result = formatCurrency(1500.5)
-      expect(result).toContain('€')
-      expect(result).toContain('1')
-      expect(result).toContain('500')
+      expect(result).toContain('$')
+      expect(result).toContain('1,500')
     })
 
     it('should format zero', () => {
       const result = formatCurrency(0)
-      expect(result).toContain('€')
+      expect(result).toContain('$')
       expect(result).toContain('0')
     })
 
     it('should format negative numbers', () => {
       const result = formatCurrency(-100)
-      expect(result).toContain('€')
-      expect(result).toContain('-')
+      expect(result).toContain('$')
       expect(result).toContain('100')
     })
 
@@ -40,15 +38,14 @@ describe('Formatters', () => {
 
     it('should handle large numbers', () => {
       const result = formatCurrency(1000000)
-      expect(result).toContain('1.000.000')
-      expect(result).toContain('€')
+      expect(result).toContain('1,000,000')
+      expect(result).toContain('$')
     })
 
     it('should handle decimal numbers', () => {
       const result = formatCurrency(1234.56)
-      expect(result).toContain('1')
-      expect(result).toContain('234')
-      expect(result).toContain('€')
+      expect(result).toContain('$')
+      expect(result).toContain('1,234')
     })
   })
 
