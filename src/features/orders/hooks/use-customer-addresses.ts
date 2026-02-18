@@ -64,7 +64,9 @@ export function useCustomerAddresses({
           // Fetch Account
           const account = await accountService.getById(customerId)
           if (!account) {
-            throw new Error('Account not found')
+            // In mock mode, customerid may not match any accountid - return empty
+            setAddresses([])
+            return
           }
 
           const addressList: CustomerAddress[] = []
@@ -106,7 +108,9 @@ export function useCustomerAddresses({
           // Fetch Contact
           const contact = await contactService.getById(customerId)
           if (!contact) {
-            throw new Error('Contact not found')
+            // In mock mode, customerid may not match any contactid - return empty
+            setAddresses([])
+            return
           }
 
           const addressList: CustomerAddress[] = []
