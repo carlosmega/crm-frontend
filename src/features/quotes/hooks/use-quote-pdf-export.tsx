@@ -158,8 +158,44 @@ export function useQuotePdfExport(options?: UseQuotePdfExportOptions) {
     window.URL.revokeObjectURL(url)
   }
 
+  /**
+   * Genera PDF como Blob sin descargar (para adjuntar a emails)
+   */
+  const generatePdfBlob = async (quoteId: string): Promise<Blob> => {
+    if (!featureFlags.useBackendAPI) {
+      const quote = await quoteService.getById(quoteId)
+      if (!quote) throw new Error('Quote not found')
+
+      const quoteLines = await quoteDetailService.getByQuote(quoteId)
+      if (quoteLines.length === 0) throw new Error('Quote has no line items.')
+
+      const pdfDocument = (
+        <QuotePdfTemplate
+          quote={quote}
+          quoteLines={quoteLines}
+          companyInfo={{
+            name: 'Your Company Name',
+            address: '123 Business St, City, ST 12345',
+            phone: '(555) 123-4567',
+            email: 'sales@company.com',
+          }}
+        />
+      )
+
+      return await pdf(pdfDocument).toBlob()
+    } else {
+      const response = await fetch(`/api/quotes/${quoteId}/pdf`)
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || `Failed to generate PDF: ${response.statusText}`)
+      }
+      return await response.blob()
+    }
+  }
+
   return {
     exportToPdf,
+    generatePdfBlob,
     isExporting,
   }
 }

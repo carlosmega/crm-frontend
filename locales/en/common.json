@@ -55,7 +55,8 @@
     "viewQuote": "View Quote",
     "viewOrder": "View Order",
     "viewInvoice": "View Invoice",
-    "backTo": "Back to {{entity}}"
+    "backTo": "Back to {{entity}}",
+    "sendEmail": "Send Email"
   },
   "confirmations": {
     "deleteTitle": "Delete {{entity}}?",
@@ -290,6 +291,27 @@
     "country": "Country",
     "shippingAddress": "Shipping Address",
     "billingAddress": "Billing Address"
+  },
+  "email": {
+    "sendEmail": "Send Email",
+    "sendDocumentTitle": "Send {{document}} by Email",
+    "to": "To",
+    "cc": "Cc",
+    "bcc": "Bcc",
+    "subject": "Subject",
+    "message": "Message",
+    "attachPdf": "Attach PDF",
+    "sending": "Sending...",
+    "sentSimulated": "Email sent (simulated)",
+    "sentDescription": "To: {{to}}",
+    "showCc": "+ Cc",
+    "showBcc": "+ Bcc",
+    "emailRequired": "Recipient email is required",
+    "emailInvalid": "Please enter a valid email address",
+    "subjectRequired": "Subject is required",
+    "messageRequired": "Message is required",
+    "simulated": "Simulated",
+    "loggedAsActivity": "This email will be logged as an activity"
   },
   "placeholders": {
     "companyOrPerson": "Company or person name",

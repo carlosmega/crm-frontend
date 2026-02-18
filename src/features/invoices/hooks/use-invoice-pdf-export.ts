@@ -91,8 +91,23 @@ export function useInvoicePdfExport(options?: UseInvoicePdfExportOptions) {
     }
   }
 
+  /**
+   * Genera PDF como Blob sin descargar (para adjuntar a emails)
+   */
+  const generatePdfBlob = async (invoiceId: string): Promise<Blob> => {
+    const response = await fetch(`/api/invoices/${invoiceId}/pdf`)
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}))
+      throw new Error(errorData.error || `Failed to generate PDF: ${response.statusText}`)
+    }
+
+    return await response.blob()
+  }
+
   return {
     exportToPdf,
+    generatePdfBlob,
     isExporting,
   }
 }

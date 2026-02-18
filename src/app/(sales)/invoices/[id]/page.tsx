@@ -7,6 +7,8 @@ import { useRouter } from 'next/navigation'
 import { useInvoice } from '@/features/invoices/hooks/use-invoices'
 import { useInvoiceDetails } from '@/features/invoices/hooks/use-invoice-details'
 import { useInvoicePdfExport } from '@/features/invoices/hooks/use-invoice-pdf-export'
+import { useAccount } from '@/features/accounts/hooks/use-accounts'
+import { useContact } from '@/features/contacts/hooks/use-contacts'
 import { MarkInvoicePaidButton } from '@/features/invoices/components/mark-invoice-paid-button'
 import { CancelInvoiceButton } from '@/features/invoices/components/cancel-invoice-button'
 import { InvoiceStateCode } from '@/core/contracts/enums'
@@ -17,6 +19,11 @@ import { useTranslation } from '@/shared/hooks/use-translation'
 // ✅ PERFORMANCE: Dynamic import for tabs
 const InvoiceDetailTabs = dynamic(
   () => import('@/features/invoices/components/invoice-detail-tabs').then(mod => ({ default: mod.InvoiceDetailTabs })),
+  { ssr: false }
+)
+
+const SendDocumentEmailDialog = dynamic(
+  () => import('@/shared/components/send-document-email').then(mod => ({ default: mod.SendDocumentEmailDialog })),
   { ssr: false }
 )
 import { Button } from '@/components/ui/button'
@@ -35,6 +42,7 @@ import {
   MoreVertical,
   CheckCircle2,
   XCircle,
+  Mail,
 } from 'lucide-react'
 
 interface InvoiceDetailPageProps {
@@ -54,7 +62,15 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
 
   const { data: invoice, isLoading: loading, error } = useInvoice(id)
   const { data: invoiceDetails, isLoading: loadingDetails } = useInvoiceDetails(id)
-  const { exportToPdf, isExporting } = useInvoicePdfExport()
+  const { exportToPdf, generatePdfBlob, isExporting } = useInvoicePdfExport()
+  const [showSendEmailDialog, setShowSendEmailDialog] = useState(false)
+
+  // Resolve customer email
+  const isAccountCustomer = invoice?.customeridtype === 'account'
+  const { account } = useAccount(isAccountCustomer ? (invoice?.customerid || '') : '')
+  const { contact } = useContact(!isAccountCustomer ? (invoice?.customerid || '') : '')
+  const customerEmail = isAccountCustomer ? account?.emailaddress1 : contact?.emailaddress1
+  const customerName = isAccountCustomer ? account?.name : (contact?.fullname || `${contact?.firstname || ''} ${contact?.lastname || ''}`.trim())
 
   const canMarkAsPaid = invoice?.statecode === InvoiceStateCode.Active
   const canCancel = invoice?.statecode === InvoiceStateCode.Active
@@ -107,6 +123,10 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
         <DropdownMenuItem onClick={() => exportToPdf(id)} disabled={isExporting}>
           <FileText className="mr-2 h-4 w-4" />
           {isExporting ? tc('actions.exporting') : tc('actions.exportPdf')}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setShowSendEmailDialog(true)}>
+          <Mail className="mr-2 h-4 w-4" />
+          {tc('actions.sendEmail')}
         </DropdownMenuItem>
         {canMarkAsPaid && invoice && (
           <>
@@ -195,6 +215,13 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
                   <FileText className="mr-2 h-4 w-4" />
                   {isExporting ? tc('actions.exporting') : tc('actions.exportPdf')}
                 </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowSendEmailDialog(true)}
+                >
+                  <Mail className="mr-2 h-4 w-4" />
+                  {tc('actions.sendEmail')}
+                </Button>
                 {canMarkAsPaid && invoice && (
                   <div data-mark-paid-button>
                     <MarkInvoicePaidButton invoice={invoice} />
@@ -238,6 +265,22 @@ export default function InvoiceDetailPage({ params }: InvoiceDetailPageProps) {
             invoiceLines={invoiceDetails || []}
           />
         </div>
+
+        {/* Send Email Dialog */}
+        {invoice && (
+          <SendDocumentEmailDialog
+            open={showSendEmailDialog}
+            onOpenChange={setShowSendEmailDialog}
+            documentType="invoice"
+            documentId={id}
+            documentNumber={invoice.invoicenumber || id}
+            documentName={invoice.name}
+            customerEmail={customerEmail}
+            customerName={customerName}
+            totalAmount={invoice.totalamount != null ? `$${invoice.totalamount.toLocaleString()}` : undefined}
+            onGeneratePdf={() => generatePdfBlob(id)}
+          />
+        )}
       </div>
     </>
   )

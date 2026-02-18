@@ -177,7 +177,8 @@
     "exporting": "Exportando...",
     "exportPdf": "Exportar a PDF",
     "copyQuoteId": "Copiar ID de Cotización",
-    "deleteQuote": "Eliminar Cotización"
+    "deleteQuote": "Eliminar Cotización",
+    "sendEmail": "Enviar Correo"
   },
   "dataTable": {
     "quoteName": "Nombre de Cotización",

@@ -140,8 +140,37 @@ export function useOrderPdfExport(options?: UseOrderPdfExportOptions) {
     }
   }
 
+  /**
+   * Genera PDF como Blob sin descargar (para adjuntar a emails)
+   */
+  const generatePdfBlob = async (
+    orderId: string,
+    order?: Order,
+    orderLines?: OrderDetail[]
+  ): Promise<Blob> => {
+    let response: Response
+
+    if (order && orderLines) {
+      response = await fetch(`/api/orders/${orderId}/pdf`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order, orderLines }),
+      })
+    } else {
+      response = await fetch(`/api/orders/${orderId}/pdf`)
+    }
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}))
+      throw new Error(errorData.error || `Failed to generate PDF: ${response.statusText}`)
+    }
+
+    return await response.blob()
+  }
+
   return {
     exportToPdf,
+    generatePdfBlob,
     isExporting,
   }
 }

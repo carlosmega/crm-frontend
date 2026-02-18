@@ -177,7 +177,8 @@
     "exporting": "Exporting...",
     "exportPdf": "Export to PDF",
     "copyQuoteId": "Copy Quote ID",
-    "deleteQuote": "Delete Quote"
+    "deleteQuote": "Delete Quote",
+    "sendEmail": "Send Email"
   },
   "dataTable": {
     "quoteName": "Quote Name",

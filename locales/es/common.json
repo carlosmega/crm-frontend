@@ -55,7 +55,8 @@
     "viewQuote": "Ver Cotización",
     "viewOrder": "Ver Pedido",
     "viewInvoice": "Ver Factura",
-    "backTo": "Volver a {{entity}}"
+    "backTo": "Volver a {{entity}}",
+    "sendEmail": "Enviar Correo"
   },
   "confirmations": {
     "deleteTitle": "¿Eliminar {{entity}}?",
@@ -290,6 +291,27 @@
     "country": "País",
     "shippingAddress": "Dirección de Envío",
     "billingAddress": "Dirección de Facturación"
+  },
+  "email": {
+    "sendEmail": "Enviar Correo",
+    "sendDocumentTitle": "Enviar {{document}} por Correo",
+    "to": "Para",
+    "cc": "Cc",
+    "bcc": "Cco",
+    "subject": "Asunto",
+    "message": "Mensaje",
+    "attachPdf": "Adjuntar PDF",
+    "sending": "Enviando...",
+    "sentSimulated": "Correo enviado (simulado)",
+    "sentDescription": "Para: {{to}}",
+    "showCc": "+ Cc",
+    "showBcc": "+ Cco",
+    "emailRequired": "El correo del destinatario es obligatorio",
+    "emailInvalid": "Ingrese una dirección de correo válida",
+    "subjectRequired": "El asunto es obligatorio",
+    "messageRequired": "El mensaje es obligatorio",
+    "simulated": "Simulado",
+    "loggedAsActivity": "Este correo se registrará como una actividad"
   },
   "placeholders": {
     "companyOrPerson": "Nombre de empresa o persona",

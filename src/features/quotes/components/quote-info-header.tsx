@@ -32,6 +32,7 @@ import {
   Copy,
   Save,
   FileText,
+  Mail,
 } from 'lucide-react'
 import { useQuotePdfExport } from '../hooks/use-quote-pdf-export'
 import { useTranslation } from '@/shared/hooks/use-translation'
@@ -46,6 +47,7 @@ interface QuoteInfoHeaderProps {
   onDelete?: () => void
   onClone?: () => void
   onSaveAsTemplate?: () => void
+  onSendEmail?: () => void
   isCloning?: boolean
   hideActions?: boolean
 }
@@ -65,6 +67,7 @@ export function QuoteInfoHeader({
   onDelete,
   onClone,
   onSaveAsTemplate,
+  onSendEmail,
   isCloning = false,
   hideActions = false,
 }: QuoteInfoHeaderProps) {
@@ -132,6 +135,14 @@ export function QuoteInfoHeader({
             <Button onClick={handleEdit} variant="outline" size="lg">
               <Edit className="mr-2 h-4 w-4" />
               {t('header.edit')}
+            </Button>
+          )}
+
+          {/* Send Email Button */}
+          {onSendEmail && (
+            <Button onClick={onSendEmail} variant="outline" size="lg">
+              <Mail className="mr-2 h-4 w-4" />
+              {t('header.sendEmail')}
             </Button>
           )}
 
@@ -216,6 +227,13 @@ export function QuoteInfoHeader({
                 <FileText className="mr-2 h-4 w-4" />
                 {isExporting ? t('header.exporting') : t('header.exportPdf')}
               </DropdownMenuItem>
+
+              {onSendEmail && (
+                <DropdownMenuItem onClick={onSendEmail}>
+                  <Mail className="mr-2 h-4 w-4" />
+                  {t('header.sendEmail')}
+                </DropdownMenuItem>
+              )}
 
               <DropdownMenuItem
                 onClick={() => {

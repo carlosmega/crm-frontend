@@ -7,6 +7,8 @@ import Link from 'next/link'
 import { useOrder, useCancelOrder, useSubmitOrder } from '@/features/orders/hooks/use-orders'
 import { useOrderDetails } from '@/features/orders/hooks/use-order-details'
 import { useOrderPdfExport } from '@/features/orders/hooks/use-order-pdf-export'
+import { useAccount } from '@/features/accounts/hooks/use-accounts'
+import { useContact } from '@/features/contacts/hooks/use-contacts'
 import { OrderStatusBadge } from '@/features/orders/components/order-status-badge'
 import { GenerateInvoiceButton } from '@/features/orders/components/generate-invoice-button'
 import { OrderStateCode } from '@/core/contracts/enums'
@@ -22,6 +24,11 @@ const OrderDetailTabs = dynamic(
 
 const AddOrderLineDialog = dynamic(
   () => import('@/features/orders/components/add-order-line-dialog').then(mod => ({ default: mod.AddOrderLineDialog })),
+  { ssr: false }
+)
+
+const SendDocumentEmailDialog = dynamic(
+  () => import('@/shared/components/send-document-email').then(mod => ({ default: mod.SendDocumentEmailDialog })),
   { ssr: false }
 )
 
@@ -56,6 +63,7 @@ import {
   Package,
   Pencil,
   Send,
+  Mail,
 } from 'lucide-react'
 
 interface OrderDetailPageProps {
@@ -78,8 +86,9 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
   const { data: orderDetails, isLoading: loadingDetails } = useOrderDetails(id)
   const cancelMutation = useCancelOrder()
   const submitMutation = useSubmitOrder()
-  const { exportToPdf, isExporting } = useOrderPdfExport()
+  const { exportToPdf, generatePdfBlob, isExporting } = useOrderPdfExport()
   const [showCancelDialog, setShowCancelDialog] = useState(false)
+  const [showSendEmailDialog, setShowSendEmailDialog] = useState(false)
   const [showSubmitDialog, setShowSubmitDialog] = useState(false)
   const [showAddLineDialog, setShowAddLineDialog] = useState(false)
   const [editingLine, setEditingLine] = useState<OrderDetail | null>(null)
@@ -89,6 +98,13 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
   const canCancel = order?.statecode === OrderStateCode.Active || order?.statecode === OrderStateCode.Submitted
   const canEditLines = order?.statecode === OrderStateCode.Active
   const canGenerateInvoice = order?.statecode === OrderStateCode.Fulfilled
+
+  // Resolve customer email
+  const isAccountCustomer = order?.customeridtype === 'account'
+  const { account } = useAccount(isAccountCustomer ? (order?.customerid || '') : '')
+  const { contact } = useContact(!isAccountCustomer ? (order?.customerid || '') : '')
+  const customerEmail = isAccountCustomer ? account?.emailaddress1 : contact?.emailaddress1
+  const customerName = isAccountCustomer ? account?.name : (contact?.fullname || `${contact?.firstname || ''} ${contact?.lastname || ''}`.trim())
 
   const handleCancelOrder = async () => {
     try {
@@ -168,6 +184,10 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
         >
           <FileDown className="mr-2 h-4 w-4" />
           {isExporting ? tc('actions.exporting') : tc('actions.exportPdf')}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setShowSendEmailDialog(true)}>
+          <Mail className="mr-2 h-4 w-4" />
+          {tc('actions.sendEmail')}
         </DropdownMenuItem>
         {canEditLines && (
           <>
@@ -294,6 +314,13 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                 >
                   <FileText className="mr-2 h-4 w-4" />
                   {isExporting ? tc('actions.exporting') : tc('actions.exportPdf')}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowSendEmailDialog(true)}
+                >
+                  <Mail className="mr-2 h-4 w-4" />
+                  {tc('actions.sendEmail')}
                 </Button>
                 {canSubmit && (
                   <Button
@@ -436,6 +463,22 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
         }}
         editItem={editingLine}
       />
+
+      {/* Send Email Dialog */}
+      {order && (
+        <SendDocumentEmailDialog
+          open={showSendEmailDialog}
+          onOpenChange={setShowSendEmailDialog}
+          documentType="order"
+          documentId={id}
+          documentNumber={order.ordernumber || id}
+          documentName={order.name}
+          customerEmail={customerEmail}
+          customerName={customerName}
+          totalAmount={order.totalamount != null ? `$${order.totalamount.toLocaleString()}` : undefined}
+          onGeneratePdf={() => generatePdfBlob(id, order, orderDetails || [])}
+        />
+      )}
     </>
   )
 }

@@ -12,6 +12,9 @@ import {
   useCloneQuote,
 } from "@/features/quotes/hooks/use-quote-mutations";
 import { QuoteInfoHeader } from "@/features/quotes/components/quote-info-header";
+import { useQuotePdfExport } from "@/features/quotes/hooks/use-quote-pdf-export";
+import { useAccount } from "@/features/accounts/hooks/use-accounts";
+import { useContact } from "@/features/contacts/hooks/use-contacts";
 import { DetailPageHeader } from "@/components/layout/detail-page-header";
 import { MobileDetailHeader } from "@/components/layout/mobile-detail-header";
 import { useTranslation } from '@/shared/hooks/use-translation';
@@ -60,6 +63,14 @@ const QuoteVersionComparisonDialog = dynamic(
     })),
   { ssr: false },
 );
+
+const SendDocumentEmailDialog = dynamic(
+  () =>
+    import("@/shared/components/send-document-email").then((mod) => ({
+      default: mod.SendDocumentEmailDialog,
+    })),
+  { ssr: false },
+);
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -82,7 +93,8 @@ import {
   XCircle,
   FileCheck,
   FilePlus,
-  FileX
+  FileX,
+  Mail,
 } from "lucide-react";
 
 interface QuoteDetailPageProps {
@@ -106,8 +118,10 @@ export default function QuoteDetailPage({ params }: QuoteDetailPageProps) {
   const { mutate: cancelQuote } = useCancelQuote();
   const { mutate: reviseQuote } = useReviseQuote();
   const { mutate: cloneQuote, isPending: isCloning } = useCloneQuote();
+  const { generatePdfBlob } = useQuotePdfExport();
 
   const [showActivateDialog, setShowActivateDialog] = useState(false);
+  const [showSendEmailDialog, setShowSendEmailDialog] = useState(false);
   const [showWinDialog, setShowWinDialog] = useState(false);
   const [showLoseDialog, setShowLoseDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -179,6 +193,13 @@ export default function QuoteDetailPage({ params }: QuoteDetailPageProps) {
   // Helper to check if quote can be edited
   const isDraft = quote.statecode === 0;
 
+  // Resolve customer email
+  const isAccountCustomer = quote.customeridtype === 'account';
+  const { account } = useAccount(isAccountCustomer ? quote.customerid : '');
+  const { contact } = useContact(!isAccountCustomer ? quote.customerid : '');
+  const customerEmail = isAccountCustomer ? account?.emailaddress1 : contact?.emailaddress1;
+  const customerName = isAccountCustomer ? account?.name : (contact?.fullname || `${contact?.firstname || ''} ${contact?.lastname || ''}`.trim());
+
   // Mobile actions dropdown
   const mobileActions = (
     <DropdownMenu>
@@ -216,6 +237,11 @@ export default function QuoteDetailPage({ params }: QuoteDetailPageProps) {
             <DropdownMenuSeparator />
           </>
         )}
+        <DropdownMenuItem onClick={() => setShowSendEmailDialog(true)}>
+          <Mail className="mr-2 h-4 w-4" />
+          {tc('actions.sendEmail')}
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleClone} disabled={isCloning}>
           <Copy className="mr-2 h-4 w-4" />
           {tc('actions.cloneQuote')}
@@ -272,6 +298,7 @@ export default function QuoteDetailPage({ params }: QuoteDetailPageProps) {
               onDelete={() => setShowDeleteDialog(true)}
               onClone={handleClone}
               onSaveAsTemplate={() => setShowSaveAsTemplateDialog(true)}
+              onSendEmail={() => setShowSendEmailDialog(true)}
               isCloning={isCloning}
             />
           </div>
@@ -288,6 +315,7 @@ export default function QuoteDetailPage({ params }: QuoteDetailPageProps) {
               onDelete={() => setShowDeleteDialog(true)}
               onClone={handleClone}
               onSaveAsTemplate={() => setShowSaveAsTemplateDialog(true)}
+              onSendEmail={() => setShowSendEmailDialog(true)}
               isCloning={isCloning}
             />
           </div>
@@ -386,6 +414,20 @@ export default function QuoteDetailPage({ params }: QuoteDetailPageProps) {
             toVersionId={versionComparisonIds.to}
           />
         )}
+
+        {/* Send Email Dialog */}
+        <SendDocumentEmailDialog
+          open={showSendEmailDialog}
+          onOpenChange={setShowSendEmailDialog}
+          documentType="quote"
+          documentId={quote.quoteid}
+          documentNumber={quote.quotenumber || quote.quoteid}
+          documentName={quote.name}
+          customerEmail={customerEmail}
+          customerName={customerName}
+          totalAmount={quote.totalamount != null ? `$${quote.totalamount.toLocaleString()}` : undefined}
+          onGeneratePdf={() => generatePdfBlob(quote.quoteid)}
+        />
       </div>
     </>
   );
