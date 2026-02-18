@@ -302,6 +302,7 @@ export default function OrderFulfillPage({ params }: OrderFulfillPageProps) {
       {/* Content */}
       <div className="flex flex-1 flex-col overflow-y-auto bg-gray-100 dark:bg-gray-900">
         <div className="px-4 pb-4 pt-1">
+          <form onSubmit={handleSubmit(onSubmit)}>
           <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as OrderFulfillTabId)} className="w-full">
             {/* Render tabs navigation in sticky header container via portal */}
             {tabsContainer && createPortal(
@@ -361,58 +362,56 @@ export default function OrderFulfillPage({ params }: OrderFulfillPageProps) {
 
             {/* FULFILLMENT DETAILS TAB */}
             <TabsContent value="details" className="mt-0">
-              <form onSubmit={handleSubmit(onSubmit)}>
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Fulfillment Details</CardTitle>
-                    <CardDescription>
-                      Enter the details of the order fulfillment
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {/* Fulfillment Date */}
-                    <div className="space-y-2">
-                      <Label htmlFor="datefulfilled">
-                        Fulfillment Date *
-                      </Label>
-                      <Controller
-                        name="datefulfilled"
-                        control={control}
-                        rules={{ required: 'Fulfillment date is required' }}
-                        render={({ field }) => (
-                          <DatePicker
-                            value={field.value}
-                            onChange={(date) => field.onChange(date?.toISOString().split('T')[0])}
-                            placeholder="Select fulfillment date"
-                          />
-                        )}
-                      />
-                      {errors.datefulfilled && (
-                        <p className="text-sm text-destructive">
-                          {errors.datefulfilled.message}
-                        </p>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Fulfillment Details</CardTitle>
+                  <CardDescription>
+                    Enter the details of the order fulfillment
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Fulfillment Date */}
+                  <div className="space-y-2">
+                    <Label htmlFor="datefulfilled">
+                      Fulfillment Date *
+                    </Label>
+                    <Controller
+                      name="datefulfilled"
+                      control={control}
+                      rules={{ required: 'Fulfillment date is required' }}
+                      render={({ field }) => (
+                        <DatePicker
+                          value={field.value}
+                          onChange={(date) => field.onChange(date?.toISOString().split('T')[0])}
+                          placeholder="Select fulfillment date"
+                        />
                       )}
-                      <p className="text-xs text-muted-foreground">
-                        The date when the order was fulfilled and shipped
+                    />
+                    {errors.datefulfilled && (
+                      <p className="text-sm text-destructive">
+                        {errors.datefulfilled.message}
                       </p>
-                    </div>
+                    )}
+                    <p className="text-xs text-muted-foreground">
+                      The date when the order was fulfilled and shipped
+                    </p>
+                  </div>
 
-                    {/* Notes */}
-                    <div className="space-y-2">
-                      <Label htmlFor="notes">Fulfillment Notes (Optional)</Label>
-                      <Textarea
-                        id="notes"
-                        {...register('notes')}
-                        placeholder="Add any notes about the fulfillment (tracking number, carrier, special instructions, etc.)"
-                        rows={4}
-                      />
-                      <p className="text-xs text-muted-foreground">
-                        Optional notes about this fulfillment
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </form>
+                  {/* Notes */}
+                  <div className="space-y-2">
+                    <Label htmlFor="notes">Fulfillment Notes (Optional)</Label>
+                    <Textarea
+                      id="notes"
+                      {...register('notes')}
+                      placeholder="Add any notes about the fulfillment (tracking number, carrier, special instructions, etc.)"
+                      rows={4}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Optional notes about this fulfillment
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
 
             {/* ORDER SUMMARY TAB */}
@@ -478,6 +477,7 @@ export default function OrderFulfillPage({ params }: OrderFulfillPageProps) {
               </Card>
             </TabsContent>
           </Tabs>
+          </form>
         </div>
       </div>
     </>

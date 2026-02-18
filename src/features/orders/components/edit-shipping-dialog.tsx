@@ -342,7 +342,7 @@ export function EditShippingDialog({
               <h3 className="font-semibold">{t('editShipping.shippingDetails')}</h3>
             </div>
             )}
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-4">
               <div>
                 <Label htmlFor="shippingmethodcode">{t('editShipping.shippingMethod')}</Label>
                 <Select
@@ -414,29 +414,29 @@ export function EditShippingDialog({
                   {...register('requestdeliveryby')}
                 />
               </div>
-            </div>
-            <div className="max-w-md">
-              <Label htmlFor="freightamount">{t('editShipping.freightAmount')}</Label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                  $
-                </span>
-                <Input
-                  id="freightamount"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  placeholder="0.00"
-                  className="pl-6"
-                  {...register('freightamount', {
-                    valueAsNumber: true,
-                    min: 0,
-                  })}
-                />
+              <div>
+                <Label htmlFor="freightamount">{t('editShipping.freightAmount')}</Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                    $
+                  </span>
+                  <Input
+                    id="freightamount"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    placeholder="0.00"
+                    className="pl-6"
+                    {...register('freightamount', {
+                      valueAsNumber: true,
+                      min: 0,
+                    })}
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {t('editShipping.freightAmountHint')}
+                </p>
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                {t('editShipping.freightAmountHint')}
-              </p>
             </div>
           </div>
           )}
