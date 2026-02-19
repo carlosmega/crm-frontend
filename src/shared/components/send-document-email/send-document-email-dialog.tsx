@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useForm } from 'react-hook-form'
 import {
@@ -92,9 +92,10 @@ export function SendDocumentEmailDialog({
     },
   })
 
-  // Reset form when dialog opens with new data
+  // Reset form ONLY when dialog opens (not on every prop change)
+  const prevOpen = useRef(false)
   useEffect(() => {
-    if (open) {
+    if (open && !prevOpen.current) {
       reset({
         to: customerEmail || '',
         subject: defaultSubject,
@@ -106,6 +107,7 @@ export function SendDocumentEmailDialog({
       setBccVisible(false)
       setAttachPdf(true)
     }
+    prevOpen.current = open
   }, [open, customerEmail, defaultSubject, defaultBody, reset])
 
   const onSubmit = async (data: EmailFormData) => {
@@ -117,10 +119,18 @@ export function SendDocumentEmailDialog({
       let pdfFilename: string | undefined
       if (attachPdf) {
         try {
-          pdfBlob = await onGeneratePdf()
-          pdfFilename = `${docLabel}-${documentNumber}.pdf`
-        } catch {
-          // PDF generation failed, continue without attachment
+          const blob = await onGeneratePdf()
+          if (blob && blob.size > 0) {
+            pdfBlob = blob
+            pdfFilename = `${docLabel}-${documentNumber}.pdf`
+          }
+        } catch (pdfError) {
+          console.error('PDF generation failed:', pdfError)
+          toast({
+            title: 'PDF generation failed',
+            description: 'The email will be sent without the PDF attachment.',
+            variant: 'destructive',
+          })
         }
       }
 

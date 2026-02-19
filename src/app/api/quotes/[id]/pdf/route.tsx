@@ -17,15 +17,56 @@ interface RouteContext {
 }
 
 /**
+ * Generate PDF from quote data
+ */
+async function generateQuotePdf(quote: any, quoteLines: any[], id: string) {
+  if (!quoteLines || quoteLines.length === 0) {
+    return NextResponse.json(
+      { error: 'Quote has no line items. Cannot generate PDF.' },
+      { status: 400 }
+    )
+  }
+
+  const pdfStream = await renderToStream(
+    <QuotePdfTemplate
+      quote={quote}
+      quoteLines={quoteLines}
+      companyInfo={{
+        name: 'Your Company Name',
+        address: '123 Business St, City, ST 12345',
+        phone: '(555) 123-4567',
+        email: 'sales@company.com',
+      }}
+    />
+  )
+
+  const chunks: Buffer[] = []
+  for await (const chunk of pdfStream) {
+    chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk))
+  }
+  const pdfBuffer = Buffer.concat(chunks)
+
+  const filename = `Quote-${quote.quotenumber || id}-${new Date().toISOString().split('T')[0]}.pdf`
+
+  return new NextResponse(pdfBuffer, {
+    status: 200,
+    headers: {
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="${filename}"`,
+      'Content-Length': pdfBuffer.length.toString(),
+    },
+  })
+}
+
+/**
  * GET /api/quotes/[id]/pdf
  *
- * Genera PDF del quote
+ * Backend mode: Fetches data from services
  */
 export async function GET(request: NextRequest, context: RouteContext) {
   try {
     const { id } = await context.params
 
-    // Validar ID
     if (!id) {
       return NextResponse.json(
         { error: 'Quote ID is required' },
@@ -33,7 +74,6 @@ export async function GET(request: NextRequest, context: RouteContext) {
       )
     }
 
-    // Obtener quote y sus líneas
     const quote = await quoteService.getById(id)
     if (!quote) {
       return NextResponse.json(
@@ -44,47 +84,46 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
     const quoteLines = await quoteDetailService.getByQuote(id)
 
-    // Validar que el quote tenga líneas
-    if (quoteLines.length === 0) {
+    return generateQuotePdf(quote, quoteLines, id)
+  } catch (error) {
+    console.error('Error generating quote PDF:', error)
+    return NextResponse.json(
+      {
+        error: 'Failed to generate PDF',
+        message: error instanceof Error ? error.message : 'Unknown error',
+      },
+      { status: 500 }
+    )
+  }
+}
+
+/**
+ * POST /api/quotes/[id]/pdf
+ *
+ * Receives quote data in request body (works when backend auth isn't forwarded)
+ */
+export async function POST(request: NextRequest, context: RouteContext) {
+  try {
+    const { id } = await context.params
+
+    if (!id) {
       return NextResponse.json(
-        { error: 'Quote has no line items. Cannot generate PDF.' },
+        { error: 'Quote ID is required' },
         { status: 400 }
       )
     }
 
-    // Generar PDF usando el template
-    const pdfStream = await renderToStream(
-      <QuotePdfTemplate
-        quote={quote}
-        quoteLines={quoteLines}
-        companyInfo={{
-          name: 'Your Company Name',
-          address: '123 Business St, City, ST 12345',
-          phone: '(555) 123-4567',
-          email: 'sales@company.com',
-        }}
-      />
-    )
+    const body = await request.json()
+    const { quote, quoteLines } = body
 
-    // Convertir stream a buffer
-    const chunks: Buffer[] = []
-    for await (const chunk of pdfStream) {
-      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk))
+    if (!quote) {
+      return NextResponse.json(
+        { error: 'Quote data is required in request body' },
+        { status: 400 }
+      )
     }
-    const pdfBuffer = Buffer.concat(chunks)
 
-    // Generar nombre de archivo
-    const filename = `Quote-${quote.quotenumber || id}-${new Date().toISOString().split('T')[0]}.pdf`
-
-    // Devolver PDF con headers apropiados
-    return new NextResponse(pdfBuffer, {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="${filename}"`,
-        'Content-Length': pdfBuffer.length.toString(),
-      },
-    })
+    return generateQuotePdf(quote, quoteLines || [], id)
   } catch (error) {
     console.error('Error generating quote PDF:', error)
     return NextResponse.json(

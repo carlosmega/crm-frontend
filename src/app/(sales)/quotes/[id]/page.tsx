@@ -133,6 +133,13 @@ export default function QuoteDetailPage({ params }: QuoteDetailPageProps) {
     to: string;
   } | null>(null);
 
+  // Resolve customer email (hooks must be before any early return)
+  const isAccountCustomer = quote?.customeridtype === 'account';
+  const { account } = useAccount(isAccountCustomer ? (quote?.customerid || '') : '');
+  const { contact } = useContact(!isAccountCustomer ? (quote?.customerid || '') : '');
+  const customerEmail = isAccountCustomer ? account?.emailaddress1 : contact?.emailaddress1;
+  const customerName = isAccountCustomer ? account?.name : (contact?.fullname || `${contact?.firstname || ''} ${contact?.lastname || ''}`.trim());
+
   const handleDelete = () => {
     deleteQuote(id, {
       onSuccess: () => {
@@ -192,13 +199,6 @@ export default function QuoteDetailPage({ params }: QuoteDetailPageProps) {
 
   // Helper to check if quote can be edited
   const isDraft = quote.statecode === 0;
-
-  // Resolve customer email
-  const isAccountCustomer = quote.customeridtype === 'account';
-  const { account } = useAccount(isAccountCustomer ? quote.customerid : '');
-  const { contact } = useContact(!isAccountCustomer ? quote.customerid : '');
-  const customerEmail = isAccountCustomer ? account?.emailaddress1 : contact?.emailaddress1;
-  const customerName = isAccountCustomer ? account?.name : (contact?.fullname || `${contact?.firstname || ''} ${contact?.lastname || ''}`.trim());
 
   // Mobile actions dropdown
   const mobileActions = (

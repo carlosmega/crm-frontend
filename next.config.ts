@@ -13,6 +13,9 @@ const nextConfig: NextConfig = {
   // ✅ Enable React Strict Mode for better debugging
   reactStrictMode: true,
 
+  // ✅ Exclude @react-pdf/renderer from server bundling (uses native Node modules)
+  serverExternalPackages: ['@react-pdf/renderer'],
+
   // ✅ Optimize package imports - reduces bundle size and compilation time
   // Works with both Turbopack and Webpack
   experimental: {

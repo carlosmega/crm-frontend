@@ -6,6 +6,8 @@
 
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { invoiceService } from '../api/invoice-service'
+import { invoiceDetailService } from '../api/invoice-detail-service'
 
 interface UseInvoicePdfExportOptions {
   onSuccess?: () => void
@@ -31,8 +33,16 @@ export function useInvoicePdfExport(options?: UseInvoicePdfExportOptions) {
     try {
       setIsExporting(true)
 
-      // Llamar al API endpoint
-      const response = await fetch(`/api/invoices/${invoiceId}/pdf`)
+      const invoice = await invoiceService.getById(invoiceId)
+      if (!invoice) throw new Error('Invoice not found')
+
+      const invoiceLines = await invoiceDetailService.getByInvoice(invoiceId)
+
+      const response = await fetch(`/api/invoices/${invoiceId}/pdf`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ invoice, invoiceLines }),
+      })
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
@@ -95,7 +105,16 @@ export function useInvoicePdfExport(options?: UseInvoicePdfExportOptions) {
    * Genera PDF como Blob sin descargar (para adjuntar a emails)
    */
   const generatePdfBlob = async (invoiceId: string): Promise<Blob> => {
-    const response = await fetch(`/api/invoices/${invoiceId}/pdf`)
+    const invoice = await invoiceService.getById(invoiceId)
+    if (!invoice) throw new Error('Invoice not found')
+
+    const invoiceLines = await invoiceDetailService.getByInvoice(invoiceId)
+
+    const response = await fetch(`/api/invoices/${invoiceId}/pdf`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ invoice, invoiceLines }),
+    })
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}))

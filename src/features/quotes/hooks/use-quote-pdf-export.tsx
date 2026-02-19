@@ -67,10 +67,19 @@ export function useQuotePdfExport(options?: UseQuotePdfExportOptions) {
 
   /**
    * Genera PDF en el servidor usando API route
+   * Pasa datos via POST para evitar problemas de autenticacion en API routes
    */
   const exportToPdfServer = async (quoteId: string) => {
-    // Llamar al API endpoint
-    const response = await fetch(`/api/quotes/${quoteId}/pdf`)
+    const quote = await quoteService.getById(quoteId)
+    if (!quote) throw new Error('Quote not found')
+
+    const quoteLines = await quoteDetailService.getByQuote(quoteId)
+
+    const response = await fetch(`/api/quotes/${quoteId}/pdf`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ quote, quoteLines }),
+    })
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}))
@@ -79,10 +88,8 @@ export function useQuotePdfExport(options?: UseQuotePdfExportOptions) {
       )
     }
 
-    // Obtener el blob del PDF
     const blob = await response.blob()
 
-    // Obtener el nombre del archivo del header Content-Disposition
     const contentDisposition = response.headers.get('Content-Disposition')
     let filename = `Quote-${quoteId}-${new Date().toISOString().split('T')[0]}.pdf`
 
@@ -162,13 +169,13 @@ export function useQuotePdfExport(options?: UseQuotePdfExportOptions) {
    * Genera PDF como Blob sin descargar (para adjuntar a emails)
    */
   const generatePdfBlob = async (quoteId: string): Promise<Blob> => {
+    const quote = await quoteService.getById(quoteId)
+    if (!quote) throw new Error('Quote not found')
+
+    const quoteLines = await quoteDetailService.getByQuote(quoteId)
+    if (quoteLines.length === 0) throw new Error('Quote has no line items.')
+
     if (!featureFlags.useBackendAPI) {
-      const quote = await quoteService.getById(quoteId)
-      if (!quote) throw new Error('Quote not found')
-
-      const quoteLines = await quoteDetailService.getByQuote(quoteId)
-      if (quoteLines.length === 0) throw new Error('Quote has no line items.')
-
       const pdfDocument = (
         <QuotePdfTemplate
           quote={quote}
@@ -184,7 +191,11 @@ export function useQuotePdfExport(options?: UseQuotePdfExportOptions) {
 
       return await pdf(pdfDocument).toBlob()
     } else {
-      const response = await fetch(`/api/quotes/${quoteId}/pdf`)
+      const response = await fetch(`/api/quotes/${quoteId}/pdf`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ quote, quoteLines }),
+      })
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
         throw new Error(errorData.error || `Failed to generate PDF: ${response.statusText}`)
