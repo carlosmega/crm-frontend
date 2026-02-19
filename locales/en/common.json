@@ -302,7 +302,7 @@
     "message": "Message",
     "attachPdf": "Attach PDF",
     "sending": "Sending...",
-    "sentSimulated": "Email sent (simulated)",
+    "sentSuccess": "Email sent successfully",
     "sentDescription": "To: {{to}}",
     "showCc": "+ Cc",
     "showBcc": "+ Bcc",
@@ -310,8 +310,7 @@
     "emailInvalid": "Please enter a valid email address",
     "subjectRequired": "Subject is required",
     "messageRequired": "Message is required",
-    "simulated": "Simulated",
-    "loggedAsActivity": "This email will be logged as an activity"
+    "loggedAsActivity": "This email will be sent and logged as an activity"
   },
   "placeholders": {
     "companyOrPerson": "Company or person name",

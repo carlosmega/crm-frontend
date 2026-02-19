@@ -302,7 +302,7 @@
     "message": "Mensaje",
     "attachPdf": "Adjuntar PDF",
     "sending": "Enviando...",
-    "sentSimulated": "Correo enviado (simulado)",
+    "sentSuccess": "Correo enviado exitosamente",
     "sentDescription": "Para: {{to}}",
     "showCc": "+ Cc",
     "showBcc": "+ Cco",
@@ -310,8 +310,7 @@
     "emailInvalid": "Ingrese una dirección de correo válida",
     "subjectRequired": "El asunto es obligatorio",
     "messageRequired": "El mensaje es obligatorio",
-    "simulated": "Simulado",
-    "loggedAsActivity": "Este correo se registrará como una actividad"
+    "loggedAsActivity": "Este correo sera enviado y registrado como una actividad"
   },
   "placeholders": {
     "companyOrPerson": "Nombre de empresa o persona",

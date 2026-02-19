@@ -281,6 +281,29 @@ export const activityServiceMock = {
   },
 
   /**
+   * Send document email (mock stub)
+   */
+  async sendDocumentEmail(params: {
+    to: string
+    subject: string
+    body: string
+    documentType: string
+    documentId: string
+    senderName?: string
+    cc?: string
+    bcc?: string
+    pdfBlob?: Blob
+    pdfFilename?: string
+  }): Promise<{ success: boolean; activityid: string; message: string }> {
+    await mockDelay(MOCK_DELAYS.WRITE)
+    return {
+      success: true,
+      activityid: `activity-${Date.now()}`,
+      message: 'Email sent successfully (mock)',
+    }
+  },
+
+  /**
    * Get activity statistics
    */
   async getStatistics(ownerId?: string): Promise<{

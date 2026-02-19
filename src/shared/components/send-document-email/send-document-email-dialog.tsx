@@ -16,12 +16,9 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/components/ui/use-toast'
 import { Loader2, Mail, Send, X, Paperclip } from 'lucide-react'
-import { useCreateActivity } from '@/features/activities/hooks'
-import { ActivityTypeCode } from '@/core/contracts/enums'
-import type { CreateActivityDto } from '@/core/contracts/entities/activity'
+import { useSendDocumentEmail } from '@/features/activities/hooks'
 import { useTranslation } from '@/shared/hooks/use-translation'
 
 export type DocumentType = 'quote' | 'order' | 'invoice'
@@ -68,7 +65,7 @@ export function SendDocumentEmailDialog({
   const { data: session } = useSession()
   const { toast } = useToast()
   const { t: tc } = useTranslation('common')
-  const createMutation = useCreateActivity()
+  const sendEmailMutation = useSendDocumentEmail()
   const [ccVisible, setCcVisible] = useState(false)
   const [bccVisible, setBccVisible] = useState(false)
   const [attachPdf, setAttachPdf] = useState(true)
@@ -116,33 +113,32 @@ export function SendDocumentEmailDialog({
       setIsSending(true)
 
       // Generate PDF if attachment is enabled
-      let pdfGenerated = false
+      let pdfBlob: Blob | undefined
+      let pdfFilename: string | undefined
       if (attachPdf) {
         try {
-          await onGeneratePdf()
-          pdfGenerated = true
+          pdfBlob = await onGeneratePdf()
+          pdfFilename = `${docLabel}-${documentNumber}.pdf`
         } catch {
           // PDF generation failed, continue without attachment
         }
       }
 
-      // Build email description for activity log
-      const emailDetails = `TO: ${data.to}${data.cc ? `\nCC: ${data.cc}` : ''}${data.bcc ? `\nBCC: ${data.bcc}` : ''}\nSUBJECT: ${data.subject}${pdfGenerated ? `\nATTACHMENT: ${docLabel}-${documentNumber}.pdf` : ''}\n\n---\n\n${data.body}`
-
-      const dto: CreateActivityDto = {
-        activitytypecode: ActivityTypeCode.Email,
+      await sendEmailMutation.mutateAsync({
+        to: data.to,
         subject: data.subject,
-        description: emailDetails,
-        scheduledstart: new Date().toISOString(),
-        regardingobjectid: documentId,
-        regardingobjectidtype: documentType,
-        ownerid: session?.user?.id || 'anonymous',
-      }
-
-      await createMutation.mutateAsync(dto)
+        body: data.body,
+        documentType,
+        documentId,
+        senderName,
+        cc: data.cc || undefined,
+        bcc: data.bcc || undefined,
+        pdfBlob,
+        pdfFilename,
+      })
 
       toast({
-        title: tc('email.sentSimulated'),
+        title: tc('email.sentSuccess'),
         description: `${tc('email.sentDescription', { to: data.to })}`,
       })
 
@@ -278,7 +274,6 @@ export function SendDocumentEmailDialog({
           {/* Footer */}
           <DialogFooter className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <Badge variant="outline">{tc('email.simulated')}</Badge>
               <span>{tc('email.loggedAsActivity')}</span>
             </div>
             <div className="flex gap-2">

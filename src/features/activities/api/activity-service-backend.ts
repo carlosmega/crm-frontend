@@ -298,6 +298,51 @@ class ActivityServiceBackend {
   }
 
   /**
+   * Send a document email with optional PDF attachment.
+   *
+   * Uses multipart/form-data to send text fields + PDF blob.
+   */
+  async sendDocumentEmail(params: {
+    to: string
+    subject: string
+    body: string
+    documentType: string
+    documentId: string
+    senderName?: string
+    cc?: string
+    bcc?: string
+    pdfBlob?: Blob
+    pdfFilename?: string
+  }): Promise<{ success: boolean; activityid: string; message: string }> {
+    const formData = new FormData()
+    formData.append('to', params.to)
+    formData.append('subject', params.subject)
+    formData.append('body', params.body)
+    formData.append('document_type', params.documentType)
+    formData.append('document_id', params.documentId)
+    if (params.senderName) formData.append('sender_name', params.senderName)
+    if (params.cc) formData.append('cc', params.cc)
+    if (params.bcc) formData.append('bcc', params.bcc)
+    if (params.pdfBlob) {
+      formData.append(
+        'pdf_file',
+        params.pdfBlob,
+        params.pdfFilename || 'document.pdf'
+      )
+    }
+
+    const response = await apiClient.post<{
+      success: boolean
+      activityid: string
+      message: string
+    }>(`${this.basePath}/send-document-email`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+
+    return response.data
+  }
+
+  /**
    * Obtener estadísticas de actividades
    *
    * @param ownerId - ID del propietario (opcional)

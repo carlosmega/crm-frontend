@@ -106,6 +106,39 @@ export function useCancelActivity() {
 }
 
 /**
+ * Hook: Send document email mutation
+ *
+ * Sends a real email via the backend with optional PDF attachment,
+ * and creates a completed Activity record.
+ */
+export function useSendDocumentEmail() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (params: {
+      to: string
+      subject: string
+      body: string
+      documentType: string
+      documentId: string
+      senderName?: string
+      cc?: string
+      bcc?: string
+      pdfBlob?: Blob
+      pdfFilename?: string
+    }) => activityService.sendDocumentEmail(params),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['activities'] })
+      if (variables.documentId) {
+        queryClient.invalidateQueries({
+          queryKey: ['activities', 'regarding', variables.documentId],
+        })
+      }
+    },
+  })
+}
+
+/**
  * Hook: Delete activity mutation
  */
 export function useDeleteActivity() {
