@@ -14,7 +14,7 @@ import { Search, Package, Check, Loader2 } from 'lucide-react'
 
 const CURRENCY_FORMATTER = new Intl.NumberFormat('es-ES', {
   style: 'currency',
-  currency: 'EUR',
+  currency: 'MXN',
   minimumFractionDigits: 0,
 })
 

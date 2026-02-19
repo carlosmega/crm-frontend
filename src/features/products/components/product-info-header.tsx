@@ -43,7 +43,7 @@ export function ProductInfoHeader({ product, className }: ProductInfoHeaderProps
     if (!value) return '-'
     return new Intl.NumberFormat('es-ES', {
       style: 'currency',
-      currency: 'EUR',
+      currency: 'MXN',
     }).format(value)
   }
 

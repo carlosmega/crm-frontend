@@ -16,7 +16,7 @@ export function ProductPriceBadge({
     if (value === undefined || value === null) return 'N/A'
     return new Intl.NumberFormat('es-ES', {
       style: 'currency',
-      currency: 'EUR',
+      currency: 'MXN',
     }).format(value)
   }
 

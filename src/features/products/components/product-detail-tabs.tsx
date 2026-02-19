@@ -46,7 +46,7 @@ export function ProductDetailTabs({ product }: ProductDetailTabsProps) {
     if (value === undefined || value === null) return '-'
     return new Intl.NumberFormat('es-ES', {
       style: 'currency',
-      currency: 'EUR',
+      currency: 'MXN',
     }).format(value)
   }
 
