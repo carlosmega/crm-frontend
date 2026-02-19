@@ -3,7 +3,7 @@ import { defineConfig, devices } from '@playwright/test'
 /**
  * Playwright Test Configuration for CRM Sales Application
  *
- * Focus: Lead → Opportunity qualification flow
+ * Uses auth setup project to login once, then reuses session for all tests.
  */
 export default defineConfig({
   testDir: './e2e',
@@ -27,9 +27,20 @@ export default defineConfig({
   },
 
   projects: [
+    // Setup project: authenticates once and saves state
+    {
+      name: 'setup',
+      testMatch: /auth\.setup\.ts/,
+      testDir: './e2e/fixtures',
+    },
+    // Main tests: reuse authenticated state
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: 'e2e/.auth/user.json',
+      },
+      dependencies: ['setup'],
     },
   ],
 

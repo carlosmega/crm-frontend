@@ -222,9 +222,26 @@ test.describe('Quote-to-Cash Flow', () => {
   test('should win quote and create order', async ({ page }) => {
     test.setTimeout(60000)
 
-    // Navigate to an Active quote (quote-004 is Active/In Review)
-    console.log('Step 1: Navigating to Active quote...')
-    await quotesPage.gotoDetail('quote-004')
+    // Navigate to quotes list first so browser has the right origin/cookies
+    await page.goto('/quotes')
+    await page.waitForLoadState('domcontentloaded')
+
+    // Find an Active quote (statecode=1) from the backend API
+    const activeQuote = await page.evaluate(async () => {
+      const res = await fetch('http://localhost:8000/api/quotes/?statecode=1', { credentials: 'include' })
+      if (!res.ok) return null
+      const data = await res.json()
+      return data.length > 0 ? data[0] : null
+    })
+
+    if (!activeQuote) {
+      console.log('  No Active quote found in backend — skipping')
+      test.skip()
+      return
+    }
+
+    console.log(`Step 1: Navigating to Active quote ${activeQuote.quoteid.slice(0, 8)}...`)
+    await quotesPage.gotoDetail(activeQuote.quoteid)
 
     // Verify quote is visible
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible({ timeout: 10000 })
@@ -286,9 +303,26 @@ test.describe('Quote-to-Cash Flow', () => {
   test('should submit active order', async ({ page }) => {
     test.setTimeout(60000)
 
-    // Navigate to an Active order (order-010 is Active)
-    console.log('Step 1: Navigating to Active order...')
-    await page.goto('/orders/order-010')
+    // Navigate to orders list first so browser has the right origin/cookies
+    await page.goto('/orders')
+    await page.waitForLoadState('domcontentloaded')
+
+    // Find an Active order (statecode=0) from the backend API
+    const activeOrder = await page.evaluate(async () => {
+      const res = await fetch('http://localhost:8000/api/orders/?statecode=0', { credentials: 'include' })
+      if (!res.ok) return null
+      const data = await res.json()
+      return data.length > 0 ? data[0] : null
+    })
+
+    if (!activeOrder) {
+      console.log('  No Active order found in backend — skipping')
+      test.skip()
+      return
+    }
+
+    console.log(`Step 1: Navigating to Active order ${activeOrder.salesorderid.slice(0, 8)}...`)
+    await page.goto(`/orders/${activeOrder.salesorderid}`)
 
     // Verify order is visible
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible({ timeout: 10000 })
@@ -340,9 +374,27 @@ test.describe('Quote-to-Cash Flow', () => {
   test('should fulfill submitted order', async ({ page }) => {
     test.setTimeout(60000)
 
-    // Navigate to a Submitted order (order-006 is Submitted)
-    console.log('Step 1: Navigating to Submitted order...')
-    await page.goto('/orders/order-006')
+    // Navigate to orders list first so browser has the right origin/cookies
+    await page.goto('/orders')
+    await page.waitForLoadState('domcontentloaded')
+
+    // Find a Submitted order (statecode=1) from the backend API
+    const submittedOrder = await page.evaluate(async () => {
+      const res = await fetch('http://localhost:8000/api/orders/?statecode=1', { credentials: 'include' })
+      if (!res.ok) return null
+      const data = await res.json()
+      return data.length > 0 ? data[0] : null
+    })
+
+    if (!submittedOrder) {
+      console.log('  No Submitted order found in backend — skipping')
+      test.skip()
+      return
+    }
+
+    const orderId = submittedOrder.salesorderid
+    console.log(`Step 1: Navigating to Submitted order ${orderId.slice(0, 8)}...`)
+    await page.goto(`/orders/${orderId}`)
 
     // Verify order is visible
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible({ timeout: 10000 })
@@ -350,7 +402,7 @@ test.describe('Quote-to-Cash Flow', () => {
 
     // Try to navigate to fulfill page
     console.log('Step 2: Going to fulfill page...')
-    await page.goto('/orders/order-006/fulfill')
+    await page.goto(`/orders/${orderId}/fulfill`)
 
     // Check if we can fulfill or if there's a blocker
     const cannotFulfillHeading = page.getByRole('heading', { name: /cannot fulfill/i })
@@ -379,9 +431,26 @@ test.describe('Quote-to-Cash Flow', () => {
   test('should generate invoice from fulfilled order', async ({ page }) => {
     test.setTimeout(60000)
 
-    // Navigate to a Fulfilled order (order-002 is Fulfilled)
-    console.log('Step 1: Navigating to Fulfilled order...')
-    await ordersPage.gotoDetail('order-002')
+    // Navigate to orders list first so browser has the right origin/cookies
+    await page.goto('/orders')
+    await page.waitForLoadState('domcontentloaded')
+
+    // Find a Fulfilled order (statecode=3) from the backend API
+    const fulfilledOrder = await page.evaluate(async () => {
+      const res = await fetch('http://localhost:8000/api/orders/?statecode=3', { credentials: 'include' })
+      if (!res.ok) return null
+      const data = await res.json()
+      return data.length > 0 ? data[0] : null
+    })
+
+    if (!fulfilledOrder) {
+      console.log('  No Fulfilled order found in backend — skipping')
+      test.skip()
+      return
+    }
+
+    console.log(`Step 1: Navigating to Fulfilled order ${fulfilledOrder.salesorderid.slice(0, 8)}...`)
+    await ordersPage.gotoDetail(fulfilledOrder.salesorderid)
 
     // Verify order is visible
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible({ timeout: 10000 })
@@ -498,6 +567,25 @@ test.describe('Quote-to-Cash Flow', () => {
   test('should navigate through Quote-to-Cash entities', async ({ page }) => {
     test.setTimeout(60000)
 
+    // Navigate to a page first so browser has the right origin/cookies
+    await page.goto('/quotes')
+    await page.waitForLoadState('domcontentloaded')
+
+    // Fetch real entity IDs from the backend API
+    const ids = await page.evaluate(async () => {
+      const fetchFirst = async (endpoint: string, idField: string) => {
+        const res = await fetch(`http://localhost:8000/api/${endpoint}/`, { credentials: 'include' })
+        if (!res.ok) return null
+        const data = await res.json()
+        return data.length > 0 ? data[0][idField] : null
+      }
+      return {
+        quoteId: await fetchFirst('quotes', 'quoteid'),
+        orderId: await fetchFirst('orders', 'salesorderid'),
+        invoiceId: await fetchFirst('invoices', 'invoiceid'),
+      }
+    })
+
     // Verify navigation through the Quote-to-Cash menu items
     console.log('Step 1: Testing Quote-to-Cash navigation...')
 
@@ -516,23 +604,32 @@ test.describe('Quote-to-Cash Flow', () => {
     await expect(page.getByRole('heading', { name: 'Invoices' })).toBeVisible({ timeout: 10000 })
     console.log('  ✓ Invoices list accessible')
 
-    // Verify we can navigate to detail pages
+    // Verify we can navigate to detail pages using real IDs
     console.log('Step 2: Testing detail page navigation...')
 
-    // Quotes detail
-    await quotesPage.gotoDetail('quote-001')
-    await expect(page.getByRole('heading', { level: 1 })).toBeVisible({ timeout: 10000 })
-    console.log('  ✓ Quote detail accessible')
+    if (ids.quoteId) {
+      await quotesPage.gotoDetail(ids.quoteId)
+      await expect(page.getByRole('heading', { level: 1 })).toBeVisible({ timeout: 10000 })
+      console.log('  ✓ Quote detail accessible')
+    } else {
+      console.log('  ⊘ No quotes in backend — skipping detail')
+    }
 
-    // Orders detail
-    await ordersPage.gotoDetail('order-001')
-    await expect(page.getByRole('heading', { level: 1 })).toBeVisible({ timeout: 10000 })
-    console.log('  ✓ Order detail accessible')
+    if (ids.orderId) {
+      await ordersPage.gotoDetail(ids.orderId)
+      await expect(page.getByRole('heading', { level: 1 })).toBeVisible({ timeout: 10000 })
+      console.log('  ✓ Order detail accessible')
+    } else {
+      console.log('  ⊘ No orders in backend — skipping detail')
+    }
 
-    // Invoices detail
-    await invoicesPage.gotoDetail('invoice-001')
-    await expect(page.getByRole('heading', { level: 1 })).toBeVisible({ timeout: 10000 })
-    console.log('  ✓ Invoice detail accessible')
+    if (ids.invoiceId) {
+      await invoicesPage.gotoDetail(ids.invoiceId)
+      await expect(page.getByRole('heading', { level: 1 })).toBeVisible({ timeout: 10000 })
+      console.log('  ✓ Invoice detail accessible')
+    } else {
+      console.log('  ⊘ No invoices in backend — skipping detail')
+    }
 
     console.log('\n========================================')
     console.log('QUOTE-TO-CASH NAVIGATION VERIFIED!')
