@@ -27,6 +27,11 @@ const apiClient: AxiosInstance = axios.create(apiConfig)
  */
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
+    // Auto-detect FormData: remove Content-Type so browser sets it with boundary
+    if (typeof FormData !== 'undefined' && config.data instanceof FormData) {
+      config.headers.delete('Content-Type')
+    }
+
     // Solo agregar CSRF token en mutaciones
     if (shouldIncludeCsrfToken(config.method)) {
       const csrfToken = getCsrfToken()

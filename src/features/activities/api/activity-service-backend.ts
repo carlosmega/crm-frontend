@@ -335,9 +335,7 @@ class ActivityServiceBackend {
       success: boolean
       activityid: string
       message: string
-    }>(`${this.basePath}/send-document-email`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    })
+    }>(`${this.basePath}/send-document-email`, formData)
 
     return response.data
   }
