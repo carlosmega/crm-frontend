@@ -3,8 +3,13 @@
  * Public authentication page
  */
 
+import { Suspense } from 'react'
 import { LoginForm } from './login-form'
 
 export default function LoginPage() {
-  return <LoginForm />
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
+  )
 }

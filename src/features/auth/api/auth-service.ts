@@ -64,6 +64,32 @@ class AuthService {
   async changePassword(dto: ChangePasswordDto): Promise<void> {
     await apiClient.post(`${this.basePath}/change-password`, dto)
   }
+
+  /**
+   * Obtener URL de autorización para SSO con Microsoft
+   *
+   * @returns URL de Microsoft login para redirigir al usuario
+   */
+  async getSSOInitUrl(): Promise<{ authorization_url: string }> {
+    const response = await apiClient.get<{ authorization_url: string }>(
+      `${this.basePath}/sso/init`
+    )
+    return response.data
+  }
+
+  /**
+   * Intercambiar token SSO por sesión Django + info de usuario
+   *
+   * @param token - Token SSO recibido del callback de Microsoft
+   * @returns Usuario autenticado y mensaje
+   */
+  async exchangeSSOToken(token: string): Promise<LoginResponse> {
+    const response = await apiClient.post<LoginResponse>(
+      `${this.basePath}/sso/exchange`,
+      { token }
+    )
+    return response.data
+  }
 }
 
 /**

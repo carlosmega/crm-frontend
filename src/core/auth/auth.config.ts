@@ -17,16 +17,23 @@ import { UserRole } from '@/core/contracts/entities'
 function mapRoleNameToUserRole(roleName: string | undefined): UserRole {
   if (!roleName) return UserRole.SalesRepresentative
 
-  // Map common Django role names to UserRole enum
+  const name = roleName.toLowerCase()
+
+  // Map Django role names (with spaces) to UserRole enum
   const roleMap: Record<string, UserRole> = {
+    'system administrator': UserRole.SystemAdministrator,
     'system-administrator': UserRole.SystemAdministrator,
+    'sales manager': UserRole.SalesManager,
     'sales-manager': UserRole.SalesManager,
+    'salesperson': UserRole.SalesRepresentative,
     'sales-representative': UserRole.SalesRepresentative,
-    'customer-service-rep': UserRole.CustomerServiceRep,
+    'marketing user': UserRole.MarketingProfessional,
     'marketing-professional': UserRole.MarketingProfessional,
+    'read-only user': UserRole.CustomerServiceRep,
+    'customer-service-rep': UserRole.CustomerServiceRep,
   }
 
-  return roleMap[roleName.toLowerCase()] || UserRole.SalesRepresentative
+  return roleMap[name] || UserRole.SalesRepresentative
 }
 
 /**
@@ -48,12 +55,28 @@ export const authConfig: NextAuthConfig = {
         }
 
         try {
+          const password = credentials.password as string
+
           // Usar backend Django o servicio mock según feature flag
           if (featureFlags.useBackendAPI) {
+            // Check if this is SSO with pre-fetched user data
+            // User data was already obtained by the browser's exchange call
+            if (password.startsWith('sso_data:')) {
+              const encoded = password.slice(9)
+              const user = JSON.parse(Buffer.from(encoded, 'base64').toString())
+
+              return {
+                id: user.systemuserid,
+                email: user.emailaddress1,
+                name: user.fullname,
+                role: mapRoleNameToUserRole(user.role_name),
+              }
+            }
+
             // BACKEND DJANGO: Autenticar con Django
             const response = await authService.login({
               emailaddress1: credentials.email as string,
-              password: credentials.password as string,
+              password: password,
             })
 
             if (!response.user) {

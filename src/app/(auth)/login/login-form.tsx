@@ -5,9 +5,9 @@
  * Enterprise-grade authentication with modern UX, animations, and security features
  */
 
-import { useState, useCallback, useMemo, memo } from 'react'
+import { useState, useCallback, useMemo, useEffect, memo } from 'react'
 import { signIn } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -138,7 +138,10 @@ DemoCredentialButton.displayName = 'DemoCredentialButton'
 
 export function LoginForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [isLoading, setIsLoading] = useState(false)
+  const [isSSOLoading, setIsSSOLoading] = useState(false)
+  const [ssoStatus, setSSOStatus] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [showPassword, setShowPassword] = useState(false)
   const [showDemoCredentials, setShowDemoCredentials] = useState(false)
@@ -164,6 +167,128 @@ export function LoginForm() {
 
   // Calculate password strength
   const passwordStrength = useMemo(() => calculatePasswordStrength(password), [password])
+
+  // Handle SSO token from URL (after Microsoft OAuth redirect)
+  useEffect(() => {
+    const ssoToken = searchParams.get('sso_token')
+    const ssoError = searchParams.get('sso_error')
+
+    if (ssoError) {
+      setError(ssoError)
+      // Clean URL
+      window.history.replaceState({}, '', '/login')
+      return
+    }
+
+    if (!ssoToken) return
+
+    const handleSSOExchange = async () => {
+      setIsSSOLoading(true)
+      setSSOStatus('Autenticando con Microsoft...')
+      setError(null)
+
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL
+
+        // Step 1: Exchange SSO token with Django (browser → Django session cookies)
+        // Retry once if DB is temporarily locked from the callback write
+        let djangoResponse: Response | null = null
+        for (let attempt = 0; attempt < 2; attempt++) {
+          if (attempt > 0) await new Promise(r => setTimeout(r, 500))
+          djangoResponse = await fetch(`${apiUrl}/auth/sso/exchange`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ token: ssoToken }),
+          })
+          if (djangoResponse.ok) break
+        }
+
+        if (!djangoResponse || !djangoResponse.ok) {
+          const errorData = await djangoResponse?.json().catch(() => null)
+          const errorMsg = errorData?.error?.message || 'Error al autenticar con Microsoft'
+          setError(errorMsg)
+          setIsSSOLoading(false)
+          setSSOStatus(null)
+          window.history.replaceState({}, '', '/login')
+          return
+        }
+
+        const djangoData = await djangoResponse.json()
+
+        if (!djangoData.success || !djangoData.user) {
+          setError('Error al obtener datos del usuario')
+          setIsSSOLoading(false)
+          setSSOStatus(null)
+          window.history.replaceState({}, '', '/login')
+          return
+        }
+
+        setSSOStatus('Creando sesión...')
+
+        // Step 2: Create NextAuth JWT session
+        // Pass user data directly (encoded) so NextAuth doesn't need to call Django again
+        const ssoPayload = btoa(JSON.stringify(djangoData.user))
+        const result = await signIn('credentials', {
+          email: djangoData.user.emailaddress1,
+          password: `sso_data:${ssoPayload}`,
+          redirect: false,
+        })
+
+        if (result?.error) {
+          setError('Error al crear sesión. Intenta nuevamente.')
+          setIsSSOLoading(false)
+          setSSOStatus(null)
+          window.history.replaceState({}, '', '/login')
+          return
+        }
+
+        if (result?.ok) {
+          setSSOStatus('Redirigiendo...')
+          // Use hard navigation to ensure session cookie is picked up by middleware
+          window.location.href = '/dashboard'
+          return
+        }
+      } catch (err) {
+        setError('Error inesperado durante la autenticación SSO')
+        setIsSSOLoading(false)
+        setSSOStatus(null)
+        window.history.replaceState({}, '', '/login')
+      }
+    }
+
+    handleSSOExchange()
+  }, [searchParams, router])
+
+  // Handle Microsoft SSO button click
+  const handleMicrosoftSSO = useCallback(async () => {
+    setIsSSOLoading(true)
+    setSSOStatus('Conectando con Microsoft...')
+    setError(null)
+
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL
+      const response = await fetch(`${apiUrl}/auth/sso/init`, {
+        method: 'GET',
+        credentials: 'include',
+      })
+
+      if (!response.ok) {
+        setError('No se pudo iniciar la autenticación con Microsoft')
+        setIsSSOLoading(false)
+        setSSOStatus(null)
+        return
+      }
+
+      const data = await response.json()
+      // Redirect to Microsoft login
+      window.location.href = data.authorization_url
+    } catch (err) {
+      setError('Error al conectar con Microsoft')
+      setIsSSOLoading(false)
+      setSSOStatus(null)
+    }
+  }, [])
 
   const onSubmit = useCallback(async (data: LoginFormData) => {
     setIsLoading(true)
@@ -231,11 +356,12 @@ export function LoginForm() {
     router.push('/dashboard?demo=true')
   }, [router])
 
-  const fillDemoCredentials = useCallback((role: 'admin' | 'manager' | 'sales') => {
+  const fillDemoCredentials = useCallback((role: 'admin' | 'manager' | 'sales' | 'marketing') => {
     const credentials = {
       admin: { email: 'admin@crm.com', password: 'admin123' },
       manager: { email: 'manager@crm.com', password: 'manager123' },
-      sales: { email: 'sales@crm.com', password: 'sales123' },
+      sales: { email: 'vendedor1@crm.com', password: 'vendedor123' },
+      marketing: { email: 'marketing@crm.com', password: 'marketing123' },
     }
     setValue('email', credentials[role].email, { shouldValidate: true })
     setValue('password', credentials[role].password, { shouldValidate: true })
@@ -630,9 +756,15 @@ export function LoginForm() {
                         isLoading={isLoading}
                       />
                       <DemoCredentialButton
-                        role="Sales"
-                        email="sales@crm.com"
+                        role="Salesperson"
+                        email="vendedor1@crm.com"
                         onClick={() => fillDemoCredentials('sales')}
+                        isLoading={isLoading}
+                      />
+                      <DemoCredentialButton
+                        role="Marketing"
+                        email="marketing@crm.com"
+                        onClick={() => fillDemoCredentials('marketing')}
                         isLoading={isLoading}
                       />
                     </div>
@@ -641,10 +773,25 @@ export function LoginForm() {
               </CardContent>
 
               <CardFooter className="flex flex-col space-y-3 pt-2">
+                {/* SSO Loading Overlay */}
+                <AnimatePresence>
+                  {isSSOLoading && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="w-full flex flex-col items-center gap-3 py-4"
+                    >
+                      <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                      <p className="text-sm text-muted-foreground">{ssoStatus}</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
                 <Button
                   type="submit"
                   className="w-full h-11 font-medium relative overflow-hidden group"
-                  disabled={isLoading || isRateLimited || !isValid}
+                  disabled={isLoading || isSSOLoading || isRateLimited || !isValid}
                 >
                   {isLoading ? (
                     <>
@@ -677,8 +824,24 @@ export function LoginForm() {
                   type="button"
                   variant="outline"
                   className="w-full h-11 group"
+                  onClick={handleMicrosoftSSO}
+                  disabled={isLoading || isSSOLoading}
+                >
+                  <svg className="mr-2 h-4 w-4" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="1" y="1" width="9" height="9" fill="#F25022"/>
+                    <rect x="11" y="1" width="9" height="9" fill="#7FBA00"/>
+                    <rect x="1" y="11" width="9" height="9" fill="#00A4EF"/>
+                    <rect x="11" y="11" width="9" height="9" fill="#FFB900"/>
+                  </svg>
+                  Iniciar sesión con Microsoft
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="w-full h-11 group text-muted-foreground"
                   onClick={handleDemoMode}
-                  disabled={isLoading}
+                  disabled={isLoading || isSSOLoading}
                 >
                   <Sparkles className="mr-2 h-4 w-4 group-hover:text-primary transition-colors" />
                   Explorar Demo sin autenticación
