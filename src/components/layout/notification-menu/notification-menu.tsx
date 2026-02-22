@@ -16,16 +16,20 @@ import {
 } from '@/components/ui/sheet'
 import { cn } from '@/lib/utils'
 import { useTranslation } from '@/shared/hooks/use-translation'
-import type { Notification } from './types'
-import { MOCK_NOTIFICATIONS } from './mock-data'
+import { useNotifications, useUnreadCount } from '@/features/notifications/hooks/use-notifications'
+import { useNotificationMutations } from '@/features/notifications/hooks/use-notification-mutations'
 import { NotificationContent } from './notification-content'
 
 export function NotificationMenu() {
   const { t } = useTranslation('notifications')
   const [open, setOpen] = useState(false)
-  const [notifications, setNotifications] = useState<Notification[]>(MOCK_NOTIFICATIONS)
   const [activeTab, setActiveTab] = useState<'all' | 'unread' | 'mentions'>('all')
   const [isMobile, setIsMobile] = useState(false)
+
+  // API data
+  const { notifications } = useNotifications()
+  const unreadCount = useUnreadCount()
+  const { markAsRead, markAllAsRead, deleteNotifications } = useNotificationMutations()
 
   // Detect mobile
   useEffect(() => {
@@ -37,12 +41,6 @@ export function NotificationMenu() {
     window.addEventListener('resize', checkMobile)
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
-
-  // Computed values
-  const unreadCount = useMemo(
-    () => notifications.filter(n => !n.isRead).length,
-    [notifications]
-  )
 
   const filteredNotifications = useMemo(() => {
     switch (activeTab) {
@@ -60,20 +58,18 @@ export function NotificationMenu() {
     [notifications]
   )
 
-  // Handlers (stable references for memoized children)
-  const handleMarkAsRead = useCallback((id: string) => {
-    setNotifications(prev =>
-      prev.map(n => (n.id === id ? { ...n, isRead: true } : n))
-    )
-  }, [])
+  // Handlers
+  const handleMarkAsRead = useCallback(async (id: string) => {
+    await markAsRead(id)
+  }, [markAsRead])
 
-  const handleDismiss = useCallback((id: string) => {
-    setNotifications(prev => prev.filter(n => n.id !== id))
-  }, [])
+  const handleDismiss = useCallback(async (id: string) => {
+    await deleteNotifications([id])
+  }, [deleteNotifications])
 
-  const handleMarkAllAsRead = useCallback(() => {
-    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })))
-  }, [])
+  const handleMarkAllAsRead = useCallback(async () => {
+    await markAllAsRead()
+  }, [markAllAsRead])
 
   // Trigger button (shared between Popover and Sheet)
   const triggerButton = (

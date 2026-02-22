@@ -13,6 +13,11 @@ import type {
   CompleteActivityDto,
   ActivityBackendResponse,
 } from '@/core/contracts/entities/activity'
+import type {
+  UnlinkedEmail,
+  MatchSuggestionsResponse,
+  LinkEmailDto,
+} from '@/core/contracts/entities/email'
 import { ActivityStateCode, ActivityTypeCode } from '@/core/contracts/enums'
 
 /**
@@ -337,6 +342,129 @@ class ActivityServiceBackend {
       message: string
     }>(`${this.basePath}/send-document-email`, formData)
 
+    return response.data
+  }
+
+  // ===========================================================================
+  // Email Matching Methods
+  // ===========================================================================
+
+  /**
+   * Get unlinked emails (emails without a regarding object)
+   */
+  async getUnlinkedEmails(): Promise<UnlinkedEmail[]> {
+    const response = await apiClient.get<UnlinkedEmail[]>(
+      `${this.basePath}/emails/unlinked`
+    )
+    return response.data
+  }
+
+  /**
+   * Get count of unlinked emails (for badge display)
+   */
+  async getUnlinkedEmailCount(): Promise<number> {
+    const response = await apiClient.get<{ count: number }>(
+      `${this.basePath}/emails/unlinked/count`
+    )
+    return response.data.count
+  }
+
+  /**
+   * Get match suggestions for an email activity
+   */
+  async getMatchSuggestions(activityId: string): Promise<MatchSuggestionsResponse> {
+    const response = await apiClient.get<MatchSuggestionsResponse>(
+      `${this.basePath}/emails/match-suggestions/${activityId}`
+    )
+    return response.data
+  }
+
+  /**
+   * Manually link an email to a CRM record
+   */
+  async linkEmail(activityId: string, dto: LinkEmailDto): Promise<Activity> {
+    const response = await apiClient.post<Activity>(
+      `${this.basePath}/${activityId}/link`,
+      dto
+    )
+    return response.data
+  }
+
+  /**
+   * Remove the regarding association from an email
+   */
+  async unlinkEmail(activityId: string): Promise<Activity> {
+    const response = await apiClient.post<Activity>(
+      `${this.basePath}/${activityId}/unlink`
+    )
+    return response.data
+  }
+
+  // ===========================================================================
+  // Microsoft Graph Integration Methods
+  // ===========================================================================
+
+  /**
+   * Get Microsoft OAuth2 authorization URL for connecting Office 365
+   */
+  async getGraphConnectUrl(): Promise<{ authorization_url: string }> {
+    const response = await apiClient.get<{ authorization_url: string }>(
+      '/graph/connect'
+    )
+    return response.data
+  }
+
+  /**
+   * Get Microsoft Graph connection status for the current user
+   */
+  async getGraphConnectionStatus(): Promise<{
+    connected: boolean
+    microsoft_email: string | null
+    connected_on: string | null
+    last_sync_on: string | null
+    last_sync_count: number
+  }> {
+    const response = await apiClient.get<{
+      connected: boolean
+      microsoft_email: string | null
+      connected_on: string | null
+      last_sync_on: string | null
+      last_sync_count: number
+    }>('/graph/status')
+    return response.data
+  }
+
+  /**
+   * Trigger on-demand email sync from Microsoft Graph
+   */
+  async syncGraphEmails(): Promise<{
+    success: boolean
+    total_fetched: number
+    new_emails: number
+    duplicates_skipped: number
+    matched_emails: number
+    unmatched_emails: number
+    errors: string[]
+  }> {
+    const response = await apiClient.post<{
+      success: boolean
+      total_fetched: number
+      new_emails: number
+      duplicates_skipped: number
+      matched_emails: number
+      unmatched_emails: number
+      errors: string[]
+    }>('/graph/sync')
+    return response.data
+  }
+
+  /**
+   * Disconnect Microsoft account from CRM
+   */
+  async disconnectGraph(): Promise<{ success: boolean; message: string }> {
+    const response = await apiClient.post<{ success: boolean; message: string }>(
+      '/graph/disconnect'
+    )
     return response.data
   }
 

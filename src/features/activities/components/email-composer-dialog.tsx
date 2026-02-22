@@ -89,9 +89,29 @@ SUBJECT: ${data.subject}
 ${data.body}
 `.trim()
 
+      // Generate tracking token if regarding context exists
+      let finalSubject = data.subject || 'No Subject'
+      if (regardingId && regardingType) {
+        const typeMap: Record<string, string> = {
+          opportunity: 'OPP',
+          account: 'ACC',
+          contact: 'CON',
+          lead: 'LEAD',
+          quote: 'QUOTE',
+          order: 'ORD',
+          invoice: 'INV',
+        }
+        const typeCode = typeMap[regardingType] || regardingType.toUpperCase().slice(0, 5)
+        const shortId = regardingId.replace(/-/g, '').slice(0, 8)
+        const token = `[CRM:${typeCode}-${shortId}]`
+        if (!finalSubject.includes('[CRM:')) {
+          finalSubject = `${finalSubject} ${token}`
+        }
+      }
+
       const dto: CreateActivityDto = {
         activitytypecode: ActivityTypeCode.Email,
-        subject: data.subject || 'No Subject',
+        subject: finalSubject,
         description: emailDetails,
         scheduledstart: new Date().toISOString(),
         regardingobjectid: regardingId,

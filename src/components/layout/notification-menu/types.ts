@@ -12,7 +12,7 @@ export interface Notification {
 
   // Optional context
   relatedEntityId?: string
-  relatedEntityType?: 'lead' | 'opportunity' | 'quote' | 'order'
+  relatedEntityType?: 'lead' | 'opportunity' | 'quote' | 'order' | 'task' | 'email' | 'phonecall' | 'appointment'
   relatedEntityName?: string
   actionUrl?: string
   actor?: {

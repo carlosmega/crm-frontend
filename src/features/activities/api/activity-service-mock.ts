@@ -303,6 +303,96 @@ export const activityServiceMock = {
     }
   },
 
+  // ===========================================================================
+  // Email Matching Stubs
+  // ===========================================================================
+
+  async getUnlinkedEmails() {
+    await mockDelay(MOCK_DELAYS.READ)
+    return []
+  },
+
+  async getUnlinkedEmailCount() {
+    await mockDelay(MOCK_DELAYS.READ)
+    return 0
+  },
+
+  async getMatchSuggestions(_activityId: string) {
+    await mockDelay(MOCK_DELAYS.READ)
+    return {
+      activityid: _activityId,
+      matched: false,
+      suggestion: undefined,
+      matched_contacts: [],
+      matched_accounts: [],
+      candidate_opportunities: [],
+    }
+  },
+
+  async linkEmail(_activityId: string, _dto: { regardingobjectid: string; regardingobjectidtype: string }) {
+    await mockDelay(MOCK_DELAYS.WRITE)
+    const activities = getAllActivities()
+    const activity = activities.find((a) => a.activityid === _activityId)
+    if (activity) {
+      activity.regardingobjectid = _dto.regardingobjectid
+      activity.regardingobjectidtype = _dto.regardingobjectidtype
+      saveActivities(activities)
+      return activity
+    }
+    return null
+  },
+
+  async unlinkEmail(_activityId: string) {
+    await mockDelay(MOCK_DELAYS.WRITE)
+    const activities = getAllActivities()
+    const activity = activities.find((a) => a.activityid === _activityId)
+    if (activity) {
+      activity.regardingobjectid = undefined
+      activity.regardingobjectidtype = undefined
+      saveActivities(activities)
+      return activity
+    }
+    return null
+  },
+
+  // ===========================================================================
+  // Microsoft Graph Integration Stubs
+  // ===========================================================================
+
+  async getGraphConnectUrl() {
+    await mockDelay(MOCK_DELAYS.READ)
+    return { authorization_url: 'https://login.microsoftonline.com/mock/oauth2/authorize' }
+  },
+
+  async getGraphConnectionStatus() {
+    await mockDelay(MOCK_DELAYS.READ)
+    return {
+      connected: false,
+      microsoft_email: null,
+      connected_on: null,
+      last_sync_on: null,
+      last_sync_count: 0,
+    }
+  },
+
+  async syncGraphEmails() {
+    await mockDelay(MOCK_DELAYS.WRITE)
+    return {
+      success: true,
+      total_fetched: 0,
+      new_emails: 0,
+      duplicates_skipped: 0,
+      matched_emails: 0,
+      unmatched_emails: 0,
+      errors: [],
+    }
+  },
+
+  async disconnectGraph() {
+    await mockDelay(MOCK_DELAYS.WRITE)
+    return { success: true, message: 'Disconnected (mock)' }
+  },
+
   /**
    * Get activity statistics
    */

@@ -257,7 +257,7 @@ export function CreateOrderFromQuoteButton({
                   <br />
                   {t('createFromQuote.totalAmount')}{' '}
                   <span className="font-medium">
-                    ${quote.totalamount.toFixed(2)}
+                    ${Number(quote.totalamount ?? 0).toFixed(2)}
                   </span>
                   <br />
                   {t('createFromQuote.lineItemsLabel')} <span className="font-medium">{quoteLines.length}</span>

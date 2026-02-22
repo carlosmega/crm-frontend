@@ -134,7 +134,19 @@ export type {
 } from './activity';
 
 // Email
-export type { Email, CreateEmailDto, SendEmailDto } from './email';
+export type {
+  Email,
+  CreateEmailDto,
+  SendEmailDto,
+  LinkEmailDto,
+  UnlinkedEmail,
+  MatchSuggestionsResponse,
+  MatchSuggestion,
+  MatchedContact,
+  MatchedAccount,
+  CandidateOpportunity,
+} from './email';
+export type { EmailMatchMethod } from './email';
 
 // Phone Call
 export type {

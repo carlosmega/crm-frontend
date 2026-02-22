@@ -1,57 +1,65 @@
 'use client'
 
-import { useCallback } from 'react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { notificationService } from '../api/notification-service'
+import { notificationKeys } from './use-notifications'
 
 export function useNotificationMutations() {
-  const markAsRead = useCallback(async (id: string) => {
-    try {
-      // PENDING: Replace with real API call when backend is ready
-      // await fetch(`/api/notifications/${id}/mark-read`, { method: 'POST' })
-      toast.success('Marked as read')
-    } catch (error) {
+  const queryClient = useQueryClient()
+
+  const invalidateAll = () => {
+    queryClient.invalidateQueries({ queryKey: notificationKeys.lists() })
+    queryClient.invalidateQueries({ queryKey: notificationKeys.unreadCount() })
+  }
+
+  const markAsReadMutation = useMutation({
+    mutationFn: (id: string) => notificationService.markAsRead(id),
+    onSuccess: () => {
+      invalidateAll()
+    },
+    onError: () => {
       toast.error('Failed to mark as read')
-      throw error
-    }
-  }, [])
+    },
+  })
 
-  const markAllAsRead = useCallback(async () => {
-    try {
-      // PENDING: Replace with real API call when backend is ready
-      // await fetch('/api/notifications/mark-all-read', { method: 'POST' })
+  const markAllAsReadMutation = useMutation({
+    mutationFn: () => notificationService.markAllAsRead(),
+    onSuccess: () => {
+      invalidateAll()
       toast.success('All notifications marked as read')
-    } catch (error) {
+    },
+    onError: () => {
       toast.error('Failed to mark all as read')
-      throw error
-    }
-  }, [])
+    },
+  })
 
-  const deleteNotifications = useCallback(async (ids: string[]) => {
-    try {
-      // PENDING: Replace with real API call when backend is ready
-      // await fetch('/api/notifications/bulk-delete', { method: 'DELETE', body: JSON.stringify({ ids }) })
+  const deleteNotificationsMutation = useMutation({
+    mutationFn: (ids: string[]) => notificationService.deleteNotifications(ids),
+    onSuccess: (_data, ids) => {
+      invalidateAll()
       toast.success(`${ids.length} notification${ids.length === 1 ? '' : 's'} deleted`)
-    } catch (error) {
+    },
+    onError: () => {
       toast.error('Failed to delete notifications')
-      throw error
-    }
-  }, [])
+    },
+  })
 
-  const archiveNotifications = useCallback(async (ids: string[]) => {
-    try {
-      // PENDING: Replace with real API call when backend is ready
-      // await fetch('/api/notifications/bulk-archive', { method: 'POST', body: JSON.stringify({ ids }) })
+  const archiveNotificationsMutation = useMutation({
+    mutationFn: (ids: string[]) => notificationService.archiveNotifications(ids),
+    onSuccess: (_data, ids) => {
+      invalidateAll()
       toast.success(`${ids.length} notification${ids.length === 1 ? '' : 's'} archived`)
-    } catch (error) {
+    },
+    onError: () => {
       toast.error('Failed to archive notifications')
-      throw error
-    }
-  }, [])
+    },
+  })
 
   return {
-    markAsRead,
-    markAllAsRead,
-    deleteNotifications,
-    archiveNotifications,
+    markAsRead: (id: string) => markAsReadMutation.mutateAsync(id),
+    markAllAsRead: () => markAllAsReadMutation.mutateAsync(),
+    deleteNotifications: (ids: string[]) => deleteNotificationsMutation.mutateAsync(ids),
+    archiveNotifications: (ids: string[]) => archiveNotificationsMutation.mutateAsync(ids),
   }
 }

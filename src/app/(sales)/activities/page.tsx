@@ -21,9 +21,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Plus, Search, Download, Loader2, WifiOff, MoreVertical } from 'lucide-react'
+import { Plus, Search, Download, Loader2, WifiOff, MoreVertical, Mail } from 'lucide-react'
 import { ErrorState } from '@/shared/components/error-state'
 import { useDebouncedValue } from '@/shared/hooks/use-debounced-value'
+import { useUnlinkedEmailCount } from '@/features/activities/hooks'
+import { GraphSyncPanel } from '@/features/activities/components'
+import Link from 'next/link'
 
 export default function ActivitiesPage() {
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
@@ -32,6 +35,7 @@ export default function ActivitiesPage() {
   const [columnFilters, setColumnFilters] = useState<ActiveFilters>({})
 
   const { data: activities, isLoading: loading, error } = useActivities()
+  const { data: unlinkedCount } = useUnlinkedEmailCount()
 
   // ✅ Performance: Debounce search query
   const debouncedSearchQuery = useDebouncedValue(searchQuery, 300)
@@ -242,11 +246,29 @@ export default function ActivitiesPage() {
                 Manage your emails, calls, tasks, and appointments
               </p>
             </div>
-            <Button onClick={() => setCreateDialogOpen(true)} className="hidden md:flex bg-purple-600 hover:bg-purple-700">
-              <Plus className="mr-2 h-4 w-4" />
-              New Activity
-            </Button>
+            <div className="hidden md:flex items-center gap-2">
+              <Button variant="outline" asChild>
+                <Link href="/activities/unlinked" className="relative">
+                  <Mail className="mr-2 h-4 w-4" />
+                  Unlinked Emails
+                  {unlinkedCount != null && unlinkedCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 min-w-5 flex items-center justify-center px-1">
+                      {unlinkedCount > 99 ? '99+' : unlinkedCount}
+                    </span>
+                  )}
+                </Link>
+              </Button>
+              <Button onClick={() => setCreateDialogOpen(true)} className="bg-purple-600 hover:bg-purple-700">
+                <Plus className="mr-2 h-4 w-4" />
+                New Activity
+              </Button>
+            </div>
           </div>
+        </div>
+
+        {/* Microsoft Graph Sync Panel */}
+        <div className="px-4 pb-4">
+          <GraphSyncPanel />
         </div>
 
         {/* Filters and Search Section */}

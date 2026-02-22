@@ -13,7 +13,7 @@ import {
   getActivityStateColor,
 } from '@/core/contracts/enums'
 import { useCompleteActivity } from '../hooks'
-import { Mail, Phone, CheckSquare, Calendar, Users, StickyNote, Circle, Check, X } from 'lucide-react'
+import { Mail, Phone, CheckSquare, Calendar, Users, StickyNote, Circle, Check, X, Sparkles } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 
 interface ActivityTimelineItemProps {
@@ -96,6 +96,21 @@ export const ActivityTimelineItem = memo(function ActivityTimelineItem({ activit
               {isOverdue && (
                 <Badge variant="destructive" className="text-xs">
                   Overdue
+                </Badge>
+              )}
+              {activity.activitytypecode === ActivityTypeCode.Email &&
+                (activity as any).matchmethod && (
+                <Badge variant="outline" className="text-xs gap-1">
+                  <Sparkles className="size-3" />
+                  {(activity as any).matchmethod === 'manual' ? 'Manual' :
+                   (activity as any).matchmethod === 'tracking_token' ? 'Token' :
+                   (activity as any).matchmethod === 'thread_correlation' ? 'Thread' :
+                   'Auto'}
+                  {(activity as any).matchconfidence && (
+                    <span className="text-muted-foreground">
+                      {(activity as any).matchconfidence}%
+                    </span>
+                  )}
                 </Badge>
               )}
             </div>
