@@ -180,3 +180,81 @@ export type {
   ResolveCaseDto,
   CancelCaseDto
 } from './case';
+
+// ===== COLLABORATION & NOTES =====
+
+// Annotation (Notes & Attachments)
+export type {
+  Annotation,
+  CreateAnnotationDto,
+  UpdateAnnotationDto
+} from './annotation';
+
+// ===== COMPETITION =====
+
+// Competitor
+export type {
+  Competitor,
+  CreateCompetitorDto,
+  UpdateCompetitorDto,
+  CompetitorOpportunity
+} from './competitor';
+export { CompetitorStateCode } from './competitor';
+
+// ===== TEAMS & QUEUES =====
+
+// Team
+export type {
+  Team,
+  CreateTeamDto,
+  UpdateTeamDto,
+  TeamMembership,
+  AddTeamMemberDto
+} from './team';
+export { TeamType } from './team';
+
+// Queue
+export type {
+  Queue,
+  CreateQueueDto,
+  UpdateQueueDto,
+  QueueItem,
+  AddToQueueDto
+} from './queue';
+export { QueueTypeCode, QueueStateCode, QueueItemStateCode } from './queue';
+
+// ===== GOALS & METRICS =====
+
+// Goal
+export type {
+  Goal,
+  CreateGoalDto,
+  UpdateGoalDto,
+  GoalMetric,
+  CreateGoalMetricDto
+} from './goal';
+export { GoalStateCode, GoalStatusCode, FiscalPeriod, MetricType } from './goal';
+
+// ===== VIEWS & DATA MANAGEMENT =====
+
+// SavedView
+export type {
+  SavedView,
+  CreateSavedViewDto,
+  UpdateSavedViewDto,
+  ShareViewDto,
+  FetchCriteria
+} from './saved-view';
+export { ViewType, LayoutType } from './saved-view';
+
+// Data Management (Import/Export)
+export type {
+  ImportJob,
+  CreateImportJobDto,
+  ExportJob,
+  CreateExportJobDto,
+  ImportError,
+  CrmFieldInfo,
+  FieldMappingPreview
+} from './data-management';
+export { ImportJobStatus, ExportJobStatus, FileFormat } from './data-management';
